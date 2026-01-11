@@ -236,7 +236,7 @@ const Story = (function() {
             5: [
                 `${c.name} wakes up early these days. He doesn't know why.`,
                 'He asked if anyone was coming. From far away.',
-                'The algorithm says: you're almost ready.',
+                'The algorithm says: you\'re almost ready.',
                 'He wrote something down. For later.',
             ],
             6: [
