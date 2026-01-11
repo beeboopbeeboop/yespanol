@@ -261,7 +261,7 @@
     </div>
 
     <script src="js/core.js"></script>
-    <script src="js/ui.js"></script>
+    <script src="js/ui-premium.js"></script>
     <script src="js/story.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -276,7 +276,7 @@
 
             const phase = Story.getPhase(overallProgress);
 
-            if (phase >= 5) {
+            if (phase >= 7) {
                 // Unlock the letter!
                 document.getElementById('lockedState').style.display = 'none';
                 document.getElementById('letterContainer').classList.add('visible');
@@ -290,16 +290,24 @@
 
                 // Celebrate!
                 setTimeout(() => {
-                    if (typeof YespanolUI !== 'undefined') {
-                        YespanolUI.celebrate();
+                    if (typeof UI !== 'undefined' && UI.Confetti) {
+                        UI.Confetti.burst({ count: 80, spread: 360 });
                     }
                 }, 1500);
 
             } else {
-                // Still locked
-                const progressNeeded = 80 - overallProgress;
+                // Still locked - show progress hint based on phase
+                const progressNeeded = 85 - overallProgress;
+                const phaseHints = {
+                    1: 'You\'ve just begun. The message will wait.',
+                    2: 'Keep going. The algorithm is watching.',
+                    3: 'Someone is out there. You\'re getting closer.',
+                    4: 'You know his name now. Keep learning.',
+                    5: 'He\'s waiting. Almost there.',
+                    6: 'So close. Just a little more.'
+                };
                 document.getElementById('progressHint').textContent =
-                    `${progressNeeded}% more to unlock. Keep going.`;
+                    phaseHints[phase] || `${progressNeeded}% more to unlock.`;
             }
         });
 

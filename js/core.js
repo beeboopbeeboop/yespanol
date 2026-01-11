@@ -5,13 +5,18 @@
 
 const Yespanol = (function() {
     const STORAGE_KEY = 'yespanol_user';
-    const VERSION = '1.0.0';
+    const BACKUP_KEY = 'yespanol_user_backup';
+    const VERSION = '1.1.0';
 
     // Default user profile
     const defaultProfile = {
         version: VERSION,
         created: null,
         lastVisit: null,
+
+        // User info
+        name: '',
+        level: 'beginner', // beginner, intermediate, advanced
 
         // Streak tracking
         streak: 0,
@@ -54,33 +59,114 @@ const Yespanol = (function() {
         }
     };
 
-    // Load user profile
+    // Validate profile structure
+    function validateProfile(profile) {
+        if (!profile || typeof profile !== 'object') return false;
+        if (!profile.skills || typeof profile.skills !== 'object') return false;
+        if (typeof profile.totalCardsReviewed !== 'number') return false;
+        if (typeof profile.streak !== 'number') return false;
+        return true;
+    }
+
+    // Load user profile with backup recovery
     function load() {
+        let profile = null;
+
+        // Try main storage
         try {
             const stored = localStorage.getItem(STORAGE_KEY);
             if (stored) {
-                const profile = JSON.parse(stored);
-                // Merge with defaults to handle new fields
-                return deepMerge(defaultProfile, profile);
+                profile = JSON.parse(stored);
+                if (!validateProfile(profile)) {
+                    console.warn('Profile validation failed, trying backup...');
+                    profile = null;
+                }
             }
         } catch (e) {
             console.error('Failed to load profile:', e);
         }
 
-        // Create new profile
-        const newProfile = { ...defaultProfile, created: Date.now() };
-        save(newProfile);
-        return newProfile;
+        // Try backup if main failed
+        if (!profile) {
+            try {
+                const backup = localStorage.getItem(BACKUP_KEY);
+                if (backup) {
+                    profile = JSON.parse(backup);
+                    if (validateProfile(profile)) {
+                        console.log('Recovered from backup');
+                        // Restore main from backup
+                        localStorage.setItem(STORAGE_KEY, backup);
+                    } else {
+                        profile = null;
+                    }
+                }
+            } catch (e) {
+                console.error('Backup recovery failed:', e);
+            }
+        }
+
+        // Merge with defaults or create new
+        if (profile) {
+            profile = deepMerge(defaultProfile, profile);
+            profile.version = VERSION; // Update version
+        } else {
+            profile = { ...JSON.parse(JSON.stringify(defaultProfile)), created: Date.now() };
+        }
+
+        save(profile);
+        return profile;
     }
 
-    // Save user profile
+    // Save user profile with automatic backup
     function save(profile) {
         try {
             profile.lastVisit = Date.now();
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+            profile.version = VERSION;
+            const data = JSON.stringify(profile);
+
+            // Check storage quota (rough estimate)
+            if (data.length > 4 * 1024 * 1024) { // 4MB warning
+                console.warn('Profile data is getting large:', Math.round(data.length / 1024), 'KB');
+            }
+
+            // Save main
+            localStorage.setItem(STORAGE_KEY, data);
+
+            // Backup every 5th save (reduce write frequency)
+            if (!save._count) save._count = 0;
+            save._count++;
+            if (save._count % 5 === 0) {
+                localStorage.setItem(BACKUP_KEY, data);
+            }
         } catch (e) {
             console.error('Failed to save profile:', e);
+            // If quota exceeded, try to clean up old card data
+            if (e.name === 'QuotaExceededError') {
+                cleanupOldData(profile);
+            }
         }
+    }
+
+    // Clean up old card data if storage is full
+    function cleanupOldData(profile) {
+        const now = Date.now();
+        const thirtyDaysAgo = now - (30 * 24 * 60 * 60 * 1000);
+
+        // Remove cards not reviewed in 30 days with high ease (well-known)
+        let removed = 0;
+        for (const [cardId, cardData] of Object.entries(profile.cards)) {
+            if (cardData.nextReview < thirtyDaysAgo && cardData.ease > 2.5) {
+                delete profile.cards[cardId];
+                removed++;
+            }
+        }
+
+        // Trim recent mistakes to last 20
+        if (profile.recentMistakes.length > 20) {
+            profile.recentMistakes = profile.recentMistakes.slice(0, 20);
+        }
+
+        console.log(`Cleaned up ${removed} old cards`);
     }
 
     // Deep merge helper
@@ -344,6 +430,81 @@ const Yespanol = (function() {
         return names[skill] || skill;
     }
 
+    // Export user data as JSON string
+    function exportData() {
+        const profile = load();
+        return JSON.stringify({
+            exportedAt: Date.now(),
+            version: VERSION,
+            profile: profile
+        }, null, 2);
+    }
+
+    // Import user data from JSON string
+    function importData(jsonString) {
+        try {
+            const data = JSON.parse(jsonString);
+
+            // Validate it's our export format
+            if (!data.profile || !validateProfile(data.profile)) {
+                return { success: false, error: 'Invalid backup file format' };
+            }
+
+            // Backup current before overwriting
+            const current = localStorage.getItem(STORAGE_KEY);
+            if (current) {
+                localStorage.setItem(BACKUP_KEY, current);
+            }
+
+            // Merge imported with defaults (handle version differences)
+            const imported = deepMerge(defaultProfile, data.profile);
+            imported.version = VERSION;
+            save(imported);
+
+            return { success: true, profile: imported };
+        } catch (e) {
+            return { success: false, error: e.message };
+        }
+    }
+
+    // Reset all progress (with confirmation)
+    function resetProgress(keepSettings = true) {
+        const profile = load();
+
+        // Backup before reset
+        localStorage.setItem(BACKUP_KEY, JSON.stringify(profile));
+
+        const newProfile = { ...JSON.parse(JSON.stringify(defaultProfile)), created: Date.now() };
+
+        // Optionally keep user settings
+        if (keepSettings && profile.settings) {
+            newProfile.settings = profile.settings;
+        }
+
+        save(newProfile);
+        return newProfile;
+    }
+
+    // Force backup now
+    function forceBackup() {
+        const profile = load();
+        localStorage.setItem(BACKUP_KEY, JSON.stringify(profile));
+        return true;
+    }
+
+    // Get storage stats
+    function getStorageStats() {
+        const main = localStorage.getItem(STORAGE_KEY) || '';
+        const backup = localStorage.getItem(BACKUP_KEY) || '';
+
+        return {
+            mainSize: main.length,
+            backupSize: backup.length,
+            totalKB: Math.round((main.length + backup.length) / 1024),
+            hasBackup: backup.length > 0
+        };
+    }
+
     // Public API
     return {
         load,
@@ -358,6 +519,12 @@ const Yespanol = (function() {
         getAccuracy,
         formatSkillName,
         achievementDefs,
+        // Data management
+        exportData,
+        importData,
+        resetProgress,
+        forceBackup,
+        getStorageStats,
         VERSION,
     };
 })();

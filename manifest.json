@@ -1,22 +1,74 @@
 {
-  "name": "Yespañol",
+  "name": "Yespañol - Learn Spanish",
   "short_name": "Yespañol",
-  "description": "Learn Spanish with science-backed methods",
+  "description": "Learn Spanish with science-backed spaced repetition. Track your progress, master grammar, and discover how people really talk.",
   "start_url": "/index.html",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#0a0a0f",
-  "theme_color": "#0a0a0f",
-  "orientation": "portrait",
+  "display_override": ["standalone", "minimal-ui"],
+  "background_color": "#000000",
+  "theme_color": "#ff6b4a",
+  "orientation": "portrait-primary",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["education", "language"],
+  "iarc_rating_id": "",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
-  ]
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot-1.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Home screen with personalized learning"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Quick Review",
+      "short_name": "Review",
+      "description": "Start a flashcard review session",
+      "url": "/practice/flashcards.html",
+      "icons": [{"src": "icon-192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Speed Challenge",
+      "short_name": "Speed",
+      "description": "60-second sprint challenge",
+      "url": "/practice/flashcards.html?mode=speed",
+      "icons": [{"src": "icon-192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Your Progress",
+      "short_name": "Stats",
+      "description": "View your learning statistics",
+      "url": "/progress.html",
+      "icons": [{"src": "icon-192.png", "sizes": "192x192"}]
+    }
+  ],
+  "related_applications": [],
+  "handle_links": "preferred",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
 }

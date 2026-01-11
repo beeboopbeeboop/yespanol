@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <link rel="stylesheet" href="css/design-system.css">
+    <title>Settings - Yespanol</title>
+    <style>
+        .app {
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding-bottom: calc(var(--nav-height) + var(--space-4));
+        }
+
+        .header {
+            padding: calc(var(--safe-top) + var(--space-6)) var(--space-5) var(--space-4);
+            text-align: center;
+        }
+
+        .header-title {
+            font-size: var(--text-2xl);
+            font-weight: var(--weight-bold);
+        }
+
+        .content {
+            padding: 0 var(--space-5);
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: var(--space-6);
+        }
+
+        .section-title {
+            font-size: var(--text-xs);
+            font-weight: var(--weight-semibold);
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: var(--space-3);
+            padding-left: var(--space-4);
+        }
+
+        /* Settings Card */
+        .settings-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-4);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .setting-icon {
+            font-size: 24px;
+            width: 32px;
+            text-align: center;
+        }
+
+        .setting-text h3 {
+            font-size: var(--text-base);
+            font-weight: var(--weight-medium);
+            margin-bottom: 2px;
+        }
+
+        .setting-text p {
+            font-size: var(--text-xs);
+            color: var(--text-tertiary);
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            width: 51px;
+            height: 31px;
+            background: var(--bg-tertiary);
+            border-radius: 16px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch.on {
+            background: var(--success);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 27px;
+            height: 27px;
+            background: white;
+            border-radius: 14px;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch.on::after {
+            transform: translateX(20px);
+        }
+
+        /* Select Dropdown */
+        .setting-select {
+            background: var(--bg-tertiary);
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: var(--space-2) var(--space-3);
+            color: var(--text-primary);
+            font-size: var(--text-sm);
+            cursor: pointer;
+        }
+
+        /* Danger Zone */
+        .danger-card {
+            background: rgba(255, 69, 58, 0.1);
+            border-color: rgba(255, 69, 58, 0.2);
+        }
+
+        .danger-btn {
+            background: transparent;
+            border: 1px solid var(--error);
+            color: var(--error);
+            padding: var(--space-3) var(--space-5);
+            border-radius: var(--radius-md);
+            font-size: var(--text-sm);
+            font-weight: var(--weight-semibold);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .danger-btn:active {
+            background: var(--error);
+            color: white;
+        }
+
+        /* About */
+        .about-card {
+            text-align: center;
+            padding: var(--space-6);
+        }
+
+        .about-logo {
+            font-size: 48px;
+            margin-bottom: var(--space-3);
+        }
+
+        .about-name {
+            font-size: var(--text-xl);
+            font-weight: var(--weight-bold);
+            margin-bottom: var(--space-1);
+        }
+
+        .about-version {
+            font-size: var(--text-sm);
+            color: var(--text-tertiary);
+            margin-bottom: var(--space-4);
+        }
+
+        .about-desc {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            line-height: var(--leading-relaxed);
+        }
+
+        /* Ambient */
+        .ambient {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .ambient::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(circle at 70% 30%, rgba(255, 107, 74, 0.04) 0%, transparent 50%);
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient"></div>
+
+    <div class="app">
+        <header class="header">
+            <h1 class="header-title">Settings</h1>
+        </header>
+
+        <main class="content">
+            <!-- Preferences -->
+            <section class="section">
+                <div class="section-title">Preferences</div>
+                <div class="settings-card">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-icon">🔊</span>
+                            <div class="setting-text">
+                                <h3>Sound Effects</h3>
+                                <p>Play sounds for feedback</p>
+                            </div>
+                        </div>
+                        <div class="toggle-switch on" id="soundToggle" onclick="toggleSetting('sound', this)"></div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-icon">📳</span>
+                            <div class="setting-text">
+                                <h3>Haptic Feedback</h3>
+                                <p>Vibration on interactions</p>
+                            </div>
+                        </div>
+                        <div class="toggle-switch on" id="hapticToggle" onclick="toggleSetting('haptic', this)"></div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-icon">🌙</span>
+                            <div class="setting-text">
+                                <h3>Dark Mode</h3>
+                                <p>Always on for OLED displays</p>
+                            </div>
+                        </div>
+                        <div class="toggle-switch on" style="opacity: 0.5; pointer-events: none;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Learning -->
+            <section class="section">
+                <div class="section-title">Learning</div>
+                <div class="settings-card">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-icon">🎯</span>
+                            <div class="setting-text">
+                                <h3>Daily Goal</h3>
+                                <p>Cards to review per day</p>
+                            </div>
+                        </div>
+                        <select class="setting-select" id="dailyGoal" onchange="updateDailyGoal(this.value)">
+                            <option value="10">10 cards</option>
+                            <option value="20" selected>20 cards</option>
+                            <option value="30">30 cards</option>
+                            <option value="50">50 cards</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-icon">🔤</span>
+                            <div class="setting-text">
+                                <h3>Font Size</h3>
+                                <p>Text size in lessons</p>
+                            </div>
+                        </div>
+                        <select class="setting-select" id="fontSize" onchange="updateFontSize(this.value)">
+                            <option value="small">Small</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="large">Large</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data -->
+            <section class="section">
+                <div class="section-title">Data</div>
+                <div class="settings-card">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-icon">📤</span>
+                            <div class="setting-text">
+                                <h3>Export Progress</h3>
+                                <p>Download your learning data</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-secondary" onclick="exportData()">Export</button>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-icon">📥</span>
+                            <div class="setting-text">
+                                <h3>Import Progress</h3>
+                                <p>Restore from backup</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-secondary" onclick="importData()">Import</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Danger Zone -->
+            <section class="section">
+                <div class="section-title">Danger Zone</div>
+                <div class="settings-card danger-card">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <span class="setting-icon">🗑️</span>
+                            <div class="setting-text">
+                                <h3>Reset All Progress</h3>
+                                <p>This cannot be undone</p>
+                            </div>
+                        </div>
+                        <button class="danger-btn" onclick="resetProgress()">Reset</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- About -->
+            <section class="section">
+                <div class="section-title">About</div>
+                <div class="settings-card about-card">
+                    <div class="about-logo">🇪🇸</div>
+                    <div class="about-name">Yespanol</div>
+                    <div class="about-version">Version 1.0.0</div>
+                    <div class="about-desc">
+                        Learn Spanish with science-backed methods. We track your weak spots and personalize your journey.
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Tab Bar -->
+    <nav class="tab-bar">
+        <a href="index.html" class="tab-item">
+            <span class="tab-icon">🏠</span>
+            <span class="tab-label">Home</span>
+        </a>
+        <a href="practice/flashcards.html" class="tab-item">
+            <span class="tab-icon">🃏</span>
+            <span class="tab-label">Review</span>
+        </a>
+        <a href="progress.html" class="tab-item">
+            <span class="tab-icon">📊</span>
+            <span class="tab-label">Stats</span>
+        </a>
+        <a href="settings.html" class="tab-item active">
+            <span class="tab-icon">⚙️</span>
+            <span class="tab-label">Settings</span>
+        </a>
+    </nav>
+
+    <script src="js/core.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const profile = Yespanol.load();
+            const settings = profile.settings || {};
+
+            // Apply saved settings
+            document.getElementById('soundToggle').classList.toggle('on', settings.soundEnabled !== false);
+            document.getElementById('hapticToggle').classList.toggle('on', settings.hapticEnabled !== false);
+            document.getElementById('dailyGoal').value = settings.dailyGoal || 20;
+            document.getElementById('fontSize').value = settings.fontSize || 'medium';
+        });
+
+        function toggleSetting(setting, el) {
+            el.classList.toggle('on');
+            const profile = Yespanol.load();
+
+            if (setting === 'sound') {
+                profile.settings.soundEnabled = el.classList.contains('on');
+            } else if (setting === 'haptic') {
+                profile.settings.hapticEnabled = el.classList.contains('on');
+            }
+
+            Yespanol.save(profile);
+        }
+
+        function updateDailyGoal(value) {
+            const profile = Yespanol.load();
+            profile.settings.dailyGoal = parseInt(value);
+            Yespanol.save(profile);
+        }
+
+        function updateFontSize(value) {
+            const profile = Yespanol.load();
+            profile.settings.fontSize = value;
+            Yespanol.save(profile);
+        }
+
+        function exportData() {
+            // Use core.js export function
+            const dataStr = Yespanol.exportData();
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `yespanol-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+
+            URL.revokeObjectURL(url);
+            showToast('Backup downloaded!');
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+
+                reader.onload = (event) => {
+                    // Use core.js import function with validation
+                    const result = Yespanol.importData(event.target.result);
+
+                    if (result.success) {
+                        showToast('Progress restored successfully!');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        alert('Failed to import: ' + result.error);
+                    }
+                };
+
+                reader.readAsText(file);
+            };
+
+            input.click();
+        }
+
+        function resetProgress() {
+            if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
+                if (confirm('Really? All your streaks, cards, and achievements will be lost forever.')) {
+                    // Use core.js function (keeps settings, creates backup first)
+                    Yespanol.resetProgress(true);
+                    showToast('Progress reset. Your backup is saved.');
+                    setTimeout(() => location.href = 'index.html', 1500);
+                }
+            }
+        }
+
+        function showToast(message) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+                background: rgba(50, 215, 75, 0.9); color: #000; padding: 12px 24px;
+                border-radius: 12px; font-size: 0.9rem; font-weight: 500;
+                z-index: 1000; animation: fadeIn 0.3s ease;
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Update version display to match core.js
+        document.querySelector('.about-version').textContent = 'Version ' + Yespanol.VERSION;
+
+        // Show storage stats
+        const stats = Yespanol.getStorageStats();
+        if (stats.totalKB > 0) {
+            const storageInfo = document.createElement('div');
+            storageInfo.style.cssText = 'margin-top: 12px; font-size: 0.8rem; color: rgba(255,255,255,0.4);';
+            storageInfo.textContent = `Storage: ${stats.totalKB}KB used${stats.hasBackup ? ' (backup active)' : ''}`;
+            document.querySelector('.about-card').appendChild(storageInfo);
+        }
+    </script>
+</body>
+</html>

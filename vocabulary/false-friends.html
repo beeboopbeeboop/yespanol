@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>False Friends - Yespanol</title>
+    <link rel="stylesheet" href="../css/design-system.css">
+    <style>
+        :root {
+            --bg-primary: #000000;
+            --bg-glass: rgba(28, 28, 30, 0.72);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(235, 235, 245, 0.6);
+            --text-tertiary: rgba(235, 235, 245, 0.3);
+            --accent: #ff6b4a;
+            --success: #30d158;
+            /* False Friends - Rose/Coral warning theme */
+            --danger: #f43f5e;
+            --danger-light: #fb7185;
+            --danger-dark: #e11d48;
+            --danger-subtle: rgba(244, 63, 94, 0.12);
+            --danger-glow: rgba(244, 63, 94, 0.4);
+            --warning: #ffd60a;
+            --card-radius: 20px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-container {
+            min-height: 100%;
+            padding: 56px 20px calc(80px + var(--safe-bottom));
+        }
+
+        .back-btn {
+            position: fixed; top: 16px; left: 16px; z-index: 100;
+            background: var(--bg-glass); border: 1px solid var(--border-glass);
+            border-radius: 12px; padding: 10px 16px; color: var(--text-primary);
+            font-size: 0.85rem; text-decoration: none;
+            backdrop-filter: blur(20px);
+        }
+        .back-btn:active { transform: scale(0.96); }
+
+        .lesson-header { text-align: center; margin-bottom: 32px; }
+        .lesson-icon { font-size: 3rem; margin-bottom: 12px; }
+        .lesson-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+        .lesson-subtitle { color: var(--text-secondary); font-size: 0.95rem; }
+
+        .progress-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: 32px; }
+        .progress-fill { height: 100%; background: var(--danger); border-radius: 2px; transition: width 0.5s ease; }
+
+        .warning-card {
+            background: rgba(255, 69, 58, 0.1);
+            border-left: 3px solid var(--danger);
+            border-radius: 0 12px 12px 0;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+        .warning-title { font-size: 0.9rem; font-weight: 600; color: var(--danger); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+        .warning-text { font-size: 0.85rem; color: var(--text-secondary); }
+
+        .section { margin-bottom: 32px; }
+        .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; }
+
+        .false-friend-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .ff-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .ff-spanish {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--danger);
+        }
+
+        .ff-badge {
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            background: rgba(255, 69, 58, 0.2);
+            color: var(--danger);
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .ff-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .ff-wrong, .ff-right {
+            padding: 14px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .ff-wrong {
+            background: rgba(255, 69, 58, 0.1);
+            border: 1px solid rgba(255, 69, 58, 0.2);
+        }
+
+        .ff-right {
+            background: rgba(50, 215, 75, 0.1);
+            border: 1px solid rgba(50, 215, 75, 0.2);
+        }
+
+        .ff-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+        .ff-wrong .ff-label { color: var(--danger); }
+        .ff-right .ff-label { color: var(--success); }
+
+        .ff-meaning {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .ff-example {
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.85rem;
+        }
+
+        .ff-example-spanish { margin-bottom: 4px; }
+        .ff-example-english { color: var(--text-tertiary); font-style: italic; }
+        .ff-highlight { color: var(--success); font-weight: 600; }
+
+        .ff-tip {
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .quiz-section {
+            background: linear-gradient(135deg, var(--bg-glass) 0%, rgba(255, 69, 58, 0.05) 100%);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            padding: 24px;
+            margin: 32px 0;
+        }
+
+        .quiz-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; }
+        .quiz-prompt { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 8px; }
+        .quiz-word { font-size: 1.4rem; font-weight: 700; color: var(--danger); text-align: center; margin-bottom: 20px; }
+        .quiz-options { display: grid; gap: 10px; }
+        .quiz-option {
+            padding: 14px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quiz-option:active { transform: scale(0.98); }
+        .quiz-option.correct { background: var(--success); color: #000; border-color: var(--success); }
+        .quiz-option.incorrect { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+        .cta-section { text-align: center; padding: 32px 0; }
+        .cta-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 16px 32px; background: var(--accent);
+            color: #000; font-size: 1rem; font-weight: 600;
+            border-radius: 14px; border: none; cursor: pointer;
+        }
+        .cta-btn:active { transform: scale(0.96); }
+
+        .score-display {
+            position: fixed; bottom: 20px; right: 20px;
+            background: var(--bg-glass); backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px; padding: 12px 20px;
+            display: flex; align-items: center; gap: 10px;
+            z-index: 50;
+        }
+        .score-label { font-size: 0.75rem; color: var(--text-secondary); }
+        .score-value { font-size: 1.2rem; font-weight: 700; color: var(--success); }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-btn">← Back</a>
+
+    <div class="app-container">
+        <header class="lesson-header">
+            <div class="lesson-icon">🚫</div>
+            <h1 class="lesson-title">False Friends</h1>
+            <p class="lesson-subtitle">Words that look similar but mean different things</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <div class="warning-card">
+            <div class="warning-title">⚠️ Beware of False Cognates!</div>
+            <div class="warning-text">These Spanish words look like English words but have completely different meanings. Using them incorrectly can lead to embarrassing misunderstandings!</div>
+        </div>
+
+        <!-- Embarrassing False Friends -->
+        <section class="section">
+            <h2 class="section-title">😳 Embarrassing Mix-ups</h2>
+            <div id="embarrassing"></div>
+        </section>
+
+        <!-- Common False Friends -->
+        <section class="section">
+            <h2 class="section-title">📚 Common Traps</h2>
+            <div id="common"></div>
+        </section>
+
+        <!-- Subtle False Friends -->
+        <section class="section">
+            <h2 class="section-title">🔍 Subtle Differences</h2>
+            <div id="subtle"></div>
+        </section>
+
+        <!-- Quiz -->
+        <section class="quiz-section">
+            <div class="quiz-title">🎯 Avoid the Trap!</div>
+            <div id="quizContainer"></div>
+        </section>
+
+        <section class="cta-section">
+            <button class="cta-btn" onclick="location.href='../practice/flashcards.html?category=false-friends'">
+                Practice Flashcards →
+            </button>
+        </section>
+    </div>
+
+    <div class="score-display">
+        <span class="score-label">Score</span>
+        <span class="score-value" id="scoreValue">0/0</span>
+    </div>
+
+    <script src="../js/core.js"></script>
+    <script>
+        const falseFriends = {
+            embarrassing: [
+                {
+                    spanish: "Embarazada",
+                    looksLike: "Embarrassed",
+                    actualMeaning: "Pregnant",
+                    correctWord: "avergonzado/a",
+                    example: "Mi hermana está embarazada.",
+                    exampleEn: "My sister is pregnant.",
+                    tip: "Say 'Estoy avergonzado' when you're embarrassed, not 'estoy embarazado'!"
+                },
+                {
+                    spanish: "Excitado",
+                    looksLike: "Excited",
+                    actualMeaning: "Sexually aroused",
+                    correctWord: "emocionado/a",
+                    example: "Estoy muy emocionado por el viaje.",
+                    exampleEn: "I'm very excited about the trip.",
+                    tip: "Use 'emocionado' for excitement. 'Excitado' can be very awkward in polite company!"
+                },
+                {
+                    spanish: "Molestar",
+                    looksLike: "To molest",
+                    actualMeaning: "To bother/annoy",
+                    correctWord: "abusar (sexually)",
+                    example: "No me molestes, estoy trabajando.",
+                    exampleEn: "Don't bother me, I'm working.",
+                    tip: "Molestar is perfectly innocent and commonly used. It just means to annoy."
+                },
+                {
+                    spanish: "Preservativo",
+                    looksLike: "Preservative",
+                    actualMeaning: "Condom",
+                    correctWord: "conservante",
+                    example: "Venden preservativos en la farmacia.",
+                    exampleEn: "They sell condoms at the pharmacy.",
+                    tip: "Food preservatives = conservantes. Preservativo = contraceptive!"
+                },
+                {
+                    spanish: "Constipado",
+                    looksLike: "Constipated",
+                    actualMeaning: "Having a cold",
+                    correctWord: "estreñido",
+                    example: "Estoy constipado, me duele la garganta.",
+                    exampleEn: "I have a cold, my throat hurts.",
+                    tip: "Constipated = estreñido. Constipado = having a cold/congested."
+                },
+                {
+                    spanish: "Caliente",
+                    looksLike: "Hot (temperature)",
+                    actualMeaning: "Hot (also sexually aroused)",
+                    correctWord: "hace calor (weather)",
+                    example: "¡Hace calor hoy!",
+                    exampleEn: "It's hot today!",
+                    tip: "For weather, say 'Hace calor'. 'Estoy caliente' can mean aroused!"
+                },
+            ],
+            common: [
+                {
+                    spanish: "Actual",
+                    looksLike: "Actual",
+                    actualMeaning: "Current/present",
+                    correctWord: "real, verdadero",
+                    example: "El presidente actual es muy popular.",
+                    exampleEn: "The current president is very popular.",
+                    tip: "Use 'real' or 'verdadero' for 'actual'. 'Actual' means 'current'."
+                },
+                {
+                    spanish: "Carpeta",
+                    looksLike: "Carpet",
+                    actualMeaning: "Folder/binder",
+                    correctWord: "alfombra",
+                    example: "Guarda los documentos en la carpeta.",
+                    exampleEn: "Keep the documents in the folder.",
+                    tip: "Carpet = alfombra. Carpeta = folder for papers."
+                },
+                {
+                    spanish: "Éxito",
+                    looksLike: "Exit",
+                    actualMeaning: "Success",
+                    correctWord: "salida",
+                    example: "La película fue un gran éxito.",
+                    exampleEn: "The movie was a great success.",
+                    tip: "Look for 'Salida' when you want to exit. 'Éxito' means success."
+                },
+                {
+                    spanish: "Realizar",
+                    looksLike: "To realize",
+                    actualMeaning: "To carry out/accomplish",
+                    correctWord: "darse cuenta",
+                    example: "Vamos a realizar el proyecto mañana.",
+                    exampleEn: "We're going to carry out the project tomorrow.",
+                    tip: "Use 'darse cuenta de' when you realize something."
+                },
+                {
+                    spanish: "Librería",
+                    looksLike: "Library",
+                    actualMeaning: "Bookstore",
+                    correctWord: "biblioteca",
+                    example: "Compré el libro en la librería.",
+                    exampleEn: "I bought the book at the bookstore.",
+                    tip: "Library = biblioteca. Librería = bookstore/bookshelf."
+                },
+                {
+                    spanish: "Asistir",
+                    looksLike: "To assist",
+                    actualMeaning: "To attend",
+                    correctWord: "ayudar",
+                    example: "Voy a asistir a la reunión.",
+                    exampleEn: "I'm going to attend the meeting.",
+                    tip: "To assist/help = ayudar. Asistir = to attend/be present."
+                },
+                {
+                    spanish: "Pretender",
+                    looksLike: "To pretend",
+                    actualMeaning: "To try/attempt/intend",
+                    correctWord: "fingir",
+                    example: "Pretendo terminar hoy.",
+                    exampleEn: "I intend to finish today.",
+                    tip: "To pretend = fingir. Pretender = to try/aim for."
+                },
+                {
+                    spanish: "Recordar",
+                    looksLike: "To record",
+                    actualMeaning: "To remember",
+                    correctWord: "grabar",
+                    example: "No recuerdo su nombre.",
+                    exampleEn: "I don't remember his name.",
+                    tip: "To record = grabar. Recordar = to remember/remind."
+                },
+                {
+                    spanish: "Contestar",
+                    looksLike: "To contest",
+                    actualMeaning: "To answer",
+                    correctWord: "disputar, impugnar",
+                    example: "¿Por qué no contestas el teléfono?",
+                    exampleEn: "Why don't you answer the phone?",
+                    tip: "To contest = disputar. Contestar = to answer/reply."
+                },
+                {
+                    spanish: "Ropa",
+                    looksLike: "Rope",
+                    actualMeaning: "Clothes",
+                    correctWord: "cuerda, soga",
+                    example: "Tengo mucha ropa nueva.",
+                    exampleEn: "I have a lot of new clothes.",
+                    tip: "Rope = cuerda. Ropa = clothing/clothes."
+                },
+            ],
+            subtle: [
+                {
+                    spanish: "Sensible",
+                    looksLike: "Sensible",
+                    actualMeaning: "Sensitive",
+                    correctWord: "sensato/a",
+                    example: "Es una persona muy sensible.",
+                    exampleEn: "He's a very sensitive person.",
+                    tip: "Sensato = sensible (reasonable). Sensible = sensitive."
+                },
+                {
+                    spanish: "Soportar",
+                    looksLike: "To support",
+                    actualMeaning: "To tolerate/bear",
+                    correctWord: "apoyar",
+                    example: "No puedo soportar el calor.",
+                    exampleEn: "I can't stand the heat.",
+                    tip: "Use 'apoyar' for support (help). 'Soportar' = tolerate/endure."
+                },
+                {
+                    spanish: "Largo",
+                    looksLike: "Large",
+                    actualMeaning: "Long",
+                    correctWord: "grande",
+                    example: "El río Amazonas es muy largo.",
+                    exampleEn: "The Amazon River is very long.",
+                    tip: "Largo = long. Grande = large/big."
+                },
+                {
+                    spanish: "Compromiso",
+                    looksLike: "Compromise",
+                    actualMeaning: "Commitment/engagement",
+                    correctWord: "acuerdo, término medio",
+                    example: "Tenemos un compromiso esta noche.",
+                    exampleEn: "We have a commitment tonight.",
+                    tip: "A compromise = un acuerdo. Compromiso = commitment/obligation."
+                },
+                {
+                    spanish: "Introducir",
+                    looksLike: "To introduce",
+                    actualMeaning: "To insert/put in",
+                    correctWord: "presentar",
+                    example: "Introduce la llave en la cerradura.",
+                    exampleEn: "Insert the key into the lock.",
+                    tip: "To introduce someone = presentar. Introducir = insert."
+                },
+                {
+                    spanish: "Eventualmente",
+                    looksLike: "Eventually",
+                    actualMeaning: "Possibly/occasionally",
+                    correctWord: "finalmente, al final",
+                    example: "Eventualmente voy al gimnasio.",
+                    exampleEn: "I occasionally go to the gym.",
+                    tip: "Eventually = finalmente. Eventualmente = possibly/sometimes."
+                },
+                {
+                    spanish: "Delito",
+                    looksLike: "Delight",
+                    actualMeaning: "Crime/offense",
+                    correctWord: "deleite, placer",
+                    example: "Robar es un delito.",
+                    exampleEn: "Stealing is a crime.",
+                    tip: "Delight = deleite/placer. Delito = crime/felony."
+                },
+                {
+                    spanish: "Disgusto",
+                    looksLike: "Disgust",
+                    actualMeaning: "Displeasure/annoyance",
+                    correctWord: "asco, repugnancia",
+                    example: "Me causó un disgusto su comentario.",
+                    exampleEn: "His comment upset me.",
+                    tip: "Disgust = asco. Disgusto = upset/annoyance (milder)."
+                },
+                {
+                    spanish: "Fábrica",
+                    looksLike: "Fabric",
+                    actualMeaning: "Factory",
+                    correctWord: "tela",
+                    example: "Trabaja en una fábrica de coches.",
+                    exampleEn: "He works in a car factory.",
+                    tip: "Fabric = tela. Fábrica = factory."
+                },
+                {
+                    spanish: "Billón",
+                    looksLike: "Billion",
+                    actualMeaning: "Trillion (1,000,000,000,000)",
+                    correctWord: "mil millones",
+                    example: "Un billón de dólares es mucho dinero.",
+                    exampleEn: "A trillion dollars is a lot of money.",
+                    tip: "US billion = mil millones. Spanish billón = trillion!"
+                },
+            ]
+        };
+
+        const quizQuestions = [
+            { word: "Embarazada", options: ["Embarrassed", "Pregnant", "Embraced", "Empty"], answer: 1 },
+            { word: "Actual", options: ["Actual/real", "Current/present", "Active", "Acting"], answer: 1 },
+            { word: "Éxito", options: ["Exit", "Exile", "Success", "Excuse"], answer: 2 },
+            { word: "Sensible", options: ["Sensible/reasonable", "Sensitive", "Sensory", "Sense"], answer: 1 },
+            { word: "Largo", options: ["Large", "Long", "Wide", "Lazy"], answer: 1 },
+            { word: "Carpeta", options: ["Carpet", "Car part", "Folder", "Carpenter"], answer: 2 },
+            { word: "Librería", options: ["Library", "Bookstore", "Liberty", "Delivery"], answer: 1 },
+            { word: "Constipado", options: ["Constipated", "Having a cold", "Constant", "Frustrated"], answer: 1 },
+            { word: "Asistir", options: ["To assist", "To attend", "To insist", "To arrest"], answer: 1 },
+            { word: "Preservativo", options: ["Preservative", "Condom", "Reserve", "Conservative"], answer: 1 },
+            { word: "Recordar", options: ["To record", "To remember", "To recur", "To decorate"], answer: 1 },
+            { word: "Fábrica", options: ["Fabric", "Factory", "Fabrication", "Fantastic"], answer: 1 },
+            { word: "Soportar", options: ["To support", "To tolerate", "To sport", "To transport"], answer: 1 },
+            { word: "Ropa", options: ["Rope", "Clothes", "Roof", "Room"], answer: 1 },
+            { word: "Pretender", options: ["To pretend", "To intend/try", "To tender", "To defend"], answer: 1 },
+        ];
+
+        let currentQuiz = 0;
+        let score = 0;
+        let answered = 0;
+
+        function renderFalseFriends(containerId, items) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = items.map(item => `
+                <div class="false-friend-card">
+                    <div class="ff-header">
+                        <div class="ff-spanish">${item.spanish}</div>
+                        <div class="ff-badge">False Friend</div>
+                    </div>
+                    <div class="ff-comparison">
+                        <div class="ff-wrong">
+                            <div class="ff-label">❌ Does NOT mean</div>
+                            <div class="ff-meaning">${item.looksLike}</div>
+                        </div>
+                        <div class="ff-right">
+                            <div class="ff-label">✓ Actually means</div>
+                            <div class="ff-meaning">${item.actualMeaning}</div>
+                        </div>
+                    </div>
+                    <div class="ff-example">
+                        <div class="ff-example-spanish">${item.example}</div>
+                        <div class="ff-example-english">${item.exampleEn}</div>
+                    </div>
+                    <div class="ff-tip">
+                        <span>💡</span>
+                        <span>${item.tip}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+
+            if (currentQuiz >= quizQuestions.length) {
+                container.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 12px;">🎉</div>
+                        <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 8px;">Quiz Complete!</div>
+                        <div style="color: var(--success); font-size: 1.3rem; font-weight: 700;">${score}/${quizQuestions.length}</div>
+                        <button class="cta-btn" onclick="resetQuiz()" style="margin-top: 16px;">Try Again</button>
+                    </div>
+                `;
+                document.getElementById('progressFill').style.width = '100%';
+                return;
+            }
+
+            const q = quizQuestions[currentQuiz];
+            container.innerHTML = `
+                <div class="quiz-prompt">What does this word ACTUALLY mean?</div>
+                <div class="quiz-word">${q.word}</div>
+                <div class="quiz-options">
+                    ${q.options.map((opt, i) => `
+                        <div class="quiz-option" onclick="checkAnswer(${i})">${opt}</div>
+                    `).join('')}
+                </div>
+            `;
+
+            document.getElementById('progressFill').style.width = `${(currentQuiz / quizQuestions.length) * 100}%`;
+        }
+
+        function checkAnswer(selected) {
+            const q = quizQuestions[currentQuiz];
+            const options = document.querySelectorAll('.quiz-option');
+
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+            options[q.answer].classList.add('correct');
+
+            if (selected === q.answer) {
+                score++;
+            } else {
+                options[selected].classList.add('incorrect');
+            }
+
+            answered++;
+            document.getElementById('scoreValue').textContent = `${score}/${answered}`;
+
+            if (typeof Yespanol !== 'undefined') {
+                Yespanol.recordAttempt(`false-friends-${currentQuiz}`, 'false-friends', selected === q.answer);
+            }
+
+            setTimeout(() => {
+                currentQuiz++;
+                renderQuiz();
+            }, 1200);
+        }
+
+        function resetQuiz() {
+            currentQuiz = 0;
+            score = 0;
+            answered = 0;
+            document.getElementById('scoreValue').textContent = '0/0';
+            renderQuiz();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderFalseFriends('embarrassing', falseFriends.embarrassing);
+            renderFalseFriends('common', falseFriends.common);
+            renderFalseFriends('subtle', falseFriends.subtle);
+            renderQuiz();
+        });
+    </script>
+</body>
+</html>

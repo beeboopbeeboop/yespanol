@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>Spanish Idioms - Yespanol</title>
+    <link rel="stylesheet" href="../css/design-system.css">
+    <style>
+        :root {
+            --bg-primary: #000000;
+            --bg-glass: rgba(28, 28, 30, 0.72);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(235, 235, 245, 0.6);
+            --text-tertiary: rgba(235, 235, 245, 0.3);
+            --accent: #ff6b4a;
+            --success: #30d158;
+            /* Idiom-specific violet theme */
+            --idiom-color: #a855f7;
+            --idiom-light: #c084fc;
+            --idiom-dark: #9333ea;
+            --idiom-subtle: rgba(168, 85, 247, 0.12);
+            --idiom-glow: rgba(168, 85, 247, 0.4);
+            --card-radius: 20px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-container {
+            min-height: 100%;
+            padding: 56px 20px calc(80px + var(--safe-bottom));
+        }
+
+        .back-btn {
+            position: fixed; top: 16px; left: 16px; z-index: 100;
+            background: var(--bg-glass); border: 1px solid var(--border-glass);
+            border-radius: 12px; padding: 10px 16px; color: var(--text-primary);
+            font-size: 0.85rem; text-decoration: none;
+            backdrop-filter: blur(20px);
+        }
+        .back-btn:active { transform: scale(0.96); }
+
+        .lesson-header { text-align: center; margin-bottom: 32px; }
+        .lesson-icon { font-size: 3rem; margin-bottom: 12px; }
+        .lesson-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+        .lesson-subtitle { color: var(--text-secondary); font-size: 0.95rem; }
+
+        .progress-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: 32px; }
+        .progress-fill { height: 100%; background: var(--idiom-color); border-radius: 2px; transition: width 0.5s ease; }
+
+        .section { margin-bottom: 32px; }
+        .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; }
+
+        .idiom-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-left: 3px solid var(--idiom-color);
+            border-radius: var(--card-radius);
+            padding: 20px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .idiom-card:active { transform: scale(0.98); }
+        .idiom-card.revealed { background: rgba(191, 90, 242, 0.08); }
+
+        .idiom-spanish {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--idiom-color);
+            margin-bottom: 8px;
+        }
+
+        .idiom-literal {
+            font-size: 0.85rem;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        .idiom-meaning {
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .idiom-details {
+            display: none;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-glass);
+        }
+        .idiom-card.revealed .idiom-details { display: block; }
+
+        .idiom-example {
+            font-size: 0.9rem;
+            background: rgba(255,255,255,0.03);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        .idiom-example-spanish { margin-bottom: 4px; }
+        .idiom-example-english { color: var(--text-tertiary); font-style: italic; }
+
+        .idiom-origin {
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        .idiom-origin-icon { font-size: 1rem; }
+
+        .quiz-section {
+            background: linear-gradient(135deg, var(--bg-glass) 0%, rgba(191, 90, 242, 0.05) 100%);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            padding: 24px;
+            margin: 32px 0;
+        }
+
+        .quiz-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; }
+        .quiz-prompt { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 12px; }
+        .quiz-idiom { font-size: 1.4rem; font-weight: 700; color: var(--idiom-color); text-align: center; margin-bottom: 20px; }
+        .quiz-options { display: grid; gap: 10px; }
+        .quiz-option {
+            padding: 14px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quiz-option:active { transform: scale(0.98); }
+        .quiz-option.correct { background: var(--success); color: #000; border-color: var(--success); }
+        .quiz-option.incorrect { background: #ff453a; color: #fff; border-color: #ff453a; }
+
+        .cta-section { text-align: center; padding: 32px 0; }
+        .cta-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 16px 32px; background: var(--accent);
+            color: #000; font-size: 1rem; font-weight: 600;
+            border-radius: 14px; border: none; cursor: pointer;
+        }
+        .cta-btn:active { transform: scale(0.96); }
+
+        .score-display {
+            position: fixed; bottom: 20px; right: 20px;
+            background: var(--bg-glass); backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px; padding: 12px 20px;
+            display: flex; align-items: center; gap: 10px;
+            z-index: 50;
+        }
+        .score-label { font-size: 0.75rem; color: var(--text-secondary); }
+        .score-value { font-size: 1.2rem; font-weight: 700; color: var(--success); }
+
+        .tip-card {
+            background: rgba(191, 90, 242, 0.1);
+            border-left: 3px solid var(--idiom-color);
+            border-radius: 0 12px 12px 0;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .tip-card strong { color: var(--idiom-color); }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-btn">← Back</a>
+
+    <div class="app-container">
+        <header class="lesson-header">
+            <div class="lesson-icon">🎭</div>
+            <h1 class="lesson-title">Spanish Idioms</h1>
+            <p class="lesson-subtitle">Sound like a native with these expressions</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <div class="tip-card">
+            <strong>Pro tip:</strong> Idioms rarely translate word-for-word. Focus on the meaning, not the literal translation. Tap each card to see examples!
+        </div>
+
+        <!-- Common Idioms -->
+        <section class="section">
+            <h2 class="section-title">🔥 Most Used Idioms</h2>
+            <div id="commonIdioms"></div>
+        </section>
+
+        <!-- Body-Related Idioms -->
+        <section class="section">
+            <h2 class="section-title">🧠 Body Expressions</h2>
+            <div id="bodyIdioms"></div>
+        </section>
+
+        <!-- Food Idioms -->
+        <section class="section">
+            <h2 class="section-title">🍕 Food Expressions</h2>
+            <div id="foodIdioms"></div>
+        </section>
+
+        <!-- Quiz -->
+        <section class="quiz-section">
+            <div class="quiz-title">🎯 Match the Meaning</div>
+            <div id="quizContainer"></div>
+        </section>
+
+        <section class="cta-section">
+            <button class="cta-btn" onclick="location.href='../practice/flashcards.html?category=idioms'">
+                Practice Flashcards →
+            </button>
+        </section>
+    </div>
+
+    <div class="score-display">
+        <span class="score-label">Score</span>
+        <span class="score-value" id="scoreValue">0/0</span>
+    </div>
+
+    <script src="../js/core.js"></script>
+    <script>
+        const idioms = {
+            common: [
+                {
+                    spanish: "Estar en las nubes",
+                    literal: "To be in the clouds",
+                    meaning: "To be daydreaming / not paying attention",
+                    example: "No me escuchas, estás en las nubes.",
+                    exampleEn: "You're not listening to me, you're daydreaming.",
+                    origin: "Refers to someone whose mind is elsewhere, like floating in the clouds."
+                },
+                {
+                    spanish: "No tener pelos en la lengua",
+                    literal: "To not have hairs on the tongue",
+                    meaning: "To speak one's mind / be blunt",
+                    example: "Mi abuela no tiene pelos en la lengua.",
+                    exampleEn: "My grandmother doesn't mince words.",
+                    origin: "The idea is that nothing blocks the words from coming out freely."
+                },
+                {
+                    spanish: "Ser pan comido",
+                    literal: "To be eaten bread",
+                    meaning: "To be a piece of cake / very easy",
+                    example: "Este examen va a ser pan comido.",
+                    exampleEn: "This exam is going to be a piece of cake.",
+                    origin: "Bread is the most basic, easy food to eat."
+                },
+                {
+                    spanish: "Tomar el pelo",
+                    literal: "To take the hair",
+                    meaning: "To pull someone's leg / tease",
+                    example: "¿Me estás tomando el pelo?",
+                    exampleEn: "Are you pulling my leg?",
+                    origin: "Similar to tugging at someone playfully."
+                },
+                {
+                    spanish: "A lo hecho, pecho",
+                    literal: "To what's done, chest",
+                    meaning: "What's done is done / face the consequences",
+                    example: "Ya lo dijiste, ahora a lo hecho, pecho.",
+                    exampleEn: "You already said it, now face the consequences.",
+                    origin: "Stand tall and face what you've done."
+                },
+                {
+                    spanish: "Más vale tarde que nunca",
+                    literal: "Better late than never",
+                    meaning: "Better late than never",
+                    example: "Llegaste tarde pero, más vale tarde que nunca.",
+                    exampleEn: "You arrived late but, better late than never.",
+                    origin: "Universal wisdom about timing."
+                },
+                {
+                    spanish: "Echar agua al mar",
+                    literal: "To throw water into the sea",
+                    meaning: "To do something pointless / waste effort",
+                    example: "Explicarle es echar agua al mar.",
+                    exampleEn: "Explaining to him is pointless.",
+                    origin: "The sea already has infinite water."
+                },
+                {
+                    spanish: "No hay mal que por bien no venga",
+                    literal: "There's no bad from which good doesn't come",
+                    meaning: "Every cloud has a silver lining",
+                    example: "Perdí el trabajo, pero encontré uno mejor. No hay mal que por bien no venga.",
+                    exampleEn: "I lost my job, but found a better one. Every cloud has a silver lining.",
+                    origin: "Optimistic view that good comes from bad."
+                },
+                {
+                    spanish: "Ir al grano",
+                    literal: "To go to the grain",
+                    meaning: "To get to the point",
+                    example: "Deja de rodeos y ve al grano.",
+                    exampleEn: "Stop beating around the bush and get to the point.",
+                    origin: "Focus on the essential part (the grain) of the matter."
+                },
+                {
+                    spanish: "Caer en la cuenta",
+                    literal: "To fall into the account",
+                    meaning: "To realize / become aware",
+                    example: "Acabo de caer en la cuenta de que olvidé mi pasaporte.",
+                    exampleEn: "I just realized I forgot my passport.",
+                    origin: "The realization drops into your awareness."
+                },
+            ],
+            body: [
+                {
+                    spanish: "Costar un ojo de la cara",
+                    literal: "To cost an eye from the face",
+                    meaning: "To cost an arm and a leg",
+                    example: "Este coche me costó un ojo de la cara.",
+                    exampleEn: "This car cost me an arm and a leg.",
+                    origin: "Eyes are invaluable, so something extremely expensive."
+                },
+                {
+                    spanish: "Meter la pata",
+                    literal: "To put the paw in",
+                    meaning: "To put your foot in it / make a mistake",
+                    example: "Metí la pata en la reunión.",
+                    exampleEn: "I put my foot in it at the meeting.",
+                    origin: "Like an animal stepping where it shouldn't."
+                },
+                {
+                    spanish: "Ser uña y carne",
+                    literal: "To be nail and flesh",
+                    meaning: "To be thick as thieves / inseparable",
+                    example: "María y yo somos uña y carne.",
+                    exampleEn: "María and I are thick as thieves.",
+                    origin: "Nail and flesh are connected and inseparable."
+                },
+                {
+                    spanish: "Tener mala pata",
+                    literal: "To have a bad leg",
+                    meaning: "To have bad luck",
+                    example: "Siempre tengo mala pata con los vuelos.",
+                    exampleEn: "I always have bad luck with flights.",
+                    origin: "Like a lame animal that struggles."
+                },
+                {
+                    spanish: "Echar una mano",
+                    literal: "To throw a hand",
+                    meaning: "To lend a hand / help out",
+                    example: "¿Me echas una mano con esto?",
+                    exampleEn: "Can you give me a hand with this?",
+                    origin: "Extending your hand to help someone."
+                },
+                {
+                    spanish: "Quedarse con la boca abierta",
+                    literal: "To stay with mouth open",
+                    meaning: "To be shocked / amazed",
+                    example: "Me quedé con la boca abierta al ver el precio.",
+                    exampleEn: "I was shocked when I saw the price.",
+                    origin: "The natural reaction to surprise."
+                },
+                {
+                    spanish: "Tener la cabeza en otro lado",
+                    literal: "To have your head somewhere else",
+                    meaning: "To be distracted / thinking about something else",
+                    example: "Perdona, tengo la cabeza en otro lado.",
+                    exampleEn: "Sorry, my head is somewhere else.",
+                    origin: "Your mind is not present."
+                },
+                {
+                    spanish: "Romper el hielo",
+                    literal: "To break the ice",
+                    meaning: "To break the ice / start a conversation",
+                    example: "Un chiste puede romper el hielo.",
+                    exampleEn: "A joke can break the ice.",
+                    origin: "Melting the cold barrier between people."
+                },
+                {
+                    spanish: "Tener sangre fría",
+                    literal: "To have cold blood",
+                    meaning: "To be cool-headed / composed",
+                    example: "Los pilotos necesitan tener sangre fría.",
+                    exampleEn: "Pilots need to be cool-headed.",
+                    origin: "Staying calm under pressure."
+                },
+                {
+                    spanish: "Estar hasta las narices",
+                    literal: "To be up to the nostrils",
+                    meaning: "To be fed up / sick of something",
+                    example: "Estoy hasta las narices de esperar.",
+                    exampleEn: "I'm sick of waiting.",
+                    origin: "Something has reached overflow level."
+                },
+            ],
+            food: [
+                {
+                    spanish: "Dar calabazas",
+                    literal: "To give pumpkins",
+                    meaning: "To reject someone romantically",
+                    example: "Le di calabazas porque no me gustaba.",
+                    exampleEn: "I rejected him because I didn't like him.",
+                    origin: "Pumpkins were given as consolation prizes in ancient times."
+                },
+                {
+                    spanish: "Estar como una sopa",
+                    literal: "To be like a soup",
+                    meaning: "To be soaking wet",
+                    example: "Llegué a casa como una sopa.",
+                    exampleEn: "I arrived home soaking wet.",
+                    origin: "Soup is completely liquid, like being drenched."
+                },
+                {
+                    spanish: "Ponerse las pilas",
+                    literal: "To put on batteries",
+                    meaning: "To get one's act together",
+                    example: "¡Ponte las pilas y estudia!",
+                    exampleEn: "Get your act together and study!",
+                    origin: "Like charging yourself up with energy."
+                },
+                {
+                    spanish: "Importar un pepino",
+                    literal: "To matter a cucumber",
+                    meaning: "To not care at all",
+                    example: "Me importa un pepino lo que digan.",
+                    exampleEn: "I don't care at all what they say.",
+                    origin: "A cucumber is worthless in this context."
+                },
+                {
+                    spanish: "Ser del año de la pera",
+                    literal: "To be from the year of the pear",
+                    meaning: "To be very old / outdated",
+                    example: "Esa computadora es del año de la pera.",
+                    exampleEn: "That computer is ancient.",
+                    origin: "Reference to a mythical, distant past."
+                },
+                {
+                    spanish: "Estar en el ajo",
+                    literal: "To be in the garlic",
+                    meaning: "To be in on something / involved in a secret",
+                    example: "Él también está en el ajo.",
+                    exampleEn: "He's also in on it.",
+                    origin: "Part of the secret ingredient."
+                },
+                {
+                    spanish: "Ser la media naranja",
+                    literal: "To be the half orange",
+                    meaning: "To be someone's soulmate",
+                    example: "Encontré mi media naranja.",
+                    exampleEn: "I found my soulmate.",
+                    origin: "Two halves making a perfect whole."
+                },
+                {
+                    spanish: "Tener mala leche",
+                    literal: "To have bad milk",
+                    meaning: "To be bad-tempered / have bad intentions",
+                    example: "Ese jefe tiene muy mala leche.",
+                    exampleEn: "That boss is really bad-tempered.",
+                    origin: "Sour milk spoils everything."
+                },
+                {
+                    spanish: "Estar en su salsa",
+                    literal: "To be in one's sauce",
+                    meaning: "To be in one's element",
+                    example: "En la cocina, está en su salsa.",
+                    exampleEn: "In the kitchen, he's in his element.",
+                    origin: "Like food perfectly complemented by its sauce."
+                },
+                {
+                    spanish: "Ser más largo que un día sin pan",
+                    literal: "To be longer than a day without bread",
+                    meaning: "To be extremely long / take forever",
+                    example: "Esa película fue más larga que un día sin pan.",
+                    exampleEn: "That movie took forever.",
+                    origin: "A day without bread feels endless."
+                },
+            ]
+        };
+
+        const quizQuestions = [
+            { idiom: "Estar en las nubes", options: ["To be rich", "To be daydreaming", "To be angry", "To be tired"], answer: 1 },
+            { idiom: "Ser pan comido", options: ["To be delicious", "To be hungry", "To be very easy", "To be expensive"], answer: 2 },
+            { idiom: "Tomar el pelo", options: ["To cut hair", "To tease someone", "To be serious", "To trust someone"], answer: 1 },
+            { idiom: "Meter la pata", options: ["To walk slowly", "To make a mistake", "To dance well", "To eat too much"], answer: 1 },
+            { idiom: "Dar calabazas", options: ["To give a gift", "To reject romantically", "To celebrate", "To cook"], answer: 1 },
+            { idiom: "Costar un ojo de la cara", options: ["To be cheap", "To be beautiful", "To cost a lot", "To see clearly"], answer: 2 },
+            { idiom: "Ir al grano", options: ["To eat grain", "To go shopping", "To get to the point", "To farm"], answer: 2 },
+            { idiom: "Echar una mano", options: ["To throw something", "To wave goodbye", "To help out", "To applaud"], answer: 2 },
+            { idiom: "Importar un pepino", options: ["To love cucumbers", "To not care at all", "To be vegetarian", "To import food"], answer: 1 },
+            { idiom: "Ser la media naranja", options: ["To be half orange", "To be soulmates", "To be fruity", "To be incomplete"], answer: 1 },
+            { idiom: "Estar en su salsa", options: ["To be cooking", "To be messy", "To be in one's element", "To be saucy"], answer: 2 },
+            { idiom: "Tener mala leche", options: ["To have allergies", "To be bad-tempered", "To dislike dairy", "To be unlucky"], answer: 1 },
+            { idiom: "Romper el hielo", options: ["To be cold", "To break something", "To start a conversation", "To skate"], answer: 2 },
+            { idiom: "Estar hasta las narices", options: ["To smell something", "To be fed up", "To have a cold", "To be hungry"], answer: 1 },
+            { idiom: "A lo hecho, pecho", options: ["To exercise", "To eat a lot", "To face consequences", "To sleep well"], answer: 2 },
+        ];
+
+        let currentQuiz = 0;
+        let score = 0;
+        let answered = 0;
+
+        function renderIdioms(containerId, items) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = items.map(item => `
+                <div class="idiom-card" onclick="this.classList.toggle('revealed')">
+                    <div class="idiom-spanish">${item.spanish}</div>
+                    <div class="idiom-literal">Literal: "${item.literal}"</div>
+                    <div class="idiom-meaning">Means: ${item.meaning}</div>
+                    <div class="idiom-details">
+                        <div class="idiom-example">
+                            <div class="idiom-example-spanish">${item.example}</div>
+                            <div class="idiom-example-english">${item.exampleEn}</div>
+                        </div>
+                        <div class="idiom-origin">
+                            <span class="idiom-origin-icon">💡</span>
+                            <span>${item.origin}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+
+            if (currentQuiz >= quizQuestions.length) {
+                container.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 12px;">🎉</div>
+                        <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 8px;">Quiz Complete!</div>
+                        <div style="color: var(--success); font-size: 1.3rem; font-weight: 700;">${score}/${quizQuestions.length}</div>
+                        <button class="cta-btn" onclick="resetQuiz()" style="margin-top: 16px;">Try Again</button>
+                    </div>
+                `;
+                document.getElementById('progressFill').style.width = '100%';
+                return;
+            }
+
+            const q = quizQuestions[currentQuiz];
+            container.innerHTML = `
+                <div class="quiz-prompt">What does this idiom mean?</div>
+                <div class="quiz-idiom">"${q.idiom}"</div>
+                <div class="quiz-options">
+                    ${q.options.map((opt, i) => `
+                        <div class="quiz-option" onclick="checkAnswer(${i})">${opt}</div>
+                    `).join('')}
+                </div>
+            `;
+
+            document.getElementById('progressFill').style.width = `${(currentQuiz / quizQuestions.length) * 100}%`;
+        }
+
+        function checkAnswer(selected) {
+            const q = quizQuestions[currentQuiz];
+            const options = document.querySelectorAll('.quiz-option');
+
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+            options[q.answer].classList.add('correct');
+
+            if (selected === q.answer) {
+                score++;
+            } else {
+                options[selected].classList.add('incorrect');
+            }
+
+            answered++;
+            document.getElementById('scoreValue').textContent = `${score}/${answered}`;
+
+            if (typeof Yespanol !== 'undefined') {
+                Yespanol.recordAttempt(`idiom-${currentQuiz}`, 'idioms', selected === q.answer);
+            }
+
+            setTimeout(() => {
+                currentQuiz++;
+                renderQuiz();
+            }, 1200);
+        }
+
+        function resetQuiz() {
+            currentQuiz = 0;
+            score = 0;
+            answered = 0;
+            document.getElementById('scoreValue').textContent = '0/0';
+            renderQuiz();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderIdioms('commonIdioms', idioms.common);
+            renderIdioms('bodyIdioms', idioms.body);
+            renderIdioms('foodIdioms', idioms.food);
+            renderQuiz();
+        });
+    </script>
+</body>
+</html>

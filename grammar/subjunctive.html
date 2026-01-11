@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>Subjunctive - Yespanol</title>
+    <link rel="stylesheet" href="../css/design-system.css">
+    <style>
+        :root {
+            --bg-primary: #000000;
+            --bg-glass: rgba(28, 28, 30, 0.72);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(235, 235, 245, 0.6);
+            --text-tertiary: rgba(235, 235, 245, 0.3);
+            /* Grammar - Deep Indigo theme */
+            --accent: #6366f1;
+            --accent-light: #818cf8;
+            --accent-dark: #4f46e5;
+            --success: #30d158;
+            --warning: #ffd60a;
+            --danger: #ff453a;
+            /* Distinct colors for Subjunctive vs Indicative */
+            --subjunctive-color: #c084fc;
+            --indicative-color: #38bdf8;
+            --card-radius: 20px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-container {
+            min-height: 100%;
+            padding: 56px 20px calc(80px + var(--safe-bottom));
+        }
+
+        .back-btn {
+            position: fixed; top: 16px; left: 16px; z-index: 100;
+            background: var(--bg-glass); border: 1px solid var(--border-glass);
+            border-radius: 12px; padding: 10px 16px; color: var(--text-primary);
+            font-size: 0.85rem; text-decoration: none;
+            backdrop-filter: blur(20px);
+        }
+        .back-btn:active { transform: scale(0.96); }
+
+        .lesson-header { text-align: center; margin-bottom: 32px; }
+        .lesson-icon { font-size: 3rem; margin-bottom: 12px; }
+        .lesson-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+        .lesson-subtitle { color: var(--text-secondary); font-size: 0.95rem; }
+
+        .progress-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: 32px; }
+        .progress-fill { height: 100%; background: var(--subjunctive-color); border-radius: 2px; transition: width 0.5s ease; }
+
+        .section { margin-bottom: 32px; }
+        .section-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+
+        .card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            padding: 20px; margin-bottom: 12px;
+        }
+        .card-subjunctive { border-left: 3px solid var(--subjunctive-color); }
+
+        .mnemonic {
+            background: linear-gradient(135deg, rgba(191, 90, 242, 0.1) 0%, rgba(100, 210, 255, 0.1) 100%);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: var(--card-radius);
+            padding: 24px; text-align: center; margin: 24px 0;
+        }
+        .mnemonic-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; }
+        .mnemonic-letters { font-size: 2rem; font-weight: 700; letter-spacing: 0.2em; margin-bottom: 12px; color: var(--subjunctive-color); }
+        .mnemonic-breakdown { text-align: left; }
+        .mnemonic-item { display: flex; gap: 8px; margin: 8px 0; font-size: 0.9rem; }
+        .mnemonic-letter { font-weight: 700; width: 24px; color: var(--subjunctive-color); }
+
+        .rule-box { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
+        .rule-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 2px; }
+        .rule-content h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; }
+        .rule-content p { font-size: 0.85rem; color: var(--text-secondary); }
+
+        .example {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px; padding: 14px;
+            margin: 12px 0; font-size: 0.95rem;
+        }
+        .example-spanish { margin-bottom: 4px; }
+        .example-spanish .highlight { color: var(--subjunctive-color); font-weight: 600; }
+        .example-english { color: var(--text-secondary); font-size: 0.85rem; font-style: italic; }
+
+        .tip-box {
+            background: rgba(255, 214, 10, 0.08);
+            border-left: 3px solid var(--warning);
+            border-radius: 0 12px 12px 0;
+            padding: 16px; margin: 16px 0;
+        }
+        .tip-title { font-size: 0.85rem; font-weight: 600; color: var(--warning); margin-bottom: 6px; }
+        .tip-text { font-size: 0.85rem; color: var(--text-secondary); }
+
+        .conj-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 16px 0; }
+        .conj-table th { text-align: left; padding: 10px; color: var(--text-secondary); font-weight: 500; border-bottom: 1px solid var(--border-glass); }
+        .conj-table td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .conj-table .pronoun { color: var(--text-secondary); }
+        .conj-table .subj-form { color: var(--subjunctive-color); font-weight: 500; }
+
+        .quiz-card {
+            background: linear-gradient(135deg, var(--bg-glass) 0%, rgba(191, 90, 242, 0.05) 100%);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            padding: 24px; margin: 24px 0;
+        }
+        .quiz-question { font-size: 1.1rem; margin-bottom: 8px; }
+        .quiz-sentence { font-size: 1.2rem; font-weight: 500; margin-bottom: 20px; }
+        .quiz-sentence .blank { background: rgba(255,255,255,0.1); padding: 4px 16px; border-radius: 8px; }
+        .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .quiz-btn {
+            padding: 14px; border-radius: 12px;
+            font-size: 1rem; font-weight: 600;
+            border: 2px solid transparent; cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(191, 90, 242, 0.15); color: var(--subjunctive-color); border-color: rgba(191, 90, 242, 0.3);
+        }
+        .quiz-btn:active { transform: scale(0.96); }
+        .quiz-btn.correct { background: var(--success); color: #000; border-color: var(--success); }
+        .quiz-btn.incorrect { background: var(--danger); color: #fff; border-color: var(--danger); }
+        .quiz-feedback { margin-top: 16px; padding: 14px; border-radius: 12px; display: none; }
+        .quiz-feedback.show { display: block; }
+        .quiz-feedback.correct { background: rgba(50, 215, 75, 0.15); color: var(--success); }
+        .quiz-feedback.incorrect { background: rgba(255, 69, 58, 0.15); color: var(--danger); }
+
+        .trigger-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+        .trigger-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 14px; text-align: center;
+        }
+        .trigger-spanish { font-weight: 600; color: var(--subjunctive-color); margin-bottom: 4px; }
+        .trigger-english { font-size: 0.8rem; color: var(--text-secondary); }
+
+        .cta-section { text-align: center; padding: 32px 0; }
+        .cta-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 16px 32px; background: var(--accent);
+            color: #000; font-size: 1rem; font-weight: 600;
+            border-radius: 14px; border: none; cursor: pointer;
+        }
+        .cta-btn:active { transform: scale(0.96); }
+
+        .score-display {
+            position: fixed; bottom: 20px; right: 20px;
+            background: var(--bg-glass); backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px; padding: 12px 20px;
+            display: flex; align-items: center; gap: 10px;
+            z-index: 50;
+        }
+        .score-label { font-size: 0.75rem; color: var(--text-secondary); }
+        .score-value { font-size: 1.2rem; font-weight: 700; color: var(--success); }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-btn">← Back</a>
+
+    <div class="app-container">
+        <header class="lesson-header">
+            <div class="lesson-icon">💭</div>
+            <h1 class="lesson-title">The Subjunctive</h1>
+            <p class="lesson-subtitle">Express wishes, doubts, emotions, and hypotheticals</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <!-- Intro -->
+        <section class="section">
+            <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 20px;">
+                The subjunctive mood is one of the most challenging aspects of Spanish, but once you master it, you'll sound much more natural. It's used to express things that aren't facts: wishes, doubts, emotions, and hypothetical situations.
+            </p>
+
+            <div class="tip-box">
+                <div class="tip-title">Key Concept</div>
+                <div class="tip-text">The <strong>indicative</strong> states facts. The <strong>subjunctive</strong> expresses everything else: desires, doubts, emotions, and unreality.</div>
+            </div>
+        </section>
+
+        <!-- WEIRDO Mnemonic -->
+        <section class="section">
+            <h2 class="section-title">When to Use Subjunctive: WEIRDO</h2>
+
+            <div class="mnemonic">
+                <div class="mnemonic-title">Remember: Use Subjunctive for WEIRDO</div>
+                <div class="mnemonic-letters">W E I R D O</div>
+                <div class="mnemonic-breakdown">
+                    <div class="mnemonic-item"><span class="mnemonic-letter">W</span> Wishes & Wants</div>
+                    <div class="mnemonic-item"><span class="mnemonic-letter">E</span> Emotions & Feelings</div>
+                    <div class="mnemonic-item"><span class="mnemonic-letter">I</span> Impersonal Expressions</div>
+                    <div class="mnemonic-item"><span class="mnemonic-letter">R</span> Recommendations & Requests</div>
+                    <div class="mnemonic-item"><span class="mnemonic-letter">D</span> Doubt & Denial</div>
+                    <div class="mnemonic-item"><span class="mnemonic-letter">O</span> Ojalá (hopefully) & Expressions</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Wishes -->
+        <section class="section">
+            <h2 class="section-title">💫 Wishes & Wants</h2>
+            <div class="card card-subjunctive">
+                <div class="rule-box">
+                    <span class="rule-icon">🌟</span>
+                    <div class="rule-content">
+                        <h4>Wanting someone to do something</h4>
+                        <p>When the subject changes between clauses</p>
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">Quiero que <span class="highlight">vengas</span> a la fiesta.</div>
+                    <div class="example-english">I want you to come to the party.</div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">Espero que <span class="highlight">tengas</span> un buen día.</div>
+                    <div class="example-english">I hope you have a good day.</div>
+                </div>
+                <div class="trigger-grid">
+                    <div class="trigger-card">
+                        <div class="trigger-spanish">querer que</div>
+                        <div class="trigger-english">to want (someone) to</div>
+                    </div>
+                    <div class="trigger-card">
+                        <div class="trigger-spanish">desear que</div>
+                        <div class="trigger-english">to wish that</div>
+                    </div>
+                    <div class="trigger-card">
+                        <div class="trigger-spanish">esperar que</div>
+                        <div class="trigger-english">to hope that</div>
+                    </div>
+                    <div class="trigger-card">
+                        <div class="trigger-spanish">preferir que</div>
+                        <div class="trigger-english">to prefer that</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Emotions -->
+        <section class="section">
+            <h2 class="section-title">💖 Emotions</h2>
+            <div class="card card-subjunctive">
+                <div class="rule-box">
+                    <span class="rule-icon">😊</span>
+                    <div class="rule-content">
+                        <h4>Expressing feelings about actions</h4>
+                        <p>Happiness, sadness, fear, surprise, etc.</p>
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">Me alegra que <span class="highlight">estés</span> aquí.</div>
+                    <div class="example-english">I'm glad you're here.</div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">Temo que <span class="highlight">sea</span> demasiado tarde.</div>
+                    <div class="example-english">I fear it's too late.</div>
+                </div>
+                <div class="trigger-grid">
+                    <div class="trigger-card">
+                        <div class="trigger-spanish">alegrarse de que</div>
+                        <div class="trigger-english">to be glad that</div>
+                    </div>
+                    <div class="trigger-card">
+                        <div class="trigger-spanish">temer que</div>
+                        <div class="trigger-english">to fear that</div>
+                    </div>
+                    <div class="trigger-card">
+                        <div class="trigger-spanish">sorprender que</div>
+                        <div class="trigger-english">to surprise that</div>
+                    </div>
+                    <div class="trigger-card">
+                        <div class="trigger-spanish">molestar que</div>
+                        <div class="trigger-english">to bother that</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Doubt -->
+        <section class="section">
+            <h2 class="section-title">🤔 Doubt & Denial</h2>
+            <div class="card card-subjunctive">
+                <div class="rule-box">
+                    <span class="rule-icon">❓</span>
+                    <div class="rule-content">
+                        <h4>Expressing uncertainty</h4>
+                        <p>Doubt, disbelief, denial, impossibility</p>
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">Dudo que <span class="highlight">llegue</span> a tiempo.</div>
+                    <div class="example-english">I doubt he'll arrive on time.</div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">No creo que <span class="highlight">sea</span> verdad.</div>
+                    <div class="example-english">I don't think it's true.</div>
+                </div>
+                <div class="tip-box">
+                    <div class="tip-title">Watch Out!</div>
+                    <div class="tip-text">"Creo que" (I believe) uses indicative, but "No creo que" (I don't believe) uses subjunctive!</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Conjugation -->
+        <section class="section">
+            <h2 class="section-title">📝 Present Subjunctive Formation</h2>
+            <div class="card">
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">
+                    Take the "yo" form of present indicative, drop the -o, and add opposite endings:
+                </p>
+                <table class="conj-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>-AR (hablar)</th>
+                            <th>-ER/-IR (comer)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="pronoun">yo</td><td class="subj-form">hable</td><td class="subj-form">coma</td></tr>
+                        <tr><td class="pronoun">tú</td><td class="subj-form">hables</td><td class="subj-form">comas</td></tr>
+                        <tr><td class="pronoun">él/ella</td><td class="subj-form">hable</td><td class="subj-form">coma</td></tr>
+                        <tr><td class="pronoun">nosotros</td><td class="subj-form">hablemos</td><td class="subj-form">comamos</td></tr>
+                        <tr><td class="pronoun">ellos</td><td class="subj-form">hablen</td><td class="subj-form">coman</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h4 style="margin-bottom: 12px;">Irregular Subjunctive Forms</h4>
+                <table class="conj-table">
+                    <thead>
+                        <tr>
+                            <th>Verb</th>
+                            <th>Yo Form</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>ser</td><td class="subj-form">sea</td></tr>
+                        <tr><td>estar</td><td class="subj-form">esté</td></tr>
+                        <tr><td>ir</td><td class="subj-form">vaya</td></tr>
+                        <tr><td>haber</td><td class="subj-form">haya</td></tr>
+                        <tr><td>saber</td><td class="subj-form">sepa</td></tr>
+                        <tr><td>dar</td><td class="subj-form">dé</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Quiz -->
+        <section class="section">
+            <h2 class="section-title">🎯 Quick Practice</h2>
+            <div id="quizContainer"></div>
+        </section>
+
+        <section class="cta-section">
+            <button class="cta-btn" onclick="goToFlashcards()">
+                Practice Flashcards →
+            </button>
+        </section>
+    </div>
+
+    <div class="score-display">
+        <span class="score-label">Score</span>
+        <span class="score-value" id="scoreValue">0/0</span>
+    </div>
+
+    <script src="../js/core.js"></script>
+    <script>
+        const quizQuestions = [
+            { sentence: "Quiero que tú ___ la verdad.", options: ["dices", "digas"], answer: 1, hint: "Wishes trigger subjunctive" },
+            { sentence: "Espero que ___ buen tiempo mañana.", options: ["hace", "haga"], answer: 1, hint: "Hope triggers subjunctive" },
+            { sentence: "No creo que ella ___ razón.", options: ["tiene", "tenga"], answer: 1, hint: "Doubt triggers subjunctive" },
+            { sentence: "Me alegra que ___ aquí.", options: ["estás", "estés"], answer: 1, hint: "Emotion triggers subjunctive" },
+            { sentence: "Es importante que ___ español.", options: ["estudias", "estudies"], answer: 1, hint: "Impersonal expression" },
+            { sentence: "Dudo que él ___ la respuesta.", options: ["sabe", "sepa"], answer: 1, hint: "Doubt triggers subjunctive" },
+            { sentence: "Ojalá que ___ a la fiesta.", options: ["vienes", "vengas"], answer: 1, hint: "Ojalá always uses subjunctive" },
+            { sentence: "Prefiero que nosotros ___ temprano.", options: ["salimos", "salgamos"], answer: 1, hint: "Preference triggers subjunctive" },
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = 0;
+
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+
+            if (currentQuestion >= quizQuestions.length) {
+                container.innerHTML = `
+                    <div class="quiz-card" style="text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 16px;">🎉</div>
+                        <div class="quiz-question">Quiz Complete!</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--success); margin: 16px 0;">
+                            ${score}/${quizQuestions.length}
+                        </div>
+                        <button class="cta-btn" onclick="resetQuiz()" style="margin-top: 16px;">Try Again</button>
+                    </div>
+                `;
+                document.getElementById('progressFill').style.width = '100%';
+                return;
+            }
+
+            const q = quizQuestions[currentQuestion];
+            container.innerHTML = `
+                <div class="quiz-card">
+                    <div class="quiz-question">Choose the correct form:</div>
+                    <div class="quiz-sentence">${q.sentence.replace('___', '<span class="blank">?</span>')}</div>
+                    <div class="quiz-options">
+                        <button class="quiz-btn" onclick="checkAnswer(0)">${q.options[0]}</button>
+                        <button class="quiz-btn" onclick="checkAnswer(1)">${q.options[1]}</button>
+                    </div>
+                    <div class="quiz-feedback" id="feedback"></div>
+                </div>
+            `;
+
+            document.getElementById('progressFill').style.width = `${(currentQuestion / quizQuestions.length) * 100}%`;
+        }
+
+        function checkAnswer(selected) {
+            const q = quizQuestions[currentQuestion];
+            const feedback = document.getElementById('feedback');
+            const buttons = document.querySelectorAll('.quiz-btn');
+
+            buttons.forEach(b => b.disabled = true);
+
+            if (selected === q.answer) {
+                buttons[selected].classList.add('correct');
+                feedback.className = 'quiz-feedback show correct';
+                feedback.textContent = `✓ Correct! ${q.hint}`;
+                score++;
+            } else {
+                buttons[selected].classList.add('incorrect');
+                buttons[q.answer].classList.add('correct');
+                feedback.className = 'quiz-feedback show incorrect';
+                feedback.textContent = `✗ The answer is "${q.options[q.answer]}". ${q.hint}`;
+            }
+
+            answered++;
+            document.getElementById('scoreValue').textContent = `${score}/${answered}`;
+
+            if (typeof Yespanol !== 'undefined') {
+                Yespanol.recordAttempt(`subjunctive-${currentQuestion}`, 'subjunctive', selected === q.answer);
+            }
+
+            setTimeout(() => {
+                currentQuestion++;
+                renderQuiz();
+            }, 1500);
+        }
+
+        function resetQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            answered = 0;
+            document.getElementById('scoreValue').textContent = '0/0';
+            renderQuiz();
+        }
+
+        function goToFlashcards() {
+            location.href = '../practice/flashcards.html?category=subjunctive';
+        }
+
+        document.addEventListener('DOMContentLoaded', renderQuiz);
+    </script>
+</body>
+</html>
