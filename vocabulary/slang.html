@@ -248,9 +248,120 @@
             border-radius: 16px; padding: 12px 20px;
             display: flex; align-items: center; gap: 10px;
             z-index: 50;
+            display: none;
         }
+        .score-display.visible { display: flex; }
         .score-label { font-size: 0.75rem; color: var(--text-secondary); }
         .score-value { font-size: 1.2rem; font-weight: 700; color: var(--success); }
+
+        /* Floating Quiz Button */
+        .floating-quiz-btn {
+            position: fixed;
+            bottom: calc(24px + var(--safe-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+            border: none;
+            border-radius: 50px;
+            color: #000;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4), 0 0 40px rgba(245, 158, 11, 0.2);
+            animation: float-pulse 2s ease-in-out infinite;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .floating-quiz-btn:active {
+            transform: translateX(-50%) scale(0.95);
+        }
+        .floating-quiz-btn .quiz-icon {
+            font-size: 1.1rem;
+        }
+        @keyframes float-pulse {
+            0%, 100% { box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4), 0 0 40px rgba(245, 158, 11, 0.2); }
+            50% { box-shadow: 0 6px 30px rgba(245, 158, 11, 0.5), 0 0 60px rgba(245, 158, 11, 0.3); }
+        }
+
+        /* Quiz Modal */
+        .quiz-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .quiz-modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .quiz-modal {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            padding: 28px;
+            width: 100%;
+            max-width: 380px;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .quiz-modal-overlay.visible .quiz-modal {
+            transform: scale(1) translateY(0);
+        }
+        .quiz-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .quiz-modal-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .quiz-modal-close {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 50%;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .quiz-modal-score {
+            text-align: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .quiz-modal-score-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--success);
+        }
+        .quiz-modal-score-label {
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+        }
     </style>
 </head>
 <body>
@@ -296,11 +407,6 @@
 
         <div id="slangContainer"></div>
 
-        <section class="quiz-section">
-            <div class="quiz-title">🎯 Street Smarts Quiz</div>
-            <div id="quizContainer"></div>
-        </section>
-
         <section class="cta-section">
             <button class="cta-btn" onclick="location.href='../practice/flashcards.html'">
                 Practice Flashcards →
@@ -308,9 +414,28 @@
         </section>
     </div>
 
-    <div class="score-display">
-        <span class="score-label">Score</span>
-        <span class="score-value" id="scoreValue">0/0</span>
+    <!-- Floating Quiz Button -->
+    <button class="floating-quiz-btn" onclick="openQuizModal()">
+        <span class="quiz-icon">🎯</span>
+        <span>Test Yourself</span>
+    </button>
+
+    <!-- Quiz Modal -->
+    <div class="quiz-modal-overlay" id="quizModalOverlay" onclick="if(event.target === this) closeQuizModal()">
+        <div class="quiz-modal">
+            <div class="quiz-modal-header">
+                <div class="quiz-modal-title">
+                    <span>🎯</span>
+                    <span>Street Smarts</span>
+                </div>
+                <button class="quiz-modal-close" onclick="closeQuizModal()">×</button>
+            </div>
+            <div class="quiz-modal-score">
+                <div class="quiz-modal-score-value" id="scoreValue">0/0</div>
+                <div class="quiz-modal-score-label">Correct Answers</div>
+            </div>
+            <div id="quizContainer"></div>
+        </div>
     </div>
 
     <script src="../js/core.js"></script>
@@ -559,10 +684,21 @@
             }, 1200);
         }
 
+        // Modal functions
+        function openQuizModal() {
+            setupQuiz();
+            document.getElementById('quizModalOverlay').classList.add('visible');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeQuizModal() {
+            document.getElementById('quizModalOverlay').classList.remove('visible');
+            document.body.style.overflow = '';
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             renderSlang();
-            setupQuiz();
 
             // Country selector
             document.querySelectorAll('.country-btn').forEach(btn => {
