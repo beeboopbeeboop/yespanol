@@ -1,8 +1,8 @@
 // Yespañol Service Worker - Full offline capability
 // Bump version to force cache refresh
-const CACHE_NAME = 'yespanol-v17';
-const STATIC_CACHE = 'yespanol-static-v17';
-const DYNAMIC_CACHE = 'yespanol-dynamic-v17';
+const CACHE_NAME = 'yespanol-v18';
+const STATIC_CACHE = 'yespanol-static-v18';
+const DYNAMIC_CACHE = 'yespanol-dynamic-v18';
 
 // Core files that must be cached
 const STATIC_ASSETS = [
