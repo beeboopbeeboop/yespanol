@@ -1,8 +1,8 @@
 // Yespañol Service Worker - Full offline capability
 // Bump version to force cache refresh
-const CACHE_NAME = 'yespanol-v15';
-const STATIC_CACHE = 'yespanol-static-v15';
-const DYNAMIC_CACHE = 'yespanol-dynamic-v15';
+const CACHE_NAME = 'yespanol-v16';
+const STATIC_CACHE = 'yespanol-static-v16';
+const DYNAMIC_CACHE = 'yespanol-dynamic-v16';
 
 // Core files that must be cached
 const STATIC_ASSETS = [
@@ -39,6 +39,7 @@ const STATIC_ASSETS = [
     '/practice/flashcards.html',
     '/practice/quiz.html',
     '/practice/reading.html',
+    '/practice/story.html',
 ];
 
 // Install - cache all static assets

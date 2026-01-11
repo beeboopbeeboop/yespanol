@@ -1473,13 +1473,13 @@
                         title.textContent = heroContent.title;
                         desc.textContent = heroContent.desc;
                         btn.textContent = phase >= 7 ? 'Read the Letter →' : 'Continue Story →';
-                        btn.onclick = () => phase >= 7 ? goTo('mensaje.html') : goTo('practice/flashcards.html?mode=story');
+                        btn.onclick = () => phase >= 7 ? goTo('mensaje.html') : goTo('practice/story.html');
                     } else {
                         eyebrow.textContent = 'El Algoritmo del Amor';
                         title.textContent = 'Begin Your Journey';
                         desc.textContent = 'Every word you learn brings you closer...';
                         btn.textContent = 'Continue Story →';
-                        btn.onclick = () => goTo('practice/flashcards.html?mode=story');
+                        btn.onclick = () => goTo('practice/story.html');
                     }
                     break;
                 case 'classic':
