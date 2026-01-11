@@ -2,673 +2,597 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spanish Practice - Intermediate</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0f">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Yespañol</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-glass: rgba(255, 255, 255, 0.06);
+            --bg-glass-hover: rgba(255, 255, 255, 0.1);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --text-primary: #f5f5f7;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-tertiary: rgba(255, 255, 255, 0.4);
+            --accent: #ff6b4a;
+            --success: #32d74b;
+            --warning: #ffd60a;
+            --danger: #ff453a;
+            --card-radius: 20px;
+            --nav-height: 72px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; overflow: hidden; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            min-height: 100vh;
-            color: #eee;
-            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem;
+        .ambient-bg {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; z-index: 0;
+        }
+        .ambient-bg::before {
+            content: ''; position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 30% 20%, rgba(255, 107, 74, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(100, 100, 255, 0.05) 0%, transparent 50%);
+            animation: ambientShift 20s ease-in-out infinite;
+        }
+        @keyframes ambientShift {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(2%, 2%); }
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #e94560;
+        .app-container {
+            position: relative; z-index: 1; height: 100%;
+            display: flex; flex-direction: column;
+            padding-bottom: calc(var(--nav-height) + var(--safe-bottom));
         }
 
-        h1 {
-            font-size: 2rem;
-            color: #e94560;
-            margin-bottom: 0.5rem;
+        .header { padding: 56px 24px 12px; text-align: center; }
+        .logo {
+            font-size: 2.5rem; font-weight: 700; letter-spacing: -0.02em;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
+        .greeting { font-size: 0.95rem; color: var(--text-secondary); margin-top: 4px; }
 
-        .level-badge {
-            display: inline-block;
-            background: #e94560;
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
+        .stats-bar { display: flex; justify-content: center; gap: 28px; padding: 12px 24px; }
+        .stat { text-align: center; }
+        .stat-value { font-size: 1.6rem; font-weight: 600; }
+        .stat-value.streak { color: var(--accent); }
+        .stat-value.accuracy { color: var(--success); }
+        .stat-label { font-size: 0.65rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; }
 
-        nav {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-bottom: 2rem;
-        }
+        .content { flex: 1; overflow-y: auto; padding: 0 20px 24px; -webkit-overflow-scrolling: touch; }
+        .content::-webkit-scrollbar { display: none; }
 
-        nav button {
-            background: #0f3460;
-            color: #eee;
-            border: 2px solid #e94560;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
+        .section-header { font-size: 0.7rem; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; margin: 20px 4px 10px; }
 
-        nav button:hover, nav button.active {
-            background: #e94560;
-            color: white;
-        }
+        .card-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 
-        .section {
-            display: none;
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
+        .card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            padding: 18px; text-decoration: none; color: inherit;
+            transition: all 0.2s ease; position: relative; overflow: hidden;
         }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent); }
+        .card:active { transform: scale(0.97); background: var(--bg-glass-hover); }
+        .card-full { grid-column: 1 / -1; }
+        .card-icon { font-size: 1.75rem; margin-bottom: 10px; }
+        .card-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 3px; }
+        .card-desc { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.4; }
 
-        .section.active {
-            display: block;
-        }
+        .skill-bar { margin-top: 10px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; }
+        .skill-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #ff8a6a); border-radius: 2px; transition: width 0.5s ease; }
+        .skill-label { font-size: 0.65rem; color: var(--text-tertiary); margin-top: 5px; display: flex; justify-content: space-between; }
 
-        h2 {
-            color: #e94560;
-            margin-bottom: 1rem;
-            font-size: 1.4rem;
-        }
+        .card-featured { background: linear-gradient(135deg, rgba(255, 107, 74, 0.12) 0%, rgba(255, 107, 74, 0.04) 100%); border-color: rgba(255, 107, 74, 0.2); }
+        .card-featured .card-title { color: var(--accent); }
 
-        h3 {
-            color: #fff;
-            margin: 1.5rem 0 0.75rem;
-            font-size: 1.1rem;
-        }
+        .card-mystery { background: linear-gradient(135deg, rgba(147, 112, 219, 0.12) 0%, rgba(147, 112, 219, 0.04) 100%); border-color: rgba(147, 112, 219, 0.3); }
+        .card-mystery .card-icon { animation: mystery-pulse 3s ease-in-out infinite; }
+        .card-mystery .card-title { color: #9370db; }
+        .card-mystery.locked { opacity: 0.6; pointer-events: none; }
+        .card-mystery.locked .card-icon { filter: grayscale(1); animation: none; }
+        @keyframes mystery-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-        .exercise {
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
+        .glitch-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
+        .glitch-overlay.visible { opacity: 1; }
+        .glitch-message { background: rgba(0, 0, 0, 0.9); color: #9370db; padding: 16px 28px; border-radius: 12px; font-family: monospace; font-size: 0.9rem; border: 1px solid rgba(147, 112, 219, 0.3); text-shadow: 0 0 10px rgba(147, 112, 219, 0.5); animation: glitch-flicker 0.1s infinite; }
+        @keyframes glitch-flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
 
-        .exercise p {
-            margin-bottom: 0.75rem;
-        }
+        .weak-badge { position: absolute; top: 10px; right: 10px; background: rgba(255, 69, 58, 0.15); color: var(--danger); font-size: 0.55rem; font-weight: 600; padding: 3px 6px; border-radius: 5px; text-transform: uppercase; }
 
-        input[type="text"] {
-            background: #0f3460;
-            border: 2px solid #e94560;
-            color: white;
-            padding: 0.5rem;
-            border-radius: 6px;
-            font-size: 1rem;
-            width: 150px;
+        .today-banner {
+            background: linear-gradient(135deg, var(--bg-glass) 0%, rgba(255, 107, 74, 0.1) 100%);
+            border: 1px solid var(--border-glass); border-radius: var(--card-radius);
+            padding: 18px; margin-bottom: 10px; position: relative; overflow: hidden;
         }
+        .today-banner::after { content: ''; position: absolute; top: -50%; right: -50%; width: 100%; height: 100%; background: radial-gradient(circle, rgba(255, 107, 74, 0.08) 0%, transparent 70%); pointer-events: none; }
+        .today-eyebrow { font-size: 0.65rem; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+        .today-title { font-size: 1.15rem; font-weight: 600; margin-bottom: 4px; }
+        .today-desc { font-size: 0.8rem; color: var(--text-secondary); }
+        .today-btn { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; padding: 11px 22px; background: var(--accent); color: #000; font-size: 0.85rem; font-weight: 600; border-radius: 12px; border: none; cursor: pointer; }
+        .today-btn:active { transform: scale(0.96); }
 
-        input[type="text"]:focus {
-            outline: none;
-            border-color: #fff;
-        }
+        .quick-row { display: flex; gap: 8px; margin-top: 10px; }
+        .quick-btn { flex: 1; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px; color: var(--text-primary); font-size: 0.8rem; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .quick-btn:active { transform: scale(0.96); background: var(--bg-glass-hover); }
 
-        button.check-btn {
-            background: #e94560;
-            color: white;
-            border: none;
-            padding: 0.5rem 1.25rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            margin-left: 0.5rem;
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            height: calc(var(--nav-height) + var(--safe-bottom)); padding-bottom: var(--safe-bottom);
+            background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            border-top: 1px solid var(--border-glass);
+            display: flex; justify-content: space-around; align-items: center; z-index: 100;
         }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 16px; color: var(--text-tertiary); text-decoration: none; }
+        .nav-item.active { color: var(--accent); }
+        .nav-icon { font-size: 1.3rem; }
+        .nav-label { font-size: 0.55rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.03em; }
 
-        button.check-btn:hover {
-            background: #ff6b6b;
-        }
+        .welcome-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .welcome-overlay.visible { display: flex; }
+        .welcome-modal { background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: var(--card-radius); padding: 28px; text-align: center; max-width: 340px; }
+        .welcome-icon { font-size: 3.5rem; margin-bottom: 12px; }
+        .welcome-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 10px; }
+        .welcome-desc { color: var(--text-secondary); margin-bottom: 20px; font-size: 0.9rem; line-height: 1.5; }
+        .welcome-btn { width: 100%; padding: 14px; background: var(--accent); color: #000; font-size: 0.95rem; font-weight: 600; border: none; border-radius: 12px; cursor: pointer; }
 
-        .feedback {
-            margin-top: 0.5rem;
-            padding: 0.5rem;
-            border-radius: 6px;
-            font-weight: 500;
-        }
+        /* Mode selector */
+        .mode-selector { display: flex; gap: 8px; padding: 0 20px; margin-bottom: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .mode-selector::-webkit-scrollbar { display: none; }
+        .mode-btn { flex-shrink: 0; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 12px; padding: 10px 16px; color: var(--text-secondary); font-size: 0.8rem; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
+        .mode-btn:active { transform: scale(0.96); }
+        .mode-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+        .mode-btn.story { border-color: rgba(147, 112, 219, 0.3); }
+        .mode-btn.story.active { background: #9370db; border-color: #9370db; }
+        .mode-icon { font-size: 1rem; }
 
-        .feedback.correct {
-            background: rgba(46, 204, 113, 0.2);
-            color: #2ecc71;
+        /* Did You Know card */
+        .fact-card {
+            background: linear-gradient(135deg, rgba(100, 100, 255, 0.08) 0%, rgba(255, 107, 74, 0.08) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px; padding: 16px; margin: 16px 0;
+            position: relative; overflow: hidden;
         }
+        .fact-card::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 80px; height: 80px;
+            background: radial-gradient(circle, rgba(255, 107, 74, 0.15) 0%, transparent 70%);
+        }
+        .fact-label { font-size: 0.65rem; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .fact-text { font-size: 0.9rem; color: var(--text-primary); line-height: 1.5; }
+        .fact-detail { font-size: 0.8rem; color: var(--text-tertiary); margin-top: 6px; }
+        .fact-refresh { position: absolute; top: 12px; right: 12px; background: none; border: none; color: var(--text-tertiary); font-size: 1rem; cursor: pointer; padding: 4px; }
+        .fact-refresh:active { transform: rotate(180deg); }
 
-        .feedback.incorrect {
-            background: rgba(231, 76, 60, 0.2);
-            color: #e74c3c;
-        }
-
-        .vocab-card {
-            background: #0f3460;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .vocab-card:hover {
-            transform: translateX(5px);
-        }
-
-        .vocab-word {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #e94560;
-        }
-
-        .vocab-translation {
-            color: #aaa;
-            font-style: italic;
-            display: none;
-        }
-
-        .vocab-card.revealed .vocab-translation {
-            display: block;
-        }
-
-        .vocab-example {
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
-            color: #ccc;
-            display: none;
-        }
-
-        .vocab-card.revealed .vocab-example {
-            display: block;
-        }
-
-        .conjugation-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-        }
-
-        .conjugation-table th, .conjugation-table td {
-            padding: 0.5rem;
-            border: 1px solid #e94560;
-            text-align: left;
-        }
-
-        .conjugation-table th {
-            background: #e94560;
-            color: white;
-        }
-
-        .conjugation-table tr:nth-child(even) {
-            background: rgba(255,255,255,0.05);
-        }
-
-        .score-display {
-            text-align: center;
-            font-size: 1.5rem;
-            margin: 1rem 0;
-            color: #e94560;
-        }
-
-        .tip {
-            background: rgba(233, 69, 96, 0.1);
-            border-left: 4px solid #e94560;
-            padding: 1rem;
-            margin: 1rem 0;
-            font-size: 0.9rem;
-        }
-
-        .reading-passage {
-            background: #0f3460;
-            padding: 1.25rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            line-height: 1.8;
-        }
-
-        .question {
-            margin: 1rem 0;
-        }
-
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-
-        .option {
-            background: rgba(255,255,255,0.05);
-            padding: 0.75rem;
-            border-radius: 6px;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.2s;
-        }
-
-        .option:hover {
-            border-color: #e94560;
-        }
-
-        .option.selected {
-            border-color: #e94560;
-            background: rgba(233, 69, 96, 0.2);
-        }
-
-        .option.correct-answer {
-            border-color: #2ecc71;
-            background: rgba(46, 204, 113, 0.2);
-        }
-
-        .option.wrong-answer {
-            border-color: #e74c3c;
-            background: rgba(231, 76, 60, 0.2);
-        }
-
-        .shuffle-btn {
-            background: #0f3460;
-            color: #eee;
-            border: 2px solid #e94560;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-bottom: 1rem;
-        }
-
-        .shuffle-btn:hover {
-            background: #e94560;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 2rem;
-            color: #666;
-            font-size: 0.85rem;
-        }
+        @media (min-width: 500px) { .card-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 768px) { .content { max-width: 560px; margin: 0 auto; } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Practica tu Espanol</h1>
-            <span class="level-badge">Nivel Intermedio (B1-B2)</span>
+    <div class="ambient-bg"></div>
+
+    <div class="app-container">
+        <header class="header">
+            <h1 class="logo">Yespañol</h1>
+            <p class="greeting" id="greeting">¡Hola!</p>
         </header>
 
-        <nav>
-            <button class="active" onclick="showSection('vocab')">Vocabulario</button>
-            <button onclick="showSection('conjugation')">Conjugaciones</button>
-            <button onclick="showSection('fillblank')">Completa</button>
-            <button onclick="showSection('reading')">Lectura</button>
-            <button onclick="showSection('subjunctive')">Subjuntivo</button>
+        <div class="stats-bar">
+            <div class="stat">
+                <div class="stat-value streak" id="streak">0</div>
+                <div class="stat-label">Streak</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="cards">0</div>
+                <div class="stat-label">Cards</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value accuracy" id="accuracy">—</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+        </div>
+
+        <!-- Mode Selector -->
+        <div class="mode-selector">
+            <button class="mode-btn story active" data-mode="story">
+                <span class="mode-icon">💜</span> Story Mode
+            </button>
+            <button class="mode-btn" data-mode="classic">
+                <span class="mode-icon">📚</span> Classic
+            </button>
+            <button class="mode-btn" data-mode="speed">
+                <span class="mode-icon">⚡</span> Speed
+            </button>
+            <button class="mode-btn" data-mode="review">
+                <span class="mode-icon">🔄</span> Review
+            </button>
+        </div>
+
+        <main class="content">
+            <div class="today-banner" id="todayBanner">
+                <div class="today-eyebrow" id="todayEyebrow">Recommended</div>
+                <div class="today-title" id="todayTitle">Ser vs Estar</div>
+                <div class="today-desc" id="todayDesc">Start here — the foundation of Spanish.</div>
+                <button class="today-btn" id="todayBtn">Start Lesson →</button>
+            </div>
+
+            <div class="quick-row">
+                <button class="quick-btn" onclick="goTo('practice/flashcards.html')">⚡ Quick Review</button>
+                <button class="quick-btn" onclick="goTo('practice/reading.html')">📖 Reading</button>
+            </div>
+
+            <!-- Did You Know fact card -->
+            <div class="fact-card" id="factCard">
+                <button class="fact-refresh" onclick="refreshFact()" title="New fact">↻</button>
+                <div class="fact-label">💡 Did you know?</div>
+                <div class="fact-text" id="factText">Loading...</div>
+                <div class="fact-detail" id="factDetail"></div>
+            </div>
+
+            <div class="section-header">Grammar</div>
+            <div class="card-grid" id="grammarGrid">
+                <a href="grammar/ser-estar.html" class="card" data-skill="ser-estar">
+                    <div class="card-icon">⚖️</div>
+                    <div class="card-title">Ser vs Estar</div>
+                    <div class="card-desc">The essential distinction</div>
+                    <div class="skill-bar"><div class="skill-fill" data-skill-bar="ser-estar"></div></div>
+                    <div class="skill-label"><span class="level-text">Beginner</span><span class="level-pct">0%</span></div>
+                </a>
+                <a href="grammar/por-para.html" class="card" data-skill="por-para">
+                    <div class="card-icon">🔀</div>
+                    <div class="card-title">Por vs Para</div>
+                    <div class="card-desc">Context is everything</div>
+                    <div class="skill-bar"><div class="skill-fill" data-skill-bar="por-para"></div></div>
+                    <div class="skill-label"><span class="level-text">Beginner</span><span class="level-pct">0%</span></div>
+                </a>
+                <a href="grammar/subjunctive.html" class="card" data-skill="subjunctive">
+                    <div class="card-icon">💭</div>
+                    <div class="card-title">Subjunctive</div>
+                    <div class="card-desc">Express wishes & doubt</div>
+                    <div class="skill-bar"><div class="skill-fill" data-skill-bar="subjunctive"></div></div>
+                    <div class="skill-label"><span class="level-text">Beginner</span><span class="level-pct">0%</span></div>
+                </a>
+                <a href="grammar/preterite-imperfect.html" class="card" data-skill="preterite-imperfect">
+                    <div class="card-icon">⏳</div>
+                    <div class="card-title">Past Tenses</div>
+                    <div class="card-desc">Preterite vs Imperfect</div>
+                    <div class="skill-bar"><div class="skill-fill" data-skill-bar="preterite-imperfect"></div></div>
+                    <div class="skill-label"><span class="level-text">Beginner</span><span class="level-pct">0%</span></div>
+                </a>
+            </div>
+
+            <div class="section-header">Vocabulary</div>
+            <div class="card-grid">
+                <a href="vocabulary/everyday.html" class="card" data-skill="vocabulary">
+                    <div class="card-icon">🗣️</div>
+                    <div class="card-title">Everyday</div>
+                    <div class="card-desc">Common words</div>
+                </a>
+                <a href="vocabulary/idioms.html" class="card" data-skill="idioms">
+                    <div class="card-icon">🎭</div>
+                    <div class="card-title">Idioms</div>
+                    <div class="card-desc">Sound native</div>
+                </a>
+                <a href="vocabulary/false-friends.html" class="card" data-skill="false-friends">
+                    <div class="card-icon">🚫</div>
+                    <div class="card-title">False Friends</div>
+                    <div class="card-desc">Avoid traps</div>
+                </a>
+                <a href="vocabulary/travel.html" class="card">
+                    <div class="card-icon">✈️</div>
+                    <div class="card-title">Travel</div>
+                    <div class="card-desc">Navigate anywhere</div>
+                </a>
+            </div>
+
+            <div class="section-header">Tools</div>
+            <div class="card-grid">
+                <a href="practice/flashcards.html" class="card card-full">
+                    <div class="card-icon">🃏</div>
+                    <div class="card-title">Flashcards</div>
+                    <div class="card-desc">Spaced repetition — your mistakes become your curriculum</div>
+                </a>
+                <a href="practice/reading.html" class="card">
+                    <div class="card-icon">📖</div>
+                    <div class="card-title">Reading</div>
+                    <div class="card-desc">Real Spanish texts</div>
+                </a>
+                <a href="tools/conjugator.html" class="card">
+                    <div class="card-icon">🔧</div>
+                    <div class="card-title">Conjugator</div>
+                    <div class="card-desc">Any verb, all tenses</div>
+                </a>
+                <a href="progress.html" class="card">
+                    <div class="card-icon">📊</div>
+                    <div class="card-title">Progress</div>
+                    <div class="card-desc">Your journey</div>
+                </a>
+                <a href="mensaje.html" class="card card-mystery" id="mysteryCard" style="display: none;">
+                    <div class="card-icon">✉️</div>
+                    <div class="card-title" id="mysteryTitle">???</div>
+                    <div class="card-desc" id="mysteryDesc">Locked</div>
+                </a>
+            </div>
+        </main>
+
+        <!-- Glitch message overlay -->
+        <div class="glitch-overlay" id="glitchOverlay">
+            <div class="glitch-message" id="glitchMessage"></div>
+        </div>
+
+        <nav class="bottom-nav">
+            <a href="index.html" class="nav-item active"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></a>
+            <a href="practice/flashcards.html" class="nav-item"><span class="nav-icon">🃏</span><span class="nav-label">Review</span></a>
+            <a href="progress.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-label">Stats</span></a>
+            <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span><span class="nav-label">Settings</span></a>
         </nav>
-
-        <!-- VOCABULARY SECTION -->
-        <div id="vocab" class="section active">
-            <h2>Vocabulario Intermedio</h2>
-            <p style="margin-bottom: 1rem; color: #aaa;">Click en cada tarjeta para revelar la traduccion y ejemplo.</p>
-
-            <button class="shuffle-btn" onclick="shuffleVocab()">Mezclar tarjetas</button>
-
-            <div id="vocab-container">
-                <div class="vocab-card" onclick="this.classList.toggle('revealed')">
-                    <div class="vocab-word">desarrollar</div>
-                    <div class="vocab-translation">to develop</div>
-                    <div class="vocab-example">"Necesitamos desarrollar nuevas estrategias para el mercado."</div>
-                </div>
-
-                <div class="vocab-card" onclick="this.classList.toggle('revealed')">
-                    <div class="vocab-word">sin embargo</div>
-                    <div class="vocab-translation">however, nevertheless</div>
-                    <div class="vocab-example">"El proyecto es dificil; sin embargo, vamos a terminarlo a tiempo."</div>
-                </div>
-
-                <div class="vocab-card" onclick="this.classList.toggle('revealed')">
-                    <div class="vocab-word">aprovechar</div>
-                    <div class="vocab-translation">to take advantage of, to make the most of</div>
-                    <div class="vocab-example">"Hay que aprovechar cada oportunidad que se presenta."</div>
-                </div>
-
-                <div class="vocab-card" onclick="this.classList.toggle('revealed')">
-                    <div class="vocab-word">destacar</div>
-                    <div class="vocab-translation">to stand out, to highlight</div>
-                    <div class="vocab-example">"Quiero destacar la importancia de este tema."</div>
-                </div>
-
-                <div class="vocab-card" onclick="this.classList.toggle('revealed')">
-                    <div class="vocab-word">a pesar de</div>
-                    <div class="vocab-translation">despite, in spite of</div>
-                    <div class="vocab-example">"A pesar de la lluvia, fuimos al parque."</div>
-                </div>
-
-                <div class="vocab-card" onclick="this.classList.toggle('revealed')">
-                    <div class="vocab-word">lograr</div>
-                    <div class="vocab-translation">to achieve, to manage to</div>
-                    <div class="vocab-example">"Finalmente logre entender la leccion."</div>
-                </div>
-
-                <div class="vocab-card" onclick="this.classList.toggle('revealed')">
-                    <div class="vocab-word">a menudo</div>
-                    <div class="vocab-translation">often, frequently</div>
-                    <div class="vocab-example">"A menudo voy al gimnasio por las mananas."</div>
-                </div>
-
-                <div class="vocab-card" onclick="this.classList.toggle('revealed')">
-                    <div class="vocab-word">realizar</div>
-                    <div class="vocab-translation">to carry out, to accomplish (NOT "to realize")</div>
-                    <div class="vocab-example">"Vamos a realizar una investigacion sobre el tema."</div>
-                </div>
-
-                <div class="vocab-card" onclick="this.classList.toggle('revealed')">
-                    <div class="vocab-word">mediante</div>
-                    <div class="vocab-translation">through, by means of</div>
-                    <div class="vocab-example">"Lo conseguimos mediante mucho trabajo y dedicacion."</div>
-                </div>
-
-                <div class="vocab-card" onclick="this.classList.toggle('revealed')">
-                    <div class="vocab-word">en cuanto a</div>
-                    <div class="vocab-translation">as for, regarding</div>
-                    <div class="vocab-example">"En cuanto a tu pregunta, todavia no tengo respuesta."</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- CONJUGATION SECTION -->
-        <div id="conjugation" class="section">
-            <h2>Tiempos Verbales Intermedios</h2>
-
-            <h3>Preterito Imperfecto</h3>
-            <div class="tip">Usamos el imperfecto para describir acciones habituales en el pasado, descripciones, y acciones en progreso.</div>
-
-            <table class="conjugation-table">
-                <tr><th>Persona</th><th>HABLAR</th><th>COMER</th><th>VIVIR</th></tr>
-                <tr><td>yo</td><td>hablaba</td><td>comia</td><td>vivia</td></tr>
-                <tr><td>tu</td><td>hablabas</td><td>comias</td><td>vivias</td></tr>
-                <tr><td>el/ella</td><td>hablaba</td><td>comia</td><td>vivia</td></tr>
-                <tr><td>nosotros</td><td>hablabamos</td><td>comiamos</td><td>viviamos</td></tr>
-                <tr><td>ellos/ellas</td><td>hablaban</td><td>comian</td><td>vivian</td></tr>
-            </table>
-
-            <h3>Condicional</h3>
-            <div class="tip">El condicional expresa situaciones hipoteticas, deseos, y cortesia. Se forma con el infinitivo + terminaciones.</div>
-
-            <table class="conjugation-table">
-                <tr><th>Persona</th><th>HABLAR</th><th>COMER</th><th>VIVIR</th></tr>
-                <tr><td>yo</td><td>hablaria</td><td>comeria</td><td>viviria</td></tr>
-                <tr><td>tu</td><td>hablarias</td><td>comerias</td><td>vivirias</td></tr>
-                <tr><td>el/ella</td><td>hablaria</td><td>comeria</td><td>viviria</td></tr>
-                <tr><td>nosotros</td><td>hablariamos</td><td>comeriamos</td><td>viviriamos</td></tr>
-                <tr><td>ellos/ellas</td><td>hablarian</td><td>comerian</td><td>vivirian</td></tr>
-            </table>
-
-            <h3>Verbos Irregulares en Condicional</h3>
-            <table class="conjugation-table">
-                <tr><th>Infinitivo</th><th>Raiz</th><th>Ejemplo (yo)</th></tr>
-                <tr><td>tener</td><td>tendr-</td><td>tendria</td></tr>
-                <tr><td>poder</td><td>podr-</td><td>podria</td></tr>
-                <tr><td>saber</td><td>sabr-</td><td>sabria</td></tr>
-                <tr><td>hacer</td><td>har-</td><td>haria</td></tr>
-                <tr><td>decir</td><td>dir-</td><td>diria</td></tr>
-                <tr><td>querer</td><td>querr-</td><td>querria</td></tr>
-                <tr><td>venir</td><td>vendr-</td><td>vendria</td></tr>
-                <tr><td>salir</td><td>saldr-</td><td>saldria</td></tr>
-            </table>
-        </div>
-
-        <!-- FILL IN THE BLANK SECTION -->
-        <div id="fillblank" class="section">
-            <h2>Completa las Oraciones</h2>
-            <p style="margin-bottom: 1rem; color: #aaa;">Escribe la forma correcta del verbo entre parentesis.</p>
-
-            <div class="exercise" data-answer="hablaba">
-                <p>Cuando era nino, yo siempre <input type="text" id="ex1"> con mi abuela en espanol. (HABLAR - imperfecto)</p>
-                <button class="check-btn" onclick="checkAnswer('ex1', 'hablaba')">Verificar</button>
-                <div class="feedback" id="fb1"></div>
-            </div>
-
-            <div class="exercise" data-answer="podria">
-                <p>Si tuviera mas tiempo, <input type="text" id="ex2"> aprender otro idioma. (PODER - condicional)</p>
-                <button class="check-btn" onclick="checkAnswer('ex2', 'podria')">Verificar</button>
-                <div class="feedback" id="fb2"></div>
-            </div>
-
-            <div class="exercise" data-answer="comian">
-                <p>Mis abuelos <input type="text" id="ex3"> paella todos los domingos. (COMER - imperfecto)</p>
-                <button class="check-btn" onclick="checkAnswer('ex3', 'comian')">Verificar</button>
-                <div class="feedback" id="fb3"></div>
-            </div>
-
-            <div class="exercise" data-answer="haria">
-                <p>Yo <input type="text" id="ex4"> cualquier cosa por mi familia. (HACER - condicional)</p>
-                <button class="check-btn" onclick="checkAnswer('ex4', 'haria')">Verificar</button>
-                <div class="feedback" id="fb4"></div>
-            </div>
-
-            <div class="exercise" data-answer="viviamos">
-                <p>En aquella epoca, nosotros <input type="text" id="ex5"> en un pueblo pequeno. (VIVIR - imperfecto)</p>
-                <button class="check-btn" onclick="checkAnswer('ex5', 'viviamos')">Verificar</button>
-                <div class="feedback" id="fb5"></div>
-            </div>
-
-            <div class="exercise" data-answer="diria">
-                <p>Ella nunca <input type="text" id="ex6"> una mentira. (DECIR - condicional)</p>
-                <button class="check-btn" onclick="checkAnswer('ex6', 'diria')">Verificar</button>
-                <div class="feedback" id="fb6"></div>
-            </div>
-
-            <div class="score-display" id="score">Puntuacion: 0/6</div>
-        </div>
-
-        <!-- READING SECTION -->
-        <div id="reading" class="section">
-            <h2>Comprension de Lectura</h2>
-
-            <div class="reading-passage">
-                <strong>El Trabajo Remoto</strong><br><br>
-                Desde hace unos anos, el trabajo remoto se ha convertido en una opcion cada vez mas popular. Muchas empresas han descubierto que sus empleados pueden ser igual de productivos trabajando desde casa. Sin embargo, no todo es perfecto. Algunos trabajadores echan de menos la interaccion con sus companeros, mientras que otros disfrutan de la flexibilidad que ofrece este nuevo modelo.<br><br>
-                A pesar de los desafios, parece que el trabajo remoto ha llegado para quedarse. Las empresas estan invirtiendo en herramientas digitales y los empleados estan aprendiendo a mantener un equilibrio entre su vida personal y profesional. En cuanto al futuro, muchos expertos creen que veremos un modelo hibrido, donde los trabajadores dividen su tiempo entre la oficina y el hogar.
-            </div>
-
-            <div class="question">
-                <p><strong>1. Segun el texto, que han descubierto las empresas?</strong></p>
-                <div class="options" id="q1">
-                    <div class="option" onclick="selectOption(this, 'q1', false)">A) Que los empleados prefieren la oficina</div>
-                    <div class="option" onclick="selectOption(this, 'q1', true)">B) Que los empleados pueden ser productivos desde casa</div>
-                    <div class="option" onclick="selectOption(this, 'q1', false)">C) Que el trabajo remoto es imposible</div>
-                </div>
-            </div>
-
-            <div class="question">
-                <p><strong>2. Que echan de menos algunos trabajadores?</strong></p>
-                <div class="options" id="q2">
-                    <div class="option" onclick="selectOption(this, 'q2', false)">A) El salario de la oficina</div>
-                    <div class="option" onclick="selectOption(this, 'q2', false)">B) Las vacaciones largas</div>
-                    <div class="option" onclick="selectOption(this, 'q2', true)">C) La interaccion con companeros</div>
-                </div>
-            </div>
-
-            <div class="question">
-                <p><strong>3. Que significa "ha llegado para quedarse"?</strong></p>
-                <div class="options" id="q3">
-                    <div class="option" onclick="selectOption(this, 'q3', false)">A) Es algo temporal</div>
-                    <div class="option" onclick="selectOption(this, 'q3', true)">B) Es algo permanente</div>
-                    <div class="option" onclick="selectOption(this, 'q3', false)">C) Es algo del pasado</div>
-                </div>
-            </div>
-
-            <div class="question">
-                <p><strong>4. Que predicen los expertos para el futuro?</strong></p>
-                <div class="options" id="q4">
-                    <div class="option" onclick="selectOption(this, 'q4', false)">A) Solo trabajo en oficina</div>
-                    <div class="option" onclick="selectOption(this, 'q4', false)">B) Solo trabajo remoto</div>
-                    <div class="option" onclick="selectOption(this, 'q4', true)">C) Un modelo hibrido</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SUBJUNCTIVE SECTION -->
-        <div id="subjunctive" class="section">
-            <h2>El Subjuntivo</h2>
-
-            <div class="tip">
-                <strong>Cuando usar el subjuntivo:</strong><br>
-                - Deseos: "Espero que vengas"<br>
-                - Dudas: "Dudo que sea verdad"<br>
-                - Emociones: "Me alegra que estes aqui"<br>
-                - Mandatos indirectos: "Quiero que estudies"<br>
-                - Expresiones impersonales: "Es importante que practiques"
-            </div>
-
-            <h3>Presente de Subjuntivo - Regulares</h3>
-            <table class="conjugation-table">
-                <tr><th>Persona</th><th>HABLAR</th><th>COMER</th><th>VIVIR</th></tr>
-                <tr><td>yo</td><td>hable</td><td>coma</td><td>viva</td></tr>
-                <tr><td>tu</td><td>hables</td><td>comas</td><td>vivas</td></tr>
-                <tr><td>el/ella</td><td>hable</td><td>coma</td><td>viva</td></tr>
-                <tr><td>nosotros</td><td>hablemos</td><td>comamos</td><td>vivamos</td></tr>
-                <tr><td>ellos/ellas</td><td>hablen</td><td>coman</td><td>vivan</td></tr>
-            </table>
-
-            <h3>Irregulares Comunes</h3>
-            <table class="conjugation-table">
-                <tr><th>Verbo</th><th>yo</th><th>tu</th><th>el/ella</th><th>nosotros</th><th>ellos</th></tr>
-                <tr><td>ser</td><td>sea</td><td>seas</td><td>sea</td><td>seamos</td><td>sean</td></tr>
-                <tr><td>estar</td><td>este</td><td>estes</td><td>este</td><td>estemos</td><td>esten</td></tr>
-                <tr><td>ir</td><td>vaya</td><td>vayas</td><td>vaya</td><td>vayamos</td><td>vayan</td></tr>
-                <tr><td>tener</td><td>tenga</td><td>tengas</td><td>tenga</td><td>tengamos</td><td>tengan</td></tr>
-                <tr><td>hacer</td><td>haga</td><td>hagas</td><td>haga</td><td>hagamos</td><td>hagan</td></tr>
-                <tr><td>saber</td><td>sepa</td><td>sepas</td><td>sepa</td><td>sepamos</td><td>sepan</td></tr>
-            </table>
-
-            <h3>Practica el Subjuntivo</h3>
-
-            <div class="exercise">
-                <p>Espero que tu <input type="text" id="sub1"> a la fiesta. (VENIR)</p>
-                <button class="check-btn" onclick="checkAnswer('sub1', 'vengas')">Verificar</button>
-                <div class="feedback" id="fbsub1"></div>
-            </div>
-
-            <div class="exercise">
-                <p>Dudo que ellos <input type="text" id="sub2"> la verdad. (SABER)</p>
-                <button class="check-btn" onclick="checkAnswer('sub2', 'sepan')">Verificar</button>
-                <div class="feedback" id="fbsub2"></div>
-            </div>
-
-            <div class="exercise">
-                <p>Es importante que nosotros <input type="text" id="sub3"> espanol todos los dias. (PRACTICAR)</p>
-                <button class="check-btn" onclick="checkAnswer('sub3', 'practiquemos')">Verificar</button>
-                <div class="feedback" id="fbsub3"></div>
-            </div>
-
-            <div class="exercise">
-                <p>Quiero que ella <input type="text" id="sub4"> feliz. (SER)</p>
-                <button class="check-btn" onclick="checkAnswer('sub4', 'sea')">Verificar</button>
-                <div class="feedback" id="fbsub4"></div>
-            </div>
-
-            <div class="exercise">
-                <p>Me alegra que ustedes <input type="text" id="sub5"> aqui. (ESTAR)</p>
-                <button class="check-btn" onclick="checkAnswer('sub5', 'esten')">Verificar</button>
-                <div class="feedback" id="fbsub5"></div>
-            </div>
-        </div>
-
-        <footer>
-            Practica un poco cada dia. La consistencia es la clave.
-        </footer>
     </div>
 
+    <div class="welcome-overlay" id="welcomeOverlay">
+        <div class="welcome-modal">
+            <div class="welcome-icon">🇪🇸</div>
+            <div class="welcome-title">Welcome to Yespañol!</div>
+            <div class="welcome-desc">Learn Spanish with science-backed methods. We track your weak spots and personalize your journey.</div>
+            <button class="welcome-btn" onclick="dismissWelcome()">¡Vamos!</button>
+        </div>
+    </div>
+
+    <script src="js/core.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/story.js"></script>
+    <script src="js/loading.js"></script>
     <script>
-        let score = 0;
-        let totalAnswered = 0;
+        const skillUrls = {
+            'ser-estar': 'grammar/ser-estar.html',
+            'por-para': 'grammar/por-para.html',
+            'subjunctive': 'grammar/subjunctive.html',
+            'preterite-imperfect': 'grammar/preterite-imperfect.html',
+            'vocabulary': 'vocabulary/everyday.html',
+            'idioms': 'vocabulary/idioms.html',
+            'false-friends': 'vocabulary/false-friends.html',
+        };
 
-        function showSection(sectionId) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-            event.target.classList.add('active');
-        }
-
-        function checkAnswer(inputId, correctAnswer) {
-            const input = document.getElementById(inputId);
-            const feedback = document.getElementById('fb' + inputId.replace('ex', '').replace('sub', 'sub'));
-            const userAnswer = input.value.toLowerCase().trim();
-
-            // Remove accents for comparison (simple normalization)
-            const normalize = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-
-            if (normalize(userAnswer) === normalize(correctAnswer) || userAnswer === correctAnswer) {
-                feedback.textContent = 'Correcto!';
-                feedback.className = 'feedback correct';
-                input.style.borderColor = '#2ecc71';
-                if (!input.dataset.answered) {
-                    score++;
-                    totalAnswered++;
-                    input.dataset.answered = 'true';
+        function goTo(url) {
+            // Show loading screen with Spanish fact
+            if (typeof YespanolLoading !== 'undefined') {
+                const isStoryMode = url.includes('mode=story');
+                if (isStoryMode) {
+                    YespanolLoading.showStory(null, 1500);
+                } else {
+                    YespanolLoading.showFact(1200);
                 }
+                setTimeout(() => {
+                    location.href = url;
+                }, isStoryMode ? 1500 : 1200);
+            } else if (typeof YespanolUI !== 'undefined') {
+                YespanolUI.pageTransition(url);
             } else {
-                feedback.textContent = 'Incorrecto. La respuesta es: ' + correctAnswer;
-                feedback.className = 'feedback incorrect';
-                input.style.borderColor = '#e74c3c';
-                if (!input.dataset.answered) {
-                    totalAnswered++;
-                    input.dataset.answered = 'true';
+                location.href = url;
+            }
+        }
+
+        // Did You Know fact refresh
+        function refreshFact() {
+            if (typeof YespanolLoading !== 'undefined') {
+                const fact = YespanolLoading.getRandomFact();
+                document.getElementById('factText').textContent = fact.fact;
+                document.getElementById('factDetail').textContent = fact.detail;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize fact card
+            refreshFact();
+            const profile = Yespanol.load();
+
+            // First-time user welcome
+            if (!profile.totalCardsReviewed && !localStorage.getItem('yespanol_welcomed')) {
+                document.getElementById('welcomeOverlay').classList.add('visible');
+            }
+
+            // Update streak
+            Yespanol.updateStreak(profile);
+            Yespanol.save(profile);
+
+            // Stats
+            document.getElementById('streak').textContent = profile.streak || 0;
+            document.getElementById('cards').textContent = profile.totalCardsReviewed || 0;
+            document.getElementById('accuracy').textContent = profile.totalCardsReviewed > 0 ? Yespanol.getAccuracy(profile) + '%' : '—';
+
+            // Greeting
+            const hour = new Date().getHours();
+            let greeting = hour < 12 ? '¡Buenos días!' : hour < 18 ? '¡Buenas tardes!' : '¡Buenas noches!';
+            if (profile.streak >= 3) greeting += ` 🔥 ${profile.streak} day streak!`;
+            document.getElementById('greeting').textContent = greeting;
+
+            // Recommended lesson based on weak areas
+            const recommended = Yespanol.getRecommendedLesson(profile);
+            document.getElementById('todayTitle').textContent = Yespanol.formatSkillName(recommended.skill);
+            document.getElementById('todayDesc').textContent = recommended.reason;
+            document.getElementById('todayBtn').onclick = () => goTo(skillUrls[recommended.skill]);
+
+            // Update skill progress bars and mark weak areas
+            document.querySelectorAll('[data-skill]').forEach(card => {
+                const skill = card.dataset.skill;
+                const data = profile.skills[skill];
+                if (data && data.attempts > 0) {
+                    const bar = card.querySelector('[data-skill-bar]');
+                    if (bar) bar.style.width = data.level + '%';
+
+                    const levelText = card.querySelector('.level-text');
+                    const levelPct = card.querySelector('.level-pct');
+                    if (levelText) {
+                        levelText.textContent = data.level < 25 ? 'Beginner' : data.level < 50 ? 'Developing' : data.level < 75 ? 'Intermediate' : 'Advanced';
+                    }
+                    if (levelPct) levelPct.textContent = data.level + '%';
+
+                    // Mark weak areas
+                    if (data.level < 30 && data.attempts >= 5) {
+                        card.classList.add('card-featured');
+                        const badge = document.createElement('div');
+                        badge.className = 'weak-badge';
+                        badge.textContent = 'Needs work';
+                        card.appendChild(badge);
+                    }
+                }
+            });
+
+            // Smooth transitions for all cards
+            document.querySelectorAll('.card[href]').forEach(card => {
+                card.addEventListener('click', e => {
+                    e.preventDefault();
+                    goTo(card.getAttribute('href'));
+                });
+            });
+
+            // Mode selector logic
+            const modeButtons = document.querySelectorAll('.mode-btn');
+            const savedMode = localStorage.getItem('yespanol_mode') || 'story';
+            setMode(savedMode);
+
+            modeButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const mode = btn.dataset.mode;
+                    setMode(mode);
+                    localStorage.setItem('yespanol_mode', mode);
+                });
+            });
+
+            function setMode(mode) {
+                modeButtons.forEach(b => b.classList.remove('active'));
+                document.querySelector(`[data-mode="${mode}"]`)?.classList.add('active');
+                updateUIForMode(mode, profile);
+            }
+
+            function updateUIForMode(mode, profile) {
+                const todayBanner = document.getElementById('todayBanner');
+                const eyebrow = document.getElementById('todayEyebrow');
+                const title = document.getElementById('todayTitle');
+                const desc = document.getElementById('todayDesc');
+                const btn = document.getElementById('todayBtn');
+
+                switch(mode) {
+                    case 'story':
+                        const phase = typeof Story !== 'undefined' ? Story.getPhase(calculateOverallProgress(profile)) : 1;
+                        eyebrow.textContent = 'El Algoritmo del Amor';
+                        title.textContent = phase < 3 ? 'Continue Your Path' : 'He\'s Getting Closer';
+                        desc.textContent = getStoryHint(phase);
+                        btn.textContent = 'Continue Story →';
+                        btn.onclick = () => goTo('practice/flashcards.html?mode=story');
+                        break;
+                    case 'classic':
+                        const rec = Yespanol.getRecommendedLesson(profile);
+                        eyebrow.textContent = 'Recommended';
+                        title.textContent = Yespanol.formatSkillName(rec.skill);
+                        desc.textContent = rec.reason;
+                        btn.textContent = 'Start Lesson →';
+                        btn.onclick = () => goTo(skillUrls[rec.skill]);
+                        break;
+                    case 'speed':
+                        eyebrow.textContent = '⚡ Speed Round';
+                        title.textContent = '60-Second Challenge';
+                        desc.textContent = 'How many cards can you get right in 60 seconds?';
+                        btn.textContent = 'Start Challenge →';
+                        btn.onclick = () => goTo('practice/flashcards.html?mode=speed');
+                        break;
+                    case 'review':
+                        const dueCards = Yespanol.getDueCards(profile).length;
+                        eyebrow.textContent = 'Spaced Repetition';
+                        title.textContent = dueCards > 0 ? `${dueCards} Cards Due` : 'All Caught Up!';
+                        desc.textContent = dueCards > 0 ? 'Review cards scheduled for today' : 'Come back later for more reviews';
+                        btn.textContent = dueCards > 0 ? 'Review Now →' : 'Practice Anyway →';
+                        btn.onclick = () => goTo('practice/flashcards.html?mode=review');
+                        break;
                 }
             }
 
-            updateScore();
-        }
-
-        function updateScore() {
-            document.getElementById('score').textContent = 'Puntuacion: ' + score + '/' + totalAnswered;
-        }
-
-        function selectOption(element, questionId, isCorrect) {
-            const options = document.querySelectorAll('#' + questionId + ' .option');
-
-            // Don't allow re-answering
-            if (document.querySelector('#' + questionId + ' .correct-answer, #' + questionId + ' .wrong-answer')) {
-                return;
+            function getStoryHint(phase) {
+                const hints = [
+                    'Every word you learn brings you closer...',
+                    'Someone is waiting. Keep learning.',
+                    'The algorithm is working. Trust it.',
+                    'He asked about you today.',
+                    'The message is almost ready.'
+                ];
+                return hints[phase - 1] || hints[0];
             }
 
-            options.forEach(opt => opt.classList.remove('selected'));
-            element.classList.add('selected');
+            // ===== EL ALGORITMO DEL AMOR =====
+            if (typeof Story !== 'undefined') {
+                const story = Story.load();
+                const overallProgress = calculateOverallProgress(profile);
+                const phase = Story.getPhase(overallProgress);
+
+                // Show mystery card at phase 3+
+                const mysteryCard = document.getElementById('mysteryCard');
+                if (phase >= 3 && mysteryCard) {
+                    mysteryCard.style.display = 'block';
+
+                    if (phase < 5) {
+                        mysteryCard.classList.add('locked');
+                        document.getElementById('mysteryTitle').textContent = '???';
+                        document.getElementById('mysteryDesc').textContent = 'Not yet...';
+                    } else {
+                        mysteryCard.classList.remove('locked');
+                        document.getElementById('mysteryTitle').textContent = 'El Mensaje';
+                        document.getElementById('mysteryDesc').textContent = 'He wrote to you.';
+                    }
+                }
+
+                // Random glitch messages (5% chance per visit after phase 2)
+                if (phase >= 2 && Math.random() < 0.05) {
+                    setTimeout(() => showGlitch(Story.getGlitchMessage(story, phase)), 3000 + Math.random() * 5000);
+                }
+            }
+        });
+
+        function calculateOverallProgress(profile) {
+            const skills = Object.values(profile.skills || {});
+            if (skills.length === 0) return 0;
+            const total = skills.reduce((sum, s) => sum + (s.level || 0), 0);
+            return Math.round(total / skills.length);
+        }
+
+        function showGlitch(message) {
+            const overlay = document.getElementById('glitchOverlay');
+            const msgEl = document.getElementById('glitchMessage');
+            if (!overlay || !msgEl) return;
+
+            msgEl.textContent = message;
+            overlay.classList.add('visible');
 
             setTimeout(() => {
-                if (isCorrect) {
-                    element.classList.add('correct-answer');
-                } else {
-                    element.classList.add('wrong-answer');
-                    // Show correct answer
-                    options.forEach(opt => {
-                        if (opt.onclick.toString().includes('true')) {
-                            opt.classList.add('correct-answer');
-                        }
-                    });
-                }
-            }, 300);
+                overlay.classList.remove('visible');
+            }, 2000);
         }
 
-        function shuffleVocab() {
-            const container = document.getElementById('vocab-container');
-            const cards = Array.from(container.children);
+        function dismissWelcome() {
+            document.getElementById('welcomeOverlay').classList.remove('visible');
+            localStorage.setItem('yespanol_welcomed', 'true');
+            if (typeof YespanolUI !== 'undefined') YespanolUI.confetti();
+        }
 
-            for (let i = cards.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                container.appendChild(cards[j]);
-                cards.splice(j, 1);
-            }
+        // Register service worker for offline support
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
         }
     </script>
 </body>

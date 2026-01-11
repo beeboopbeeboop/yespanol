@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Flashcards — Yespañol</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-glass: rgba(255, 255, 255, 0.06);
+            --bg-glass-hover: rgba(255, 255, 255, 0.1);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --text-primary: #f5f5f7;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-tertiary: rgba(255, 255, 255, 0.4);
+            --accent: #ff6b4a;
+            --success: #32d74b;
+            --danger: #ff453a;
+            --card-radius: 24px;
+            --nav-height: 72px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: pan-y;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .ambient-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 107, 74, 0.06) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 70%, rgba(100, 100, 255, 0.04) 0%, transparent 50%);
+        }
+
+        .app-container {
+            position: relative;
+            z-index: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 56px 20px 16px;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+
+        .header-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-count {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            min-width: 40px;
+            text-align: right;
+        }
+
+        /* Progress bar */
+        .progress-container {
+            padding: 0 20px;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #ff8a6a);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        /* Card stack area */
+        .card-stack {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        /* Flashcard */
+        .flashcard {
+            position: absolute;
+            width: calc(100% - 40px);
+            max-width: 380px;
+            aspect-ratio: 3/4;
+            max-height: 70vh;
+            background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            cursor: grab;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+            text-align: center;
+            transition: transform 0.1s ease, box-shadow 0.3s ease;
+            will-change: transform;
+        }
+
+        .flashcard::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+        }
+
+        .flashcard.grabbing {
+            cursor: grabbing;
+        }
+
+        .flashcard.swiping-right {
+            box-shadow: 0 0 40px rgba(50, 215, 75, 0.3);
+        }
+
+        .flashcard.swiping-left {
+            box-shadow: 0 0 40px rgba(255, 69, 58, 0.3);
+        }
+
+        .flashcard.behind {
+            transform: scale(0.95) translateY(10px);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .flashcard.far-behind {
+            transform: scale(0.9) translateY(20px);
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .flashcard.exiting {
+            transition: transform 0.4s ease, opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        /* Card content */
+        .card-category {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 24px;
+        }
+
+        .card-word {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .card-pronunciation {
+            font-size: 1rem;
+            color: var(--text-tertiary);
+            font-style: italic;
+            margin-bottom: 24px;
+        }
+
+        .card-divider {
+            width: 40px;
+            height: 2px;
+            background: var(--accent);
+            opacity: 0.5;
+            margin: 16px 0;
+        }
+
+        .card-answer {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+
+        .flashcard.revealed .card-answer {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .card-example {
+            font-size: 0.95rem;
+            color: var(--text-tertiary);
+            margin-top: 20px;
+            line-height: 1.5;
+            opacity: 0;
+            transition: opacity 0.3s ease 0.1s;
+        }
+
+        .flashcard.revealed .card-example {
+            opacity: 1;
+        }
+
+        .tap-hint {
+            position: absolute;
+            bottom: 24px;
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            transition: opacity 0.3s ease;
+        }
+
+        .flashcard.revealed .tap-hint {
+            opacity: 0;
+        }
+
+        /* Swipe indicators */
+        .swipe-indicator {
+            position: absolute;
+            top: 24px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .swipe-indicator.left {
+            left: 24px;
+            background: rgba(255, 69, 58, 0.2);
+            color: var(--danger);
+            border: 2px solid var(--danger);
+        }
+
+        .swipe-indicator.right {
+            right: 24px;
+            background: rgba(50, 215, 75, 0.2);
+            color: var(--success);
+            border: 2px solid var(--success);
+        }
+
+        .flashcard.swiping-left .swipe-indicator.left,
+        .flashcard.swiping-right .swipe-indicator.right {
+            opacity: 1;
+        }
+
+        /* Action buttons */
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            padding: 24px 20px calc(var(--nav-height) + var(--safe-bottom) + 20px);
+        }
+
+        .action-btn {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:active {
+            transform: scale(0.9);
+        }
+
+        .action-btn.skip {
+            background: rgba(255, 69, 58, 0.15);
+            border: 2px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .action-btn.reveal {
+            background: var(--bg-glass);
+            border: 2px solid var(--border-glass);
+            color: var(--text-primary);
+            width: 56px;
+            height: 56px;
+            font-size: 1.2rem;
+        }
+
+        .action-btn.got-it {
+            background: rgba(50, 215, 75, 0.15);
+            border: 2px solid var(--success);
+            color: var(--success);
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .empty-desc {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .restart-btn {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Stats modal */
+        .stats-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .stats-overlay.visible {
+            display: flex;
+        }
+
+        .stats-modal {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            padding: 32px;
+            text-align: center;
+            max-width: 340px;
+            width: 100%;
+        }
+
+        .stats-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-box {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat-number.green { color: var(--success); }
+        .stat-number.red { color: var(--danger); }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        /* Bottom nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            height: calc(var(--nav-height) + var(--safe-bottom));
+            padding-bottom: var(--safe-bottom);
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(30px);
+            border-top: 1px solid var(--border-glass);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 20px;
+            color: var(--text-tertiary);
+            text-decoration: none;
+        }
+
+        .nav-item.active { color: var(--accent); }
+        .nav-icon { font-size: 1.5rem; }
+        .nav-label {
+            font-size: 0.65rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-bg"></div>
+
+    <div class="app-container">
+        <header class="header">
+            <a href="../index.html" class="back-btn">←</a>
+            <span class="header-title">Flashcards</span>
+            <span class="card-count" id="cardCount">1/20</span>
+        </header>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 5%"></div>
+            </div>
+        </div>
+
+        <div class="card-stack" id="cardStack">
+            <!-- Cards injected by JS -->
+        </div>
+
+        <div class="actions">
+            <button class="action-btn skip" id="btnSkip" title="Need practice">✕</button>
+            <button class="action-btn reveal" id="btnReveal" title="Reveal answer">👁</button>
+            <button class="action-btn got-it" id="btnGotIt" title="Got it!">✓</button>
+        </div>
+    </div>
+
+    <div class="stats-overlay" id="statsOverlay">
+        <div class="stats-modal">
+            <div class="stats-title">Session Complete!</div>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-number green" id="statCorrect">0</div>
+                    <div class="stat-label">Got It</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number red" id="statReview">0</div>
+                    <div class="stat-label">Need Review</div>
+                </div>
+            </div>
+            <button class="restart-btn" onclick="restartSession()">Practice Again</button>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="../index.html" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Home</span>
+        </a>
+        <a href="flashcards.html" class="nav-item active">
+            <span class="nav-icon">🃏</span>
+            <span class="nav-label">Review</span>
+        </a>
+        <a href="../progress.html" class="nav-item">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">Progress</span>
+        </a>
+        <a href="../settings.html" class="nav-item">
+            <span class="nav-icon">⚙️</span>
+            <span class="nav-label">Settings</span>
+        </a>
+    </nav>
+
+    <script>
+        // Flashcard data - mixed vocabulary and grammar
+        const cardData = [
+            { category: 'Vocabulary', word: 'desarrollar', pronunciation: 'deh-sah-roh-YAR', answer: 'to develop', example: '"Necesitamos desarrollar nuevas ideas."' },
+            { category: 'Ser vs Estar', word: 'Ella ___ doctora.', pronunciation: 'profession', answer: 'es (ser)', example: 'Professions use SER — it\'s who you are.' },
+            { category: 'Vocabulary', word: 'sin embargo', pronunciation: 'seen em-BAR-go', answer: 'however, nevertheless', example: '"Es difícil; sin embargo, lo haremos."' },
+            { category: 'Ser vs Estar', word: 'La puerta ___ abierta.', pronunciation: 'condition/state', answer: 'está (estar)', example: 'States & conditions use ESTAR — it can change.' },
+            { category: 'Por vs Para', word: 'Gracias ___ tu ayuda.', pronunciation: 'reason/cause', answer: 'por', example: 'POR = because of, due to (the reason)' },
+            { category: 'Vocabulary', word: 'aprovechar', pronunciation: 'ah-pro-veh-CHAR', answer: 'to take advantage of', example: '"Hay que aprovechar el momento."' },
+            { category: 'Por vs Para', word: 'Este regalo es ___ ti.', pronunciation: 'recipient', answer: 'para', example: 'PARA = for (recipient, destination)' },
+            { category: 'Vocabulary', word: 'a pesar de', pronunciation: 'ah peh-SAR deh', answer: 'despite, in spite of', example: '"A pesar de la lluvia, salimos."' },
+            { category: 'Subjunctive', word: 'Espero que tú ___ (venir)', pronunciation: 'wish/hope trigger', answer: 'vengas', example: 'Esperar + que = subjunctive' },
+            { category: 'Vocabulary', word: 'lograr', pronunciation: 'lo-GRAR', answer: 'to achieve, manage to', example: '"Logré terminar el proyecto."' },
+            { category: 'Ser vs Estar', word: '¿Cómo ___? (asking how someone is)', pronunciation: 'temporary state', answer: 'estás (estar)', example: 'How you\'re feeling = temporary = ESTAR' },
+            { category: 'Vocabulary', word: 'realizar', pronunciation: 'reh-ah-lee-SAR', answer: 'to carry out (NOT "to realize")', example: '"Vamos a realizar el plan." (False friend!)' },
+            { category: 'Por vs Para', word: 'Trabajo ___ una empresa grande.', pronunciation: 'employer', answer: 'para', example: 'PARA = for (who you work for)' },
+            { category: 'Vocabulary', word: 'destacar', pronunciation: 'des-tah-CAR', answer: 'to stand out, highlight', example: '"Quiero destacar este punto."' },
+            { category: 'Subjunctive', word: 'Dudo que él ___ (saber)', pronunciation: 'doubt trigger', answer: 'sepa', example: 'Dudar + que = subjunctive' },
+            { category: 'Vocabulary', word: 'mediante', pronunciation: 'meh-dee-AN-teh', answer: 'through, by means of', example: '"Lo logramos mediante trabajo duro."' },
+            { category: 'Ser vs Estar', word: 'La fiesta ___ en mi casa.', pronunciation: 'location of event', answer: 'es (ser)', example: 'Events use SER for location!' },
+            { category: 'Vocabulary', word: 'en cuanto a', pronunciation: 'en KWAN-toh ah', answer: 'as for, regarding', example: '"En cuanto a tu pregunta..."' },
+            { category: 'Por vs Para', word: 'Caminamos ___ el parque.', pronunciation: 'through/along', answer: 'por', example: 'POR = through, along, around' },
+            { category: 'Vocabulary', word: 'echar de menos', pronunciation: 'eh-CHAR deh MEH-nos', answer: 'to miss (someone/thing)', example: '"Te echo de menos." = I miss you.' },
+        ];
+
+        let cards = [];
+        let currentIndex = 0;
+        let correctCount = 0;
+        let reviewCount = 0;
+        let startX = 0;
+        let startY = 0;
+        let currentX = 0;
+        let isDragging = false;
+        let currentCard = null;
+
+        function shuffle(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function initSession() {
+            cards = shuffle(cardData);
+            currentIndex = 0;
+            correctCount = 0;
+            reviewCount = 0;
+            renderCards();
+            updateProgress();
+        }
+
+        function renderCards() {
+            const stack = document.getElementById('cardStack');
+            stack.innerHTML = '';
+
+            // Render up to 3 cards
+            for (let i = Math.min(currentIndex + 2, cards.length - 1); i >= currentIndex; i--) {
+                const card = cards[i];
+                const depth = i - currentIndex;
+
+                const cardEl = document.createElement('div');
+                cardEl.className = 'flashcard' + (depth === 1 ? ' behind' : '') + (depth === 2 ? ' far-behind' : '');
+                cardEl.innerHTML = `
+                    <div class="swipe-indicator left">Review</div>
+                    <div class="swipe-indicator right">Got it!</div>
+                    <div class="card-category">${card.category}</div>
+                    <div class="card-word">${card.word}</div>
+                    <div class="card-pronunciation">${card.pronunciation}</div>
+                    <div class="card-divider"></div>
+                    <div class="card-answer">${card.answer}</div>
+                    <div class="card-example">${card.example}</div>
+                    <div class="tap-hint">Tap to reveal</div>
+                `;
+
+                if (depth === 0) {
+                    setupCardInteraction(cardEl);
+                }
+
+                stack.appendChild(cardEl);
+            }
+        }
+
+        function setupCardInteraction(cardEl) {
+            currentCard = cardEl;
+
+            // Tap to reveal
+            cardEl.addEventListener('click', (e) => {
+                if (!isDragging) {
+                    cardEl.classList.toggle('revealed');
+                }
+            });
+
+            // Touch events
+            cardEl.addEventListener('touchstart', handleTouchStart, { passive: true });
+            cardEl.addEventListener('touchmove', handleTouchMove, { passive: false });
+            cardEl.addEventListener('touchend', handleTouchEnd);
+
+            // Mouse events
+            cardEl.addEventListener('mousedown', handleMouseDown);
+        }
+
+        function handleTouchStart(e) {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            isDragging = false;
+            currentCard.classList.add('grabbing');
+        }
+
+        function handleTouchMove(e) {
+            if (!startX) return;
+
+            currentX = e.touches[0].clientX - startX;
+            const currentY = e.touches[0].clientY - startY;
+
+            // If moving more horizontally than vertically, it's a swipe
+            if (Math.abs(currentX) > Math.abs(currentY) && Math.abs(currentX) > 10) {
+                isDragging = true;
+                e.preventDefault();
+                updateCardPosition(currentX);
+            }
+        }
+
+        function handleTouchEnd() {
+            currentCard.classList.remove('grabbing');
+            if (isDragging) {
+                handleSwipeEnd();
+            }
+            startX = 0;
+            currentX = 0;
+            isDragging = false;
+        }
+
+        function handleMouseDown(e) {
+            startX = e.clientX;
+            isDragging = false;
+            currentCard.classList.add('grabbing');
+
+            const handleMouseMove = (e) => {
+                currentX = e.clientX - startX;
+                if (Math.abs(currentX) > 5) {
+                    isDragging = true;
+                    updateCardPosition(currentX);
+                }
+            };
+
+            const handleMouseUp = () => {
+                currentCard.classList.remove('grabbing');
+                if (isDragging) {
+                    handleSwipeEnd();
+                }
+                startX = 0;
+                currentX = 0;
+                isDragging = false;
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', handleMouseUp);
+            };
+
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+        }
+
+        function updateCardPosition(x) {
+            const rotate = x * 0.1;
+            currentCard.style.transform = `translateX(${x}px) rotate(${rotate}deg)`;
+
+            currentCard.classList.remove('swiping-left', 'swiping-right');
+            if (x < -50) {
+                currentCard.classList.add('swiping-left');
+            } else if (x > 50) {
+                currentCard.classList.add('swiping-right');
+            }
+        }
+
+        function handleSwipeEnd() {
+            const threshold = 100;
+
+            if (currentX > threshold) {
+                swipeCard('right');
+            } else if (currentX < -threshold) {
+                swipeCard('left');
+            } else {
+                // Reset position
+                currentCard.style.transform = '';
+                currentCard.classList.remove('swiping-left', 'swiping-right');
+            }
+        }
+
+        function swipeCard(direction) {
+            const card = currentCard;
+            const exitX = direction === 'right' ? window.innerWidth : -window.innerWidth;
+
+            card.classList.add('exiting');
+            card.style.transform = `translateX(${exitX}px) rotate(${direction === 'right' ? 30 : -30}deg)`;
+            card.style.opacity = '0';
+
+            if (direction === 'right') {
+                correctCount++;
+                markCardLearned(currentIndex);
+            } else {
+                reviewCount++;
+                markCardForReview(currentIndex);
+            }
+
+            setTimeout(() => {
+                currentIndex++;
+                if (currentIndex >= cards.length) {
+                    showStats();
+                } else {
+                    renderCards();
+                    updateProgress();
+                }
+            }, 300);
+        }
+
+        function updateProgress() {
+            const progress = ((currentIndex + 1) / cards.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('cardCount').textContent = `${currentIndex + 1}/${cards.length}`;
+        }
+
+        function markCardLearned(index) {
+            const progress = JSON.parse(localStorage.getItem('yespanol_progress') || '{}');
+            progress.wordsLearned = (progress.wordsLearned || 0) + 1;
+            progress.totalCorrect = (progress.totalCorrect || 0) + 1;
+            progress.totalAttempts = (progress.totalAttempts || 0) + 1;
+            progress.accuracy = Math.round((progress.totalCorrect / progress.totalAttempts) * 100);
+            localStorage.setItem('yespanol_progress', JSON.stringify(progress));
+        }
+
+        function markCardForReview(index) {
+            const progress = JSON.parse(localStorage.getItem('yespanol_progress') || '{}');
+            progress.totalAttempts = (progress.totalAttempts || 0) + 1;
+            progress.accuracy = Math.round(((progress.totalCorrect || 0) / progress.totalAttempts) * 100);
+            // Add to spaced repetition queue
+            const reviewQueue = progress.reviewQueue || [];
+            reviewQueue.push({ card: cards[index], nextReview: Date.now() + 60000 }); // Review in 1 min
+            progress.reviewQueue = reviewQueue;
+            localStorage.setItem('yespanol_progress', JSON.stringify(progress));
+        }
+
+        function showStats() {
+            document.getElementById('statCorrect').textContent = correctCount;
+            document.getElementById('statReview').textContent = reviewCount;
+            document.getElementById('statsOverlay').classList.add('visible');
+        }
+
+        function restartSession() {
+            document.getElementById('statsOverlay').classList.remove('visible');
+            initSession();
+        }
+
+        // Button handlers
+        document.getElementById('btnReveal').addEventListener('click', () => {
+            if (currentCard) currentCard.classList.add('revealed');
+        });
+
+        document.getElementById('btnSkip').addEventListener('click', () => {
+            if (currentCard) swipeCard('left');
+        });
+
+        document.getElementById('btnGotIt').addEventListener('click', () => {
+            if (currentCard) swipeCard('right');
+        });
+
+        // Init
+        initSession();
+    </script>
+</body>
+</html>

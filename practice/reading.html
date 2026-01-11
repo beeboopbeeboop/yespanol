@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>Reading Practice - Yespañol</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-glass: rgba(255, 255, 255, 0.06);
+            --bg-glass-hover: rgba(255, 255, 255, 0.1);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --text-primary: #f5f5f7;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-tertiary: rgba(255, 255, 255, 0.4);
+            --accent: #ff6b4a;
+            --success: #32d74b;
+            --warning: #ffd60a;
+            --danger: #ff453a;
+            --card-radius: 20px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-container {
+            min-height: 100%;
+            padding: 56px 20px calc(100px + var(--safe-bottom));
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .back-btn {
+            position: fixed; top: 16px; left: 16px; z-index: 100;
+            background: var(--bg-glass); border: 1px solid var(--border-glass);
+            border-radius: 12px; padding: 10px 16px; color: var(--text-primary);
+            font-size: 0.85rem; text-decoration: none;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        }
+
+        .header { text-align: center; margin-bottom: 24px; }
+        .header-icon { font-size: 2.5rem; margin-bottom: 8px; }
+        .header-title { font-size: 1.5rem; font-weight: 700; }
+        .header-subtitle { color: var(--text-secondary); font-size: 0.9rem; }
+
+        /* Level selector */
+        .level-selector { display: flex; gap: 8px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 4px; }
+        .level-btn {
+            flex-shrink: 0; padding: 10px 18px;
+            background: var(--bg-glass); border: 1px solid var(--border-glass);
+            border-radius: 12px; color: var(--text-secondary);
+            font-size: 0.85rem; font-weight: 500; cursor: pointer;
+        }
+        .level-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+        /* Passage card */
+        .passage-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            padding: 24px; margin-bottom: 20px;
+        }
+
+        .passage-meta {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 16px; padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-glass);
+        }
+        .passage-level {
+            font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 0.05em; color: var(--accent);
+        }
+        .passage-length { font-size: 0.75rem; color: var(--text-tertiary); }
+
+        .passage-title {
+            font-size: 1.2rem; font-weight: 600; margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .passage-text {
+            font-size: 1rem; line-height: 1.8;
+            color: var(--text-secondary);
+        }
+        .passage-text p { margin-bottom: 16px; }
+        .passage-text p:last-child { margin-bottom: 0; }
+
+        /* Vocabulary highlights */
+        .vocab-word {
+            color: var(--accent);
+            border-bottom: 1px dotted var(--accent);
+            cursor: pointer;
+            position: relative;
+        }
+        .vocab-tooltip {
+            position: absolute; bottom: 100%; left: 50%;
+            transform: translateX(-50%); padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.95); border-radius: 8px;
+            font-size: 0.8rem; color: #fff; white-space: nowrap;
+            opacity: 0; pointer-events: none; transition: opacity 0.2s;
+            z-index: 10;
+        }
+        .vocab-word:hover .vocab-tooltip,
+        .vocab-word:focus .vocab-tooltip { opacity: 1; }
+
+        /* Questions section */
+        .questions-section {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            padding: 24px; margin-bottom: 20px;
+        }
+        .questions-title {
+            font-size: 1rem; font-weight: 600; margin-bottom: 20px;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .question { margin-bottom: 24px; }
+        .question:last-child { margin-bottom: 0; }
+        .question-text { font-size: 0.95rem; margin-bottom: 12px; font-weight: 500; }
+        .question-number { color: var(--accent); margin-right: 6px; }
+
+        .options { display: flex; flex-direction: column; gap: 8px; }
+        .option-btn {
+            width: 100%; text-align: left; padding: 14px 16px;
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass);
+            border-radius: 12px; color: var(--text-primary);
+            font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
+        }
+        .option-btn:active { transform: scale(0.98); }
+        .option-btn.selected { border-color: var(--accent); background: rgba(255, 107, 74, 0.1); }
+        .option-btn.correct { border-color: var(--success); background: rgba(50, 215, 75, 0.15); color: var(--success); }
+        .option-btn.incorrect { border-color: var(--danger); background: rgba(255, 69, 58, 0.15); color: var(--danger); }
+        .option-btn:disabled { cursor: default; }
+
+        /* Results */
+        .results-card {
+            background: linear-gradient(135deg, var(--bg-glass) 0%, rgba(50, 215, 75, 0.1) 100%);
+            border: 1px solid rgba(50, 215, 75, 0.2);
+            border-radius: var(--card-radius);
+            padding: 24px; text-align: center; display: none;
+        }
+        .results-card.show { display: block; }
+        .results-icon { font-size: 3rem; margin-bottom: 12px; }
+        .results-score { font-size: 2rem; font-weight: 700; color: var(--success); margin-bottom: 8px; }
+        .results-message { color: var(--text-secondary); margin-bottom: 20px; }
+
+        .btn-row { display: flex; gap: 10px; justify-content: center; }
+        .btn {
+            padding: 14px 24px; border-radius: 12px;
+            font-size: 0.9rem; font-weight: 600;
+            border: none; cursor: pointer;
+        }
+        .btn-primary { background: var(--accent); color: #000; }
+        .btn-secondary { background: var(--bg-glass); color: var(--text-primary); border: 1px solid var(--border-glass); }
+
+        /* Passage selector */
+        .passage-list { display: flex; flex-direction: column; gap: 12px; }
+        .passage-preview {
+            background: var(--bg-glass); border: 1px solid var(--border-glass);
+            border-radius: 16px; padding: 18px; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .passage-preview:active { transform: scale(0.98); background: var(--bg-glass-hover); }
+        .passage-preview-title { font-weight: 600; margin-bottom: 4px; }
+        .passage-preview-meta { font-size: 0.8rem; color: var(--text-tertiary); display: flex; gap: 12px; }
+        .passage-preview.completed { border-color: rgba(50, 215, 75, 0.3); }
+        .passage-preview.completed::after {
+            content: '✓'; float: right; color: var(--success);
+            font-weight: bold; margin-top: -24px;
+        }
+
+        /* Translation toggle */
+        .translation-toggle {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 16px; background: rgba(255,255,255,0.03);
+            border-radius: 12px; margin-top: 16px;
+        }
+        .toggle-label { font-size: 0.85rem; color: var(--text-secondary); }
+        .toggle-switch {
+            width: 48px; height: 28px; background: rgba(255,255,255,0.1);
+            border-radius: 14px; position: relative; cursor: pointer;
+            transition: background 0.2s;
+        }
+        .toggle-switch.on { background: var(--accent); }
+        .toggle-switch::after {
+            content: ''; position: absolute; top: 2px; left: 2px;
+            width: 24px; height: 24px; background: #fff;
+            border-radius: 12px; transition: transform 0.2s;
+        }
+        .toggle-switch.on::after { transform: translateX(20px); }
+
+        .translation-text {
+            margin-top: 16px; padding: 16px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px; font-style: italic;
+            color: var(--text-tertiary); font-size: 0.9rem;
+            display: none;
+        }
+        .translation-text.show { display: block; }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-btn">← Back</a>
+
+    <div class="app-container">
+        <header class="header">
+            <div class="header-icon">📖</div>
+            <h1 class="header-title">Reading Practice</h1>
+            <p class="header-subtitle">Improve comprehension with real Spanish texts</p>
+        </header>
+
+        <div class="level-selector">
+            <button class="level-btn active" data-level="beginner">Beginner</button>
+            <button class="level-btn" data-level="intermediate">Intermediate</button>
+            <button class="level-btn" data-level="advanced">Advanced</button>
+        </div>
+
+        <div id="passageList" class="passage-list"></div>
+        <div id="passageView" style="display: none;"></div>
+    </div>
+
+    <script src="../js/core.js"></script>
+    <script src="../js/ui.js"></script>
+    <script src="../js/loading.js"></script>
+    <script>
+        // Reading passages database
+        const passages = {
+            beginner: [
+                {
+                    id: 'b1',
+                    title: 'Mi Familia',
+                    text: `<p>Me llamo Ana y tengo una familia pequeña. Mi padre se llama Juan y tiene cincuenta años. Él <span class="vocab-word">trabaja<span class="vocab-tooltip">works</span></span> en un hospital porque es médico.</p>
+                    <p>Mi madre se llama María. Ella es profesora de inglés en una escuela. A ella le <span class="vocab-word">encanta<span class="vocab-tooltip">loves</span></span> leer libros.</p>
+                    <p>Tengo un hermano <span class="vocab-word">menor<span class="vocab-tooltip">younger</span></span> que se llama Pedro. Él tiene quince años y le gusta mucho jugar al fútbol.</p>
+                    <p>Los domingos, toda la familia <span class="vocab-word">almuerza<span class="vocab-tooltip">has lunch</span></span> junta en casa de mi abuela.</p>`,
+                    translation: `My name is Ana and I have a small family. My father's name is Juan and he is fifty years old. He works in a hospital because he is a doctor.\n\nMy mother's name is María. She is an English teacher at a school. She loves reading books.\n\nI have a younger brother named Pedro. He is fifteen years old and he really likes playing soccer.\n\nOn Sundays, the whole family has lunch together at my grandmother's house.`,
+                    questions: [
+                        { q: '¿Cuál es la profesión del padre de Ana?', options: ['Profesor', 'Médico', 'Abogado', 'Ingeniero'], correct: 1 },
+                        { q: '¿Qué le gusta hacer a la madre?', options: ['Cocinar', 'Bailar', 'Leer', 'Cantar'], correct: 2 },
+                        { q: '¿Cuántos años tiene Pedro?', options: ['Diez', 'Doce', 'Quince', 'Veinte'], correct: 2 },
+                        { q: '¿Qué hace la familia los domingos?', options: ['Van al cine', 'Almuerzan juntos', 'Viajan', 'Trabajan'], correct: 1 }
+                    ],
+                    wordCount: 95
+                },
+                {
+                    id: 'b2',
+                    title: 'Un Día Normal',
+                    text: `<p>Todos los días me <span class="vocab-word">despierto<span class="vocab-tooltip">wake up</span></span> a las siete de la mañana. Primero, me ducho y me visto. Después, <span class="vocab-word">desayuno<span class="vocab-tooltip">I have breakfast</span></span> con mi familia.</p>
+                    <p>A las ocho, salgo de casa y camino a la escuela. Las clases <span class="vocab-word">empiezan<span class="vocab-tooltip">begin</span></span> a las ocho y media.</p>
+                    <p>A las dos de la tarde, <span class="vocab-word">vuelvo<span class="vocab-tooltip">I return</span></span> a casa para almorzar. Por la tarde, hago mi tarea y a veces juego con mis amigos.</p>
+                    <p>Por la noche, ceno con mi familia y veo la televisión. Me acuesto a las diez.</p>`,
+                    translation: `Every day I wake up at seven in the morning. First, I shower and get dressed. Then, I have breakfast with my family.\n\nAt eight, I leave home and walk to school. Classes begin at eight thirty.\n\nAt two in the afternoon, I return home to have lunch. In the afternoon, I do my homework and sometimes I play with my friends.\n\nAt night, I have dinner with my family and watch television. I go to bed at ten.`,
+                    questions: [
+                        { q: '¿A qué hora se despierta?', options: ['A las seis', 'A las siete', 'A las ocho', 'A las nueve'], correct: 1 },
+                        { q: '¿Cómo va a la escuela?', options: ['En coche', 'En autobús', 'Caminando', 'En bicicleta'], correct: 2 },
+                        { q: '¿Qué hace por la tarde?', options: ['Duerme', 'Trabaja', 'Hace tarea', 'Estudia música'], correct: 2 },
+                        { q: '¿A qué hora se acuesta?', options: ['A las nueve', 'A las diez', 'A las once', 'A las doce'], correct: 1 }
+                    ],
+                    wordCount: 108
+                },
+                {
+                    id: 'b3',
+                    title: 'El Mercado',
+                    text: `<p>Hoy voy al mercado con mi madre. El mercado está muy <span class="vocab-word">cerca<span class="vocab-tooltip">near/close</span></span> de nuestra casa, solo a cinco minutos caminando.</p>
+                    <p>En el mercado hay muchas <span class="vocab-word">tiendas<span class="vocab-tooltip">shops/stores</span></span>. Compramos frutas frescas: manzanas, naranjas y plátanos. También compramos verduras: tomates, lechugas y zanahorias.</p>
+                    <p>Mi madre <span class="vocab-word">pregunta<span class="vocab-tooltip">asks</span></span> el precio de todo. "¿Cuánto cuestan las manzanas?" — "Dos euros el kilo, señora."</p>
+                    <p>Al final, gastamos veinte euros. <span class="vocab-word">Llevamos<span class="vocab-tooltip">We carry</span></span> las bolsas a casa. ¡Ahora tenemos comida para toda la semana!</p>`,
+                    translation: `Today I go to the market with my mother. The market is very close to our house, only five minutes walking.\n\nAt the market there are many shops. We buy fresh fruits: apples, oranges, and bananas. We also buy vegetables: tomatoes, lettuces, and carrots.\n\nMy mother asks the price of everything. "How much do the apples cost?" — "Two euros per kilo, ma'am."\n\nIn the end, we spend twenty euros. We carry the bags home. Now we have food for the whole week!`,
+                    questions: [
+                        { q: '¿Dónde está el mercado?', options: ['Lejos', 'Cerca de casa', 'En el centro', 'En otra ciudad'], correct: 1 },
+                        { q: '¿Qué frutas compran?', options: ['Fresas y uvas', 'Manzanas y naranjas', 'Peras y melones', 'Sandías'], correct: 1 },
+                        { q: '¿Cuánto cuestan las manzanas?', options: ['Un euro', 'Dos euros el kilo', 'Tres euros', 'Cinco euros'], correct: 1 },
+                        { q: '¿Cuánto dinero gastan en total?', options: ['Diez euros', 'Quince euros', 'Veinte euros', 'Treinta euros'], correct: 2 }
+                    ],
+                    wordCount: 112
+                }
+            ],
+            intermediate: [
+                {
+                    id: 'i1',
+                    title: 'El Cambio Climático',
+                    text: `<p>El cambio climático es uno de los <span class="vocab-word">desafíos<span class="vocab-tooltip">challenges</span></span> más importantes de nuestro tiempo. Las temperaturas globales han aumentado significativamente en las últimas décadas.</p>
+                    <p>Los científicos <span class="vocab-word">advierten<span class="vocab-tooltip">warn</span></span> que si no tomamos medidas urgentes, las consecuencias serán devastadoras. El nivel del mar está subiendo, los glaciares se están <span class="vocab-word">derritiendo<span class="vocab-tooltip">melting</span></span>, y los eventos climáticos extremos son cada vez más frecuentes.</p>
+                    <p>Sin embargo, hay esperanza. Muchos países están <span class="vocab-word">invirtiendo<span class="vocab-tooltip">investing</span></span> en energías renovables como la solar y la eólica. Los jóvenes de todo el mundo están exigiendo acción climática.</p>
+                    <p>Cada persona puede contribuir: reduciendo el consumo de plástico, usando transporte público, y <span class="vocab-word">apoyando<span class="vocab-tooltip">supporting</span></span> políticas ambientales.</p>`,
+                    translation: `Climate change is one of the most important challenges of our time. Global temperatures have increased significantly in recent decades.\n\nScientists warn that if we don't take urgent measures, the consequences will be devastating. Sea level is rising, glaciers are melting, and extreme weather events are becoming more frequent.\n\nHowever, there is hope. Many countries are investing in renewable energies like solar and wind. Young people around the world are demanding climate action.\n\nEach person can contribute: by reducing plastic consumption, using public transport, and supporting environmental policies.`,
+                    questions: [
+                        { q: '¿Qué está pasando con las temperaturas globales?', options: ['Están bajando', 'Están estables', 'Están aumentando', 'No se sabe'], correct: 2 },
+                        { q: '¿Qué está pasando con los glaciares?', options: ['Se están formando', 'Se están derritiendo', 'Están creciendo', 'Están estables'], correct: 1 },
+                        { q: '¿Qué energías renovables se mencionan?', options: ['Nuclear y gas', 'Solar y eólica', 'Carbón y petróleo', 'Hidroeléctrica'], correct: 1 },
+                        { q: '¿Qué pueden hacer las personas individualmente?', options: ['Nada', 'Solo votar', 'Reducir plástico y usar transporte público', 'Mudarse a otro país'], correct: 2 }
+                    ],
+                    wordCount: 148
+                },
+                {
+                    id: 'i2',
+                    title: 'La Siesta Española',
+                    text: `<p>La siesta es una tradición española que ha <span class="vocab-word">perdurado<span class="vocab-tooltip">endured/lasted</span></span> durante siglos. Consiste en dormir una breve siesta después del almuerzo, generalmente entre las dos y las cinco de la tarde.</p>
+                    <p>Esta costumbre tiene sus raíces en el clima mediterráneo. Durante las horas más calurosas del día, era <span class="vocab-word">sensato<span class="vocab-tooltip">sensible/wise</span></span> descansar en lugar de trabajar bajo el sol abrasador.</p>
+                    <p>Sin embargo, la siesta está <span class="vocab-word">desapareciendo<span class="vocab-tooltip">disappearing</span></span> en la España moderna. Los horarios laborales más estrictos y el ritmo de vida acelerado hacen difícil mantener esta tradición. Muchas tiendas que antes cerraban al mediodía ahora permanecen abiertas.</p>
+                    <p>A pesar de esto, los estudios científicos <span class="vocab-word">respaldan<span class="vocab-tooltip">support/back up</span></span> los beneficios de la siesta: mejora la memoria, reduce el estrés y aumenta la productividad.</p>`,
+                    translation: `The siesta is a Spanish tradition that has endured for centuries. It consists of taking a brief nap after lunch, generally between two and five in the afternoon.\n\nThis custom has its roots in the Mediterranean climate. During the hottest hours of the day, it was sensible to rest instead of working under the scorching sun.\n\nHowever, the siesta is disappearing in modern Spain. Stricter work schedules and the accelerated pace of life make it difficult to maintain this tradition. Many shops that used to close at noon now stay open.\n\nDespite this, scientific studies support the benefits of the siesta: it improves memory, reduces stress, and increases productivity.`,
+                    questions: [
+                        { q: '¿Cuándo se toma tradicionalmente la siesta?', options: ['Por la mañana', 'Después del almuerzo', 'Por la noche', 'Antes del desayuno'], correct: 1 },
+                        { q: '¿Por qué surgió la tradición de la siesta?', options: ['Por el frío', 'Por el calor del mediodía', 'Por la lluvia', 'Por la noche'], correct: 1 },
+                        { q: '¿Qué está pasando con la siesta hoy en día?', options: ['Es más popular', 'Está desapareciendo', 'Es obligatoria', 'No ha cambiado'], correct: 1 },
+                        { q: '¿Qué dicen los estudios sobre la siesta?', options: ['Es mala para la salud', 'No tiene efectos', 'Mejora la memoria y reduce el estrés', 'Causa problemas'], correct: 2 }
+                    ],
+                    wordCount: 165
+                }
+            ],
+            advanced: [
+                {
+                    id: 'a1',
+                    title: 'El Realismo Mágico',
+                    text: `<p>El realismo mágico es un género literario que <span class="vocab-word">surgió<span class="vocab-tooltip">emerged/arose</span></span> en Latinoamérica a mediados del siglo XX. Se caracteriza por la inclusión de elementos mágicos o fantásticos en un contexto realista, presentados como si fueran completamente normales.</p>
+                    <p>Gabriel García Márquez, el escritor colombiano ganador del Premio Nobel, es quizás el máximo <span class="vocab-word">exponente<span class="vocab-tooltip">exponent/representative</span></span> de este género. Su obra maestra, "Cien años de soledad", narra la historia de la familia Buendía a través de varias generaciones en el pueblo ficticio de Macondo.</p>
+                    <p>En esta novela, lo <span class="vocab-word">sobrenatural<span class="vocab-tooltip">supernatural</span></span> convive con lo cotidiano: los muertos hablan con los vivos, una mujer asciende al cielo mientras tiende la ropa, y una lluvia puede durar años. Sin embargo, los personajes aceptan estos fenómenos sin <span class="vocab-word">asombro<span class="vocab-tooltip">astonishment</span></span>.</p>
+                    <p>El realismo mágico no es simplemente fantasía; es una forma de representar la realidad latinoamericana, donde la historia, la política y las creencias populares se <span class="vocab-word">entrelazan<span class="vocab-tooltip">intertwine</span></span> de maneras que desafían la lógica occidental.</p>`,
+                    translation: `Magical realism is a literary genre that emerged in Latin America in the mid-twentieth century. It is characterized by the inclusion of magical or fantastic elements in a realistic context, presented as if they were completely normal.\n\nGabriel García Márquez, the Colombian writer and Nobel Prize winner, is perhaps the greatest exponent of this genre. His masterpiece, "One Hundred Years of Solitude," narrates the history of the Buendía family across several generations in the fictional town of Macondo.\n\nIn this novel, the supernatural coexists with the everyday: the dead speak with the living, a woman ascends to heaven while hanging laundry, and a rain can last for years. However, the characters accept these phenomena without astonishment.\n\nMagical realism is not simply fantasy; it is a way of representing Latin American reality, where history, politics, and popular beliefs intertwine in ways that defy Western logic.`,
+                    questions: [
+                        { q: '¿Cuándo surgió el realismo mágico?', options: ['Siglo XVIII', 'Siglo XIX', 'Mediados del siglo XX', 'Siglo XXI'], correct: 2 },
+                        { q: '¿Quién es el máximo exponente del género?', options: ['Pablo Neruda', 'Jorge Luis Borges', 'Gabriel García Márquez', 'Mario Vargas Llosa'], correct: 2 },
+                        { q: '¿Cómo reaccionan los personajes ante lo sobrenatural?', options: ['Con miedo', 'Con asombro', 'Sin asombro, como algo normal', 'Con alegría'], correct: 2 },
+                        { q: '¿Qué representa el realismo mágico según el texto?', options: ['La fantasía pura', 'La ciencia ficción', 'La realidad latinoamericana', 'La historia europea'], correct: 2 }
+                    ],
+                    wordCount: 198
+                },
+                {
+                    id: 'a2',
+                    title: 'La Inmigración y la Identidad',
+                    text: `<p>La inmigración <span class="vocab-word">plantea<span class="vocab-tooltip">poses/raises</span></span> preguntas fundamentales sobre la identidad. ¿Qué significa pertenecer a un lugar? ¿Puede una persona ser de dos países simultáneamente? Estas cuestiones se vuelven cada vez más relevantes en nuestro mundo globalizado.</p>
+                    <p>Los inmigrantes a menudo experimentan lo que los sociólogos llaman "identidad <span class="vocab-word">híbrida<span class="vocab-tooltip">hybrid</span></span>". No son completamente de su país de origen ni completamente del país de acogida. Viven en un espacio intermedio, negociando constantemente entre dos culturas.</p>
+                    <p>Esta experiencia puede ser <span class="vocab-word">enriquecedora<span class="vocab-tooltip">enriching</span></span> pero también dolorosa. Los hijos de inmigrantes frecuentemente enfrentan presiones contradictorias: en casa se espera que mantengan las tradiciones familiares, mientras que en la escuela y el trabajo deben <span class="vocab-word">asimilarse<span class="vocab-tooltip">assimilate</span></span> a la cultura dominante.</p>
+                    <p>Sin embargo, estas identidades múltiples pueden ser una fortaleza. Las personas biculturales a menudo desarrollan mayor <span class="vocab-word">empatía<span class="vocab-tooltip">empathy</span></span>, flexibilidad cognitiva y habilidades de comunicación intercultural — competencias cada vez más valiosas en el siglo XXI.</p>`,
+                    translation: `Immigration poses fundamental questions about identity. What does it mean to belong to a place? Can a person be from two countries simultaneously? These questions become increasingly relevant in our globalized world.\n\nImmigrants often experience what sociologists call "hybrid identity." They are not completely from their country of origin nor completely from the host country. They live in an intermediate space, constantly negotiating between two cultures.\n\nThis experience can be enriching but also painful. Children of immigrants frequently face contradictory pressures: at home they are expected to maintain family traditions, while at school and work they must assimilate to the dominant culture.\n\nHowever, these multiple identities can be a strength. Bicultural people often develop greater empathy, cognitive flexibility, and intercultural communication skills — increasingly valuable competencies in the 21st century.`,
+                    questions: [
+                        { q: '¿Qué es la "identidad híbrida"?', options: ['Tener dos pasaportes', 'Vivir entre dos culturas', 'Hablar dos idiomas', 'Tener dos trabajos'], correct: 1 },
+                        { q: '¿Qué presiones enfrentan los hijos de inmigrantes?', options: ['Solo económicas', 'Solo laborales', 'Mantener tradiciones y asimilarse', 'Ninguna'], correct: 2 },
+                        { q: '¿Qué desarrollan las personas biculturales según el texto?', options: ['Problemas de identidad', 'Mayor empatía y flexibilidad', 'Confusión', 'Aislamiento'], correct: 1 },
+                        { q: '¿Cómo describe el autor la experiencia de inmigración?', options: ['Solo negativa', 'Solo positiva', 'Enriquecedora pero también dolorosa', 'Indiferente'], correct: 2 }
+                    ],
+                    wordCount: 185
+                }
+            ]
+        };
+
+        let currentLevel = 'beginner';
+        let currentPassage = null;
+        let answers = {};
+        let score = 0;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPassageList();
+
+            // Level selector
+            document.querySelectorAll('.level-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentLevel = btn.dataset.level;
+                    renderPassageList();
+                });
+            });
+        });
+
+        function renderPassageList() {
+            const list = document.getElementById('passageList');
+            const view = document.getElementById('passageView');
+            const completed = JSON.parse(localStorage.getItem('yespanol_reading_completed') || '[]');
+
+            list.style.display = 'flex';
+            view.style.display = 'none';
+
+            list.innerHTML = passages[currentLevel].map(p => `
+                <div class="passage-preview ${completed.includes(p.id) ? 'completed' : ''}" onclick="openPassage('${p.id}')">
+                    <div class="passage-preview-title">${p.title}</div>
+                    <div class="passage-preview-meta">
+                        <span>${p.wordCount} words</span>
+                        <span>${p.questions.length} questions</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openPassage(id) {
+            currentPassage = passages[currentLevel].find(p => p.id === id);
+            answers = {};
+            score = 0;
+
+            const list = document.getElementById('passageList');
+            const view = document.getElementById('passageView');
+
+            list.style.display = 'none';
+            view.style.display = 'block';
+
+            view.innerHTML = `
+                <div class="passage-card">
+                    <div class="passage-meta">
+                        <span class="passage-level">${currentLevel}</span>
+                        <span class="passage-length">${currentPassage.wordCount} words</span>
+                    </div>
+                    <h2 class="passage-title">${currentPassage.title}</h2>
+                    <div class="passage-text">${currentPassage.text}</div>
+
+                    <div class="translation-toggle">
+                        <span class="toggle-label">Show English translation</span>
+                        <div class="toggle-switch" onclick="toggleTranslation(this)"></div>
+                    </div>
+                    <div class="translation-text" id="translationText">${currentPassage.translation.replace(/\n/g, '<br>')}</div>
+                </div>
+
+                <div class="questions-section">
+                    <h3 class="questions-title">📝 Comprehension Questions</h3>
+                    ${currentPassage.questions.map((q, i) => `
+                        <div class="question" id="question-${i}">
+                            <div class="question-text"><span class="question-number">${i + 1}.</span> ${q.q}</div>
+                            <div class="options">
+                                ${q.options.map((opt, j) => `
+                                    <button class="option-btn" onclick="selectAnswer(${i}, ${j})">${opt}</button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+
+                    <div style="margin-top: 24px;">
+                        <button class="btn btn-primary" onclick="checkAnswers()" style="width: 100%;">Check Answers</button>
+                    </div>
+                </div>
+
+                <div class="results-card" id="resultsCard">
+                    <div class="results-icon">🎉</div>
+                    <div class="results-score" id="resultsScore">0/0</div>
+                    <div class="results-message" id="resultsMessage">Great job!</div>
+                    <div class="btn-row">
+                        <button class="btn btn-secondary" onclick="renderPassageList()">Back to List</button>
+                        <button class="btn btn-primary" onclick="openPassage('${id}')">Try Again</button>
+                    </div>
+                </div>
+            `;
+
+            window.scrollTo(0, 0);
+        }
+
+        function toggleTranslation(toggle) {
+            toggle.classList.toggle('on');
+            document.getElementById('translationText').classList.toggle('show');
+        }
+
+        function selectAnswer(questionIndex, optionIndex) {
+            answers[questionIndex] = optionIndex;
+
+            const questionEl = document.getElementById(`question-${questionIndex}`);
+            questionEl.querySelectorAll('.option-btn').forEach((btn, i) => {
+                btn.classList.remove('selected');
+                if (i === optionIndex) btn.classList.add('selected');
+            });
+        }
+
+        function checkAnswers() {
+            score = 0;
+            const total = currentPassage.questions.length;
+
+            currentPassage.questions.forEach((q, i) => {
+                const questionEl = document.getElementById(`question-${i}`);
+                const buttons = questionEl.querySelectorAll('.option-btn');
+
+                buttons.forEach((btn, j) => {
+                    btn.disabled = true;
+                    if (j === q.correct) {
+                        btn.classList.add('correct');
+                    } else if (answers[i] === j) {
+                        btn.classList.add('incorrect');
+                    }
+                });
+
+                if (answers[i] === q.correct) score++;
+            });
+
+            // Show results
+            const resultsCard = document.getElementById('resultsCard');
+            resultsCard.classList.add('show');
+            document.getElementById('resultsScore').textContent = `${score}/${total}`;
+
+            const percentage = (score / total) * 100;
+            let message = '';
+            if (percentage === 100) message = '¡Perfecto! Excellent comprehension!';
+            else if (percentage >= 75) message = '¡Muy bien! Great understanding!';
+            else if (percentage >= 50) message = 'Good effort! Keep practicing.';
+            else message = 'Keep reading! You\'ll improve.';
+            document.getElementById('resultsMessage').textContent = message;
+
+            // Mark as completed
+            if (percentage >= 75) {
+                const completed = JSON.parse(localStorage.getItem('yespanol_reading_completed') || '[]');
+                if (!completed.includes(currentPassage.id)) {
+                    completed.push(currentPassage.id);
+                    localStorage.setItem('yespanol_reading_completed', JSON.stringify(completed));
+                }
+            }
+
+            // Record in profile
+            if (typeof Yespanol !== 'undefined') {
+                Yespanol.recordAttempt(`reading-${currentPassage.id}`, 'vocabulary', percentage >= 50);
+            }
+
+            resultsCard.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

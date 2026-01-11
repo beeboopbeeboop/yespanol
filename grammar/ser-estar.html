@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>Ser vs Estar - Yespañol</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-glass: rgba(255, 255, 255, 0.06);
+            --bg-glass-hover: rgba(255, 255, 255, 0.1);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --text-primary: #f5f5f7;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-tertiary: rgba(255, 255, 255, 0.4);
+            --accent: #ff6b4a;
+            --success: #32d74b;
+            --warning: #ffd60a;
+            --danger: #ff453a;
+            --ser-color: #4a9eff;
+            --estar-color: #ff6b4a;
+            --card-radius: 20px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            min-height: 100%;
+            padding: 56px 20px calc(80px + var(--safe-bottom));
+        }
+
+        /* Back button */
+        .back-btn {
+            position: fixed; top: 16px; left: 16px; z-index: 100;
+            background: var(--bg-glass); border: 1px solid var(--border-glass);
+            border-radius: 12px; padding: 10px 16px; color: var(--text-primary);
+            font-size: 0.85rem; text-decoration: none;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        }
+        .back-btn:active { transform: scale(0.96); }
+
+        /* Header */
+        .lesson-header { text-align: center; margin-bottom: 32px; }
+        .lesson-icon { font-size: 3rem; margin-bottom: 12px; }
+        .lesson-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+        .lesson-subtitle { color: var(--text-secondary); font-size: 0.95rem; }
+
+        /* Progress bar */
+        .progress-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: 32px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--ser-color), var(--estar-color)); border-radius: 2px; transition: width 0.5s ease; }
+
+        /* Section */
+        .section { margin-bottom: 32px; }
+        .section-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+        .section-title .ser { color: var(--ser-color); }
+        .section-title .estar { color: var(--estar-color); }
+
+        /* Card styles */
+        .card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            padding: 20px; margin-bottom: 12px;
+        }
+        .card-ser { border-left: 3px solid var(--ser-color); }
+        .card-estar { border-left: 3px solid var(--estar-color); }
+
+        /* Comparison cards */
+        .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .compare-card { padding: 16px; text-align: center; }
+        .compare-card h3 { font-size: 1.3rem; margin-bottom: 8px; }
+        .compare-card.ser h3 { color: var(--ser-color); }
+        .compare-card.estar h3 { color: var(--estar-color); }
+        .compare-card p { font-size: 0.8rem; color: var(--text-secondary); }
+
+        /* Rule box */
+        .rule-box { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
+        .rule-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 2px; }
+        .rule-content h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; }
+        .rule-content p { font-size: 0.85rem; color: var(--text-secondary); }
+
+        /* Examples */
+        .example {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px; padding: 14px;
+            margin: 12px 0; font-size: 0.95rem;
+        }
+        .example-spanish { margin-bottom: 4px; }
+        .example-spanish .highlight-ser { color: var(--ser-color); font-weight: 600; }
+        .example-spanish .highlight-estar { color: var(--estar-color); font-weight: 600; }
+        .example-english { color: var(--text-secondary); font-size: 0.85rem; font-style: italic; }
+
+        /* Mnemonic */
+        .mnemonic {
+            background: linear-gradient(135deg, rgba(74, 158, 255, 0.1) 0%, rgba(255, 107, 74, 0.1) 100%);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: var(--card-radius);
+            padding: 24px; text-align: center; margin: 24px 0;
+        }
+        .mnemonic-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; }
+        .mnemonic-letters { font-size: 2rem; font-weight: 700; letter-spacing: 0.2em; margin-bottom: 12px; }
+        .mnemonic-letters .ser { color: var(--ser-color); }
+        .mnemonic-letters .estar { color: var(--estar-color); }
+        .mnemonic-breakdown { text-align: left; }
+        .mnemonic-item { display: flex; gap: 8px; margin: 8px 0; font-size: 0.9rem; }
+        .mnemonic-letter { font-weight: 700; width: 24px; }
+
+        /* Conjugation table */
+        .conj-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 16px 0; }
+        .conj-table th { text-align: left; padding: 10px; color: var(--text-secondary); font-weight: 500; border-bottom: 1px solid var(--border-glass); }
+        .conj-table td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .conj-table .pronoun { color: var(--text-secondary); }
+        .conj-table .ser-form { color: var(--ser-color); font-weight: 500; }
+        .conj-table .estar-form { color: var(--estar-color); font-weight: 500; }
+
+        /* Quiz section */
+        .quiz-card {
+            background: linear-gradient(135deg, var(--bg-glass) 0%, rgba(255, 107, 74, 0.05) 100%);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            padding: 24px; margin: 24px 0;
+        }
+        .quiz-question { font-size: 1.1rem; margin-bottom: 8px; }
+        .quiz-sentence { font-size: 1.3rem; font-weight: 500; margin-bottom: 20px; }
+        .quiz-sentence .blank { background: rgba(255,255,255,0.1); padding: 4px 16px; border-radius: 8px; margin: 0 4px; }
+        .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .quiz-btn {
+            padding: 14px; border-radius: 12px;
+            font-size: 1rem; font-weight: 600;
+            border: 2px solid transparent; cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .quiz-btn.ser { background: rgba(74, 158, 255, 0.15); color: var(--ser-color); border-color: rgba(74, 158, 255, 0.3); }
+        .quiz-btn.estar { background: rgba(255, 107, 74, 0.15); color: var(--estar-color); border-color: rgba(255, 107, 74, 0.3); }
+        .quiz-btn:active { transform: scale(0.96); }
+        .quiz-btn.correct { background: var(--success); color: #000; border-color: var(--success); }
+        .quiz-btn.incorrect { background: var(--danger); color: #fff; border-color: var(--danger); }
+        .quiz-feedback { margin-top: 16px; padding: 14px; border-radius: 12px; display: none; }
+        .quiz-feedback.show { display: block; }
+        .quiz-feedback.correct { background: rgba(50, 215, 75, 0.15); color: var(--success); }
+        .quiz-feedback.incorrect { background: rgba(255, 69, 58, 0.15); color: var(--danger); }
+
+        /* Tips */
+        .tip-box {
+            background: rgba(255, 214, 10, 0.08);
+            border-left: 3px solid var(--warning);
+            border-radius: 0 12px 12px 0;
+            padding: 16px; margin: 16px 0;
+        }
+        .tip-title { font-size: 0.85rem; font-weight: 600; color: var(--warning); margin-bottom: 6px; }
+        .tip-text { font-size: 0.85rem; color: var(--text-secondary); }
+
+        /* CTA button */
+        .cta-section { text-align: center; padding: 32px 0; }
+        .cta-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 16px 32px; background: var(--accent);
+            color: #000; font-size: 1rem; font-weight: 600;
+            border-radius: 14px; border: none; cursor: pointer;
+        }
+        .cta-btn:active { transform: scale(0.96); }
+
+        /* Score display */
+        .score-display {
+            position: fixed; bottom: 20px; right: 20px;
+            background: var(--bg-glass); backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px; padding: 12px 20px;
+            display: flex; align-items: center; gap: 10px;
+            z-index: 50;
+        }
+        .score-label { font-size: 0.75rem; color: var(--text-secondary); }
+        .score-value { font-size: 1.2rem; font-weight: 700; color: var(--success); }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-btn">← Back</a>
+
+    <div class="app-container">
+        <header class="lesson-header">
+            <div class="lesson-icon">⚖️</div>
+            <h1 class="lesson-title">Ser vs Estar</h1>
+            <p class="lesson-subtitle">Both mean "to be" — but the meaning changes everything</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <!-- Intro -->
+        <section class="section">
+            <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 20px;">
+                In English, we have one verb: "to be." Spanish has two, and knowing when to use each is one of the most important skills you'll learn. Get this wrong, and you might tell someone you're dead when you meant to say you're bored.
+            </p>
+
+            <div class="compare-grid">
+                <div class="card compare-card ser">
+                    <h3>SER</h3>
+                    <p>Permanent, essential, inherent characteristics</p>
+                </div>
+                <div class="card compare-card estar">
+                    <h3>ESTAR</h3>
+                    <p>Temporary states, locations, conditions</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- The DOCTOR Mnemonic for SER -->
+        <section class="section">
+            <h2 class="section-title"><span class="ser">SER</span> — Use DOCTOR</h2>
+
+            <div class="mnemonic">
+                <div class="mnemonic-title">Remember: SER = DOCTOR</div>
+                <div class="mnemonic-letters"><span class="ser">D O C T O R</span></div>
+                <div class="mnemonic-breakdown">
+                    <div class="mnemonic-item"><span class="mnemonic-letter ser">D</span> Description (inherent qualities)</div>
+                    <div class="mnemonic-item"><span class="mnemonic-letter ser">O</span> Occupation</div>
+                    <div class="mnemonic-item"><span class="mnemonic-letter ser">C</span> Characteristic (personality)</div>
+                    <div class="mnemonic-item"><span class="mnemonic-letter ser">T</span> Time & Date</div>
+                    <div class="mnemonic-item"><span class="mnemonic-letter ser">O</span> Origin</div>
+                    <div class="mnemonic-item"><span class="mnemonic-letter ser">R</span> Relationship</div>
+                </div>
+            </div>
+
+            <div class="card card-ser">
+                <div class="rule-box">
+                    <span class="rule-icon">🎨</span>
+                    <div class="rule-content">
+                        <h4>Description — What something IS</h4>
+                        <p>Physical descriptions that define the essence of someone or something</p>
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">Ella <span class="highlight-ser">es</span> alta y rubia.</div>
+                    <div class="example-english">She is tall and blonde.</div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">El cielo <span class="highlight-ser">es</span> azul.</div>
+                    <div class="example-english">The sky is blue.</div>
+                </div>
+            </div>
+
+            <div class="card card-ser">
+                <div class="rule-box">
+                    <span class="rule-icon">💼</span>
+                    <div class="rule-content">
+                        <h4>Occupation — What you do</h4>
+                        <p>Jobs, professions, roles</p>
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">Mi padre <span class="highlight-ser">es</span> médico.</div>
+                    <div class="example-english">My father is a doctor.</div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">Ella <span class="highlight-ser">es</span> profesora de español.</div>
+                    <div class="example-english">She is a Spanish teacher.</div>
+                </div>
+            </div>
+
+            <div class="card card-ser">
+                <div class="rule-box">
+                    <span class="rule-icon">😊</span>
+                    <div class="rule-content">
+                        <h4>Characteristic — Who you are</h4>
+                        <p>Personality traits, inherent qualities</p>
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">Juan <span class="highlight-ser">es</span> muy inteligente.</div>
+                    <div class="example-english">Juan is very intelligent.</div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">Ella <span class="highlight-ser">es</span> amable y generosa.</div>
+                    <div class="example-english">She is kind and generous.</div>
+                </div>
+            </div>
+
+            <div class="card card-ser">
+                <div class="rule-box">
+                    <span class="rule-icon">🕐</span>
+                    <div class="rule-content">
+                        <h4>Time & Date</h4>
+                        <p>Telling time, days, dates</p>
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish"><span class="highlight-ser">Son</span> las tres de la tarde.</div>
+                    <div class="example-english">It's three in the afternoon.</div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">Hoy <span class="highlight-ser">es</span> lunes.</div>
+                    <div class="example-english">Today is Monday.</div>
+                </div>
+            </div>
+
+            <div class="card card-ser">
+                <div class="rule-box">
+                    <span class="rule-icon">🌍</span>
+                    <div class="rule-content">
+                        <h4>Origin — Where you're from</h4>
+                        <p>Nationality, place of origin, what something is made of</p>
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish"><span class="highlight-ser">Soy</span> de México.</div>
+                    <div class="example-english">I'm from Mexico.</div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">Esta mesa <span class="highlight-ser">es</span> de madera.</div>
+                    <div class="example-english">This table is made of wood.</div>
+                </div>
+            </div>
+
+            <div class="card card-ser">
+                <div class="rule-box">
+                    <span class="rule-icon">❤️</span>
+                    <div class="rule-content">
+                        <h4>Relationship</h4>
+                        <p>Family ties, connections between people</p>
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">María <span class="highlight-ser">es</span> mi hermana.</div>
+                    <div class="example-english">María is my sister.</div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">Ellos <span class="highlight-ser">son</span> mis mejores amigos.</div>
+                    <div class="example-english">They are my best friends.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The PLACE Mnemonic for ESTAR -->
+        <section class="section">
+            <h2 class="section-title"><span class="estar">ESTAR</span> — Use PLACE</h2>
+
+            <div class="mnemonic">
+                <div class="mnemonic-title">Remember: ESTAR = PLACE</div>
+                <div class="mnemonic-letters"><span class="estar">P L A C E</span></div>
+                <div class="mnemonic-breakdown">
+                    <div class="mnemonic-item"><span class="mnemonic-letter estar">P</span> Position (physical)</div>
+                    <div class="mnemonic-item"><span class="mnemonic-letter estar">L</span> Location</div>
+                    <div class="mnemonic-item"><span class="mnemonic-letter estar">A</span> Action (progressive -ing)</div>
+                    <div class="mnemonic-item"><span class="mnemonic-letter estar">C</span> Condition (temporary)</div>
+                    <div class="mnemonic-item"><span class="mnemonic-letter estar">E</span> Emotion (how you feel)</div>
+                </div>
+            </div>
+
+            <div class="card card-estar">
+                <div class="rule-box">
+                    <span class="rule-icon">🧍</span>
+                    <div class="rule-content">
+                        <h4>Position — Physical state</h4>
+                        <p>Standing, sitting, lying down</p>
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">El gato <span class="highlight-estar">está</span> sentado en la silla.</div>
+                    <div class="example-english">The cat is sitting on the chair.</div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish"><span class="highlight-estar">Estoy</span> de pie.</div>
+                    <div class="example-english">I'm standing.</div>
+                </div>
+            </div>
+
+            <div class="card card-estar">
+                <div class="rule-box">
+                    <span class="rule-icon">📍</span>
+                    <div class="rule-content">
+                        <h4>Location — Where something is</h4>
+                        <p>Physical location of people, places, things</p>
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">Madrid <span class="highlight-estar">está</span> en España.</div>
+                    <div class="example-english">Madrid is in Spain.</div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">¿Dónde <span class="highlight-estar">estás</span>?</div>
+                    <div class="example-english">Where are you?</div>
+                </div>
+                <div class="tip-box">
+                    <div class="tip-title">Pro Tip</div>
+                    <div class="tip-text">Even though Madrid will always be in Spain (permanent), we use <strong>estar</strong> for location. Location = always estar!</div>
+                </div>
+            </div>
+
+            <div class="card card-estar">
+                <div class="rule-box">
+                    <span class="rule-icon">🏃</span>
+                    <div class="rule-content">
+                        <h4>Action — Present Progressive</h4>
+                        <p>Estar + gerund (-ando/-iendo) = currently doing</p>
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish"><span class="highlight-estar">Estoy</span> aprendiendo español.</div>
+                    <div class="example-english">I am learning Spanish.</div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">¿Qué <span class="highlight-estar">estás</span> haciendo?</div>
+                    <div class="example-english">What are you doing?</div>
+                </div>
+            </div>
+
+            <div class="card card-estar">
+                <div class="rule-box">
+                    <span class="rule-icon">🌡️</span>
+                    <div class="rule-content">
+                        <h4>Condition — Temporary states</h4>
+                        <p>Health, states that can change</p>
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish"><span class="highlight-estar">Estoy</span> enfermo hoy.</div>
+                    <div class="example-english">I'm sick today.</div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">La puerta <span class="highlight-estar">está</span> cerrada.</div>
+                    <div class="example-english">The door is closed.</div>
+                </div>
+            </div>
+
+            <div class="card card-estar">
+                <div class="rule-box">
+                    <span class="rule-icon">💭</span>
+                    <div class="rule-content">
+                        <h4>Emotion — How you feel right now</h4>
+                        <p>Current emotional states (temporary)</p>
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish"><span class="highlight-estar">Estoy</span> muy feliz hoy.</div>
+                    <div class="example-english">I'm very happy today.</div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">Ella <span class="highlight-estar">está</span> preocupada por el examen.</div>
+                    <div class="example-english">She is worried about the exam.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tricky Cases -->
+        <section class="section">
+            <h2 class="section-title">⚠️ Tricky Cases — Same Word, Different Meaning</h2>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 16px;">
+                Some adjectives change meaning completely depending on whether you use ser or estar:
+            </p>
+
+            <div class="card">
+                <div class="compare-grid" style="margin-bottom: 0;">
+                    <div style="text-align: center;">
+                        <div style="color: var(--ser-color); font-weight: 600; margin-bottom: 4px;">SER aburrido</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">to be boring</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="color: var(--estar-color); font-weight: 600; margin-bottom: 4px;">ESTAR aburrido</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">to be bored</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="compare-grid" style="margin-bottom: 0;">
+                    <div style="text-align: center;">
+                        <div style="color: var(--ser-color); font-weight: 600; margin-bottom: 4px;">SER listo</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">to be clever/smart</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="color: var(--estar-color); font-weight: 600; margin-bottom: 4px;">ESTAR listo</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">to be ready</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="compare-grid" style="margin-bottom: 0;">
+                    <div style="text-align: center;">
+                        <div style="color: var(--ser-color); font-weight: 600; margin-bottom: 4px;">SER malo</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">to be bad/evil</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="color: var(--estar-color); font-weight: 600; margin-bottom: 4px;">ESTAR malo</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">to be sick/ill</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="compare-grid" style="margin-bottom: 0;">
+                    <div style="text-align: center;">
+                        <div style="color: var(--ser-color); font-weight: 600; margin-bottom: 4px;">SER rico</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">to be rich (wealthy)</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="color: var(--estar-color); font-weight: 600; margin-bottom: 4px;">ESTAR rico</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">to be delicious</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="compare-grid" style="margin-bottom: 0;">
+                    <div style="text-align: center;">
+                        <div style="color: var(--ser-color); font-weight: 600; margin-bottom: 4px;">SER vivo</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">to be sharp/cunning</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="color: var(--estar-color); font-weight: 600; margin-bottom: 4px;">ESTAR vivo</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">to be alive</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <div class="tip-title">Remember!</div>
+                <div class="tip-text">"Está muerto" (He is dead) uses estar because death is a state/condition, not an inherent characteristic. He wasn't born dead!</div>
+            </div>
+        </section>
+
+        <!-- Conjugation Reference -->
+        <section class="section">
+            <h2 class="section-title">📝 Present Tense Conjugation</h2>
+
+            <div class="card">
+                <table class="conj-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th style="color: var(--ser-color);">SER</th>
+                            <th style="color: var(--estar-color);">ESTAR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="pronoun">yo</td><td class="ser-form">soy</td><td class="estar-form">estoy</td></tr>
+                        <tr><td class="pronoun">tú</td><td class="ser-form">eres</td><td class="estar-form">estás</td></tr>
+                        <tr><td class="pronoun">él/ella/usted</td><td class="ser-form">es</td><td class="estar-form">está</td></tr>
+                        <tr><td class="pronoun">nosotros</td><td class="ser-form">somos</td><td class="estar-form">estamos</td></tr>
+                        <tr><td class="pronoun">vosotros</td><td class="ser-form">sois</td><td class="estar-form">estáis</td></tr>
+                        <tr><td class="pronoun">ellos/ustedes</td><td class="ser-form">son</td><td class="estar-form">están</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section class="section">
+            <h2 class="section-title">🎯 Quick Practice</h2>
+
+            <div id="quizContainer"></div>
+        </section>
+
+        <!-- CTA -->
+        <section class="cta-section">
+            <button class="cta-btn" onclick="goToFlashcards()">
+                Practice Flashcards →
+            </button>
+        </section>
+    </div>
+
+    <div class="score-display">
+        <span class="score-label">Score</span>
+        <span class="score-value" id="scoreValue">0/0</span>
+    </div>
+
+    <script src="../js/core.js"></script>
+    <script src="../js/ui.js"></script>
+    <script>
+        const quizQuestions = [
+            { sentence: "Yo ___ de Argentina.", answer: "ser", hint: "Origin" },
+            { sentence: "Ella ___ enferma hoy.", answer: "estar", hint: "Temporary condition" },
+            { sentence: "El libro ___ en la mesa.", answer: "estar", hint: "Location" },
+            { sentence: "___ las dos de la tarde.", answer: "ser", hint: "Time" },
+            { sentence: "Nosotros ___ estudiantes.", answer: "ser", hint: "Occupation/Role" },
+            { sentence: "La comida ___ muy rica.", answer: "estar", hint: "Temporary quality (delicious)" },
+            { sentence: "Él ___ muy inteligente.", answer: "ser", hint: "Inherent characteristic" },
+            { sentence: "¿Dónde ___ el baño?", answer: "estar", hint: "Location" },
+            { sentence: "Yo ___ aprendiendo español.", answer: "estar", hint: "Action in progress" },
+            { sentence: "María ___ mi hermana.", answer: "ser", hint: "Relationship" },
+            { sentence: "Él ___ aburrido en clase.", answer: "estar", hint: "Feeling bored (temporary)" },
+            { sentence: "Esta película ___ muy aburrida.", answer: "ser", hint: "Characteristic (boring movie)" },
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = 0;
+        const quizContainer = document.getElementById('quizContainer');
+
+        function renderQuiz() {
+            if (currentQuestion >= quizQuestions.length) {
+                quizContainer.innerHTML = `
+                    <div class="quiz-card" style="text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 16px;">🎉</div>
+                        <div class="quiz-question">Quiz Complete!</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--success); margin: 16px 0;">
+                            ${score}/${quizQuestions.length}
+                        </div>
+                        <button class="cta-btn" onclick="resetQuiz()" style="margin-top: 16px;">Try Again</button>
+                    </div>
+                `;
+                updateProgress(100);
+                return;
+            }
+
+            const q = quizQuestions[currentQuestion];
+            const serForm = getConjugation('ser', q.sentence);
+            const estarForm = getConjugation('estar', q.sentence);
+
+            quizContainer.innerHTML = `
+                <div class="quiz-card">
+                    <div class="quiz-question">Fill in the blank:</div>
+                    <div class="quiz-sentence">${q.sentence.replace('___', '<span class="blank">?</span>')}</div>
+                    <div class="quiz-options">
+                        <button class="quiz-btn ser" onclick="checkAnswer('ser', this)">${serForm}</button>
+                        <button class="quiz-btn estar" onclick="checkAnswer('estar', this)">${estarForm}</button>
+                    </div>
+                    <div class="quiz-feedback" id="feedback"></div>
+                </div>
+            `;
+
+            updateProgress((currentQuestion / quizQuestions.length) * 100);
+        }
+
+        function getConjugation(verb, sentence) {
+            const serForms = { 'yo': 'soy', 'tú': 'eres', 'él': 'es', 'ella': 'es', 'usted': 'es', 'nosotros': 'somos', 'ellos': 'son', 'default': 'es' };
+            const estarForms = { 'yo': 'estoy', 'tú': 'estás', 'él': 'está', 'ella': 'está', 'usted': 'está', 'nosotros': 'estamos', 'ellos': 'están', 'default': 'está' };
+
+            const forms = verb === 'ser' ? serForms : estarForms;
+            const lower = sentence.toLowerCase();
+
+            for (const [pronoun, form] of Object.entries(forms)) {
+                if (lower.startsWith(pronoun + ' ') || lower.includes(' ' + pronoun + ' ')) {
+                    return form;
+                }
+            }
+
+            // Special cases
+            if (lower.includes('la comida') || lower.includes('el libro') || lower.includes('esta película') || lower.includes('el baño')) {
+                return forms['él'];
+            }
+            if (lower.startsWith('¿dónde')) {
+                return forms['él'];
+            }
+            if (lower.startsWith('___ las')) {
+                return verb === 'ser' ? 'son' : 'están';
+            }
+
+            return forms['default'];
+        }
+
+        function checkAnswer(answer, btn) {
+            const q = quizQuestions[currentQuestion];
+            const feedback = document.getElementById('feedback');
+            const buttons = document.querySelectorAll('.quiz-btn');
+
+            buttons.forEach(b => b.disabled = true);
+
+            if (answer === q.answer) {
+                btn.classList.add('correct');
+                feedback.className = 'quiz-feedback show correct';
+                feedback.innerHTML = `✓ Correct! ${q.hint}`;
+                score++;
+                if (typeof YespanolUI !== 'undefined') YespanolUI.haptic('success');
+            } else {
+                btn.classList.add('incorrect');
+                document.querySelector(`.quiz-btn.${q.answer}`).classList.add('correct');
+                feedback.className = 'quiz-feedback show incorrect';
+                feedback.innerHTML = `✗ The answer is ${q.answer.toUpperCase()}. ${q.hint}`;
+                if (typeof YespanolUI !== 'undefined') YespanolUI.haptic('error');
+            }
+
+            answered++;
+            updateScore();
+
+            // Record attempt
+            if (typeof Yespanol !== 'undefined') {
+                Yespanol.recordAttempt(`ser-estar-${currentQuestion}`, 'ser-estar', answer === q.answer);
+            }
+
+            setTimeout(() => {
+                currentQuestion++;
+                renderQuiz();
+            }, 1500);
+        }
+
+        function updateScore() {
+            document.getElementById('scoreValue').textContent = `${score}/${answered}`;
+        }
+
+        function updateProgress(percent) {
+            document.getElementById('progressFill').style.width = percent + '%';
+        }
+
+        function resetQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            answered = 0;
+            updateScore();
+            renderQuiz();
+        }
+
+        function goToFlashcards() {
+            if (typeof YespanolUI !== 'undefined') {
+                YespanolUI.pageTransition('../practice/flashcards.html?category=ser-estar');
+            } else {
+                location.href = '../practice/flashcards.html?category=ser-estar';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuiz();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>El Mensaje — Yespañol</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-glass: rgba(255, 255, 255, 0.04);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --text-primary: #f5f5f7;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --accent: #9370db;
+            --accent-glow: rgba(147, 112, 219, 0.3);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.8;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        .ambient-bg {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; z-index: 0;
+            background: radial-gradient(circle at 50% 30%, rgba(147, 112, 219, 0.08) 0%, transparent 60%);
+        }
+
+        .container {
+            position: relative; z-index: 1;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 40px 24px 60px;
+        }
+
+        /* Locked state */
+        .locked-state {
+            text-align: center;
+            max-width: 320px;
+        }
+
+        .locked-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+            filter: grayscale(1);
+        }
+
+        .locked-title {
+            font-size: 1.5rem;
+            font-weight: normal;
+            margin-bottom: 12px;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .locked-desc {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 24px;
+        }
+
+        .progress-hint {
+            font-size: 0.85rem;
+            color: var(--accent);
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 32px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 0.9rem;
+        }
+
+        /* Letter state */
+        .letter-container {
+            display: none;
+            max-width: 480px;
+            width: 100%;
+        }
+
+        .letter-container.visible {
+            display: block;
+            animation: fadeIn 2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .letter-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .letter-eyebrow {
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            margin-bottom: 8px;
+        }
+
+        .letter-title {
+            font-size: 2rem;
+            font-weight: normal;
+            font-style: italic;
+        }
+
+        .letter-from {
+            margin-top: 8px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .letter-paper {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 36px 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .letter-paper::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(147, 112, 219, 0.2), transparent);
+        }
+
+        .letter-content {
+            font-size: 1.05rem;
+            white-space: pre-line;
+        }
+
+        .letter-content p {
+            margin-bottom: 1.2em;
+        }
+
+        .letter-signature {
+            margin-top: 32px;
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
+        .letter-ps {
+            margin-top: 24px;
+            font-size: 0.9rem;
+            color: var(--accent);
+            font-style: italic;
+        }
+
+        .letter-location {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .location-pin {
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        /* Actions */
+        .letter-actions {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .read-again-btn {
+            background: transparent;
+            border: 1px solid var(--border-glass);
+            color: var(--text-secondary);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            margin-right: 12px;
+        }
+
+        .home-btn {
+            background: var(--accent);
+            border: none;
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .confetti-note {
+            margin-top: 48px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            text-align: center;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-bg"></div>
+
+    <div class="container">
+        <!-- Locked State -->
+        <div class="locked-state" id="lockedState">
+            <div class="locked-icon">✉️</div>
+            <h1 class="locked-title">Not yet.</h1>
+            <p class="locked-desc">There's a message waiting for you. But you're not ready to read it.</p>
+            <p class="progress-hint" id="progressHint">Keep learning. It will unlock.</p>
+            <a href="index.html" class="back-link">← Back to learning</a>
+        </div>
+
+        <!-- Letter State -->
+        <div class="letter-container" id="letterContainer">
+            <div class="letter-header">
+                <div class="letter-eyebrow">El Mensaje</div>
+                <h1 class="letter-title" id="letterTitle">A letter for you</h1>
+                <p class="letter-from">from <span id="letterFrom">someone</span></p>
+            </div>
+
+            <div class="letter-paper">
+                <div class="letter-content" id="letterContent">
+                    <!-- Letter content injected by JS -->
+                </div>
+            </div>
+
+            <div class="letter-location">
+                <span class="location-pin">📍</span>
+                <span id="letterLocation">Somewhere, waiting</span>
+            </div>
+
+            <div class="letter-actions">
+                <button class="read-again-btn" onclick="location.reload()">Read Again</button>
+                <button class="home-btn" onclick="location.href='index.html'">Back Home</button>
+            </div>
+
+            <p class="confetti-note">You did it. Whatever comes next — you're ready.</p>
+        </div>
+    </div>
+
+    <script src="js/core.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/story.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const profile = Yespanol.load();
+            const story = Story.load();
+
+            // Calculate progress
+            const skills = Object.values(profile.skills || {});
+            const overallProgress = skills.length > 0
+                ? Math.round(skills.reduce((sum, s) => sum + (s.level || 0), 0) / skills.length)
+                : 0;
+
+            const phase = Story.getPhase(overallProgress);
+
+            if (phase >= 5) {
+                // Unlock the letter!
+                document.getElementById('lockedState').style.display = 'none';
+                document.getElementById('letterContainer').classList.add('visible');
+
+                const letter = Story.getLetter(story);
+
+                document.getElementById('letterTitle').textContent = letter.title;
+                document.getElementById('letterFrom').textContent = letter.from;
+                document.getElementById('letterLocation').textContent = letter.location;
+                document.getElementById('letterContent').innerHTML = formatLetter(letter.content);
+
+                // Celebrate!
+                setTimeout(() => {
+                    if (typeof YespanolUI !== 'undefined') {
+                        YespanolUI.celebrate();
+                    }
+                }, 1500);
+
+            } else {
+                // Still locked
+                const progressNeeded = 80 - overallProgress;
+                document.getElementById('progressHint').textContent =
+                    `${progressNeeded}% more to unlock. Keep going.`;
+            }
+        });
+
+        function formatLetter(content) {
+            // Split into paragraphs and format
+            const paragraphs = content.split('\n\n');
+            return paragraphs.map(p => {
+                if (p.startsWith('—')) {
+                    return `<div class="letter-signature">${p}</div>`;
+                } else if (p.startsWith('P.D.') || p.startsWith('P.S.')) {
+                    return `<div class="letter-ps">${p}</div>`;
+                } else {
+                    return `<p>${p}</p>`;
+                }
+            }).join('');
+        }
+    </script>
+</body>
+</html>
