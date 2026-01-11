@@ -65,10 +65,9 @@
         .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; }
 
         .idiom-card {
-            background: var(--bg-glass);
+            background: linear-gradient(135deg, var(--bg-glass) 0%, rgba(168, 85, 247, 0.08) 100%);
             backdrop-filter: blur(20px);
-            border: 1px solid var(--border-glass);
-            border-left: 3px solid var(--idiom-color);
+            border: 1px solid rgba(168, 85, 247, 0.25);
             border-radius: var(--card-radius);
             padding: 20px;
             margin-bottom: 16px;
@@ -216,6 +215,24 @@
         <section class="section">
             <h2 class="section-title">🍕 Food Expressions</h2>
             <div id="foodIdioms"></div>
+        </section>
+
+        <!-- Animal Idioms -->
+        <section class="section">
+            <h2 class="section-title">🐾 Animal Expressions</h2>
+            <div id="animalIdioms"></div>
+        </section>
+
+        <!-- Weather & Nature Idioms -->
+        <section class="section">
+            <h2 class="section-title">🌦️ Weather & Nature</h2>
+            <div id="weatherIdioms"></div>
+        </section>
+
+        <!-- Money Idioms -->
+        <section class="section">
+            <h2 class="section-title">💰 Money Expressions</h2>
+            <div id="moneyIdioms"></div>
         </section>
 
         <!-- Quiz -->
@@ -484,6 +501,204 @@
                     exampleEn: "That movie took forever.",
                     origin: "A day without bread feels endless."
                 },
+            ],
+            animal: [
+                {
+                    spanish: "Ser un gallina",
+                    literal: "To be a chicken",
+                    meaning: "To be a coward",
+                    example: "No seas gallina, salta al agua.",
+                    exampleEn: "Don't be a chicken, jump in the water.",
+                    origin: "Chickens are seen as timid, easily frightened animals."
+                },
+                {
+                    spanish: "Llevarse como el perro y el gato",
+                    literal: "To get along like dog and cat",
+                    meaning: "To fight constantly / not get along",
+                    example: "Mis hermanos se llevan como el perro y el gato.",
+                    exampleEn: "My siblings fight like cats and dogs.",
+                    origin: "The classic animal rivalry."
+                },
+                {
+                    spanish: "Ser un ratón de biblioteca",
+                    literal: "To be a library mouse",
+                    meaning: "To be a bookworm",
+                    example: "Mi hija es un ratón de biblioteca.",
+                    exampleEn: "My daughter is a bookworm.",
+                    origin: "A mouse quietly hiding among books."
+                },
+                {
+                    spanish: "Buscar tres pies al gato",
+                    literal: "To look for three feet on a cat",
+                    meaning: "To overcomplicate things / look for problems",
+                    example: "No busques tres pies al gato, es simple.",
+                    exampleEn: "Don't overcomplicate it, it's simple.",
+                    origin: "Cats have four feet, looking for three is absurd."
+                },
+                {
+                    spanish: "Estar como pez en el agua",
+                    literal: "To be like a fish in water",
+                    meaning: "To be in one's element / feel comfortable",
+                    example: "En las fiestas, está como pez en el agua.",
+                    exampleEn: "At parties, he's in his element.",
+                    origin: "A fish is most comfortable in water."
+                },
+                {
+                    spanish: "Tener memoria de pez",
+                    literal: "To have the memory of a fish",
+                    meaning: "To have a terrible memory",
+                    example: "Perdona, tengo memoria de pez.",
+                    exampleEn: "Sorry, I have a terrible memory.",
+                    origin: "Fish supposedly have very short memories."
+                },
+                {
+                    spanish: "Ser un pájaro de mal agüero",
+                    literal: "To be a bird of bad omen",
+                    meaning: "To be a bearer of bad news",
+                    example: "No seas pájaro de mal agüero.",
+                    exampleEn: "Don't be a bearer of bad news.",
+                    origin: "Ancient beliefs about birds predicting misfortune."
+                },
+                {
+                    spanish: "Dormir como un lirón",
+                    literal: "To sleep like a dormouse",
+                    meaning: "To sleep very soundly",
+                    example: "Anoche dormí como un lirón.",
+                    exampleEn: "Last night I slept like a log.",
+                    origin: "Dormice hibernate and sleep very deeply."
+                },
+            ],
+            weather: [
+                {
+                    spanish: "Llover a cántaros",
+                    literal: "To rain pitchers",
+                    meaning: "To rain cats and dogs / pour down",
+                    example: "Está lloviendo a cántaros, quédate en casa.",
+                    exampleEn: "It's pouring down, stay home.",
+                    origin: "Rain falling as if from overflowing pitchers."
+                },
+                {
+                    spanish: "Hacer un frío de perros",
+                    literal: "To be dog cold",
+                    meaning: "To be freezing cold",
+                    example: "Hoy hace un frío de perros.",
+                    exampleEn: "It's freezing cold today.",
+                    origin: "So cold even dogs would suffer."
+                },
+                {
+                    spanish: "Ser un sol",
+                    literal: "To be a sun",
+                    meaning: "To be a sweetheart / wonderful person",
+                    example: "Tu madre es un sol, siempre tan amable.",
+                    exampleEn: "Your mother is a sweetheart, always so kind.",
+                    origin: "The sun brings warmth and light to all."
+                },
+                {
+                    spanish: "Estar en la luna",
+                    literal: "To be on the moon",
+                    meaning: "To be distracted / out of it",
+                    example: "¿Qué te pasa? Estás en la luna.",
+                    exampleEn: "What's wrong? You're totally out of it.",
+                    origin: "So far away you're on another celestial body."
+                },
+                {
+                    spanish: "Prometer el oro y el moro",
+                    literal: "To promise gold and the Moor",
+                    meaning: "To promise the moon / make empty promises",
+                    example: "Los políticos prometen el oro y el moro.",
+                    exampleEn: "Politicians promise the moon.",
+                    origin: "Historical reference to promising impossible riches."
+                },
+                {
+                    spanish: "Quedarse de piedra",
+                    literal: "To turn to stone",
+                    meaning: "To be stunned / shocked",
+                    example: "Cuando oí la noticia, me quedé de piedra.",
+                    exampleEn: "When I heard the news, I was stunned.",
+                    origin: "So shocked you can't move, like a statue."
+                },
+                {
+                    spanish: "Ahogarse en un vaso de agua",
+                    literal: "To drown in a glass of water",
+                    meaning: "To make mountains out of molehills",
+                    example: "No te ahogues en un vaso de agua, tiene solución.",
+                    exampleEn: "Don't make a mountain out of a molehill, it's fixable.",
+                    origin: "Overreacting to tiny problems."
+                },
+                {
+                    spanish: "Estar entre la espada y la pared",
+                    literal: "To be between the sword and the wall",
+                    meaning: "To be between a rock and a hard place",
+                    example: "Estoy entre la espada y la pared con esta decisión.",
+                    exampleEn: "I'm between a rock and a hard place with this decision.",
+                    origin: "Trapped with no good options."
+                },
+            ],
+            money: [
+                {
+                    spanish: "Estar sin blanca",
+                    literal: "To be without a blanca (old coin)",
+                    meaning: "To be broke / penniless",
+                    example: "Estoy sin blanca hasta el viernes.",
+                    exampleEn: "I'm broke until Friday.",
+                    origin: "The blanca was a small-value coin in medieval Spain."
+                },
+                {
+                    spanish: "Tirar la casa por la ventana",
+                    literal: "To throw the house out the window",
+                    meaning: "To spare no expense / go all out",
+                    example: "Para la boda, tiraron la casa por la ventana.",
+                    exampleEn: "For the wedding, they spared no expense.",
+                    origin: "Historically, lottery winners threw old furniture out to replace it."
+                },
+                {
+                    spanish: "Ser tacaño",
+                    literal: "To be stingy",
+                    meaning: "To be cheap / tight-fisted",
+                    example: "No seas tacaño, invita a una ronda.",
+                    exampleEn: "Don't be cheap, buy a round.",
+                    origin: "Direct expression for miserliness."
+                },
+                {
+                    spanish: "No tener ni un duro",
+                    literal: "To not have even a duro (old coin)",
+                    meaning: "To be completely broke",
+                    example: "No tengo ni un duro, ¿me prestas algo?",
+                    exampleEn: "I'm completely broke, can you lend me something?",
+                    origin: "The duro was a 5-peseta coin."
+                },
+                {
+                    spanish: "Valer su peso en oro",
+                    literal: "To be worth one's weight in gold",
+                    meaning: "To be extremely valuable",
+                    example: "Esa empleada vale su peso en oro.",
+                    exampleEn: "That employee is worth her weight in gold.",
+                    origin: "Same as English - gold is precious."
+                },
+                {
+                    spanish: "Costar un riñón",
+                    literal: "To cost a kidney",
+                    meaning: "To be very expensive",
+                    example: "Esa casa cuesta un riñón.",
+                    exampleEn: "That house costs a fortune.",
+                    origin: "You only have two kidneys - giving one up is a big sacrifice."
+                },
+                {
+                    spanish: "Ser cuatro gatos",
+                    literal: "To be four cats",
+                    meaning: "To be very few people",
+                    example: "En la fiesta éramos cuatro gatos.",
+                    exampleEn: "At the party there were hardly any people.",
+                    origin: "So few attendees they could count as stray cats."
+                },
+                {
+                    spanish: "Hacer el agosto",
+                    literal: "To make the August",
+                    meaning: "To make a killing / profit greatly",
+                    example: "Los hoteles hacen el agosto en verano.",
+                    exampleEn: "Hotels make a killing in summer.",
+                    origin: "August is harvest time when farmers prosper."
+                },
             ]
         };
 
@@ -503,6 +718,14 @@
             { idiom: "Romper el hielo", options: ["To be cold", "To break something", "To start a conversation", "To skate"], answer: 2 },
             { idiom: "Estar hasta las narices", options: ["To smell something", "To be fed up", "To have a cold", "To be hungry"], answer: 1 },
             { idiom: "A lo hecho, pecho", options: ["To exercise", "To eat a lot", "To face consequences", "To sleep well"], answer: 2 },
+            { idiom: "Ser un gallina", options: ["To be brave", "To be a coward", "To be early", "To be hungry"], answer: 1 },
+            { idiom: "Llover a cántaros", options: ["To drizzle", "To pour down heavily", "To be sunny", "To snow"], answer: 1 },
+            { idiom: "Estar sin blanca", options: ["To be rich", "To be broke", "To be white", "To be blank"], answer: 1 },
+            { idiom: "Dormir como un lirón", options: ["To sleep badly", "To stay awake", "To sleep very soundly", "To nap briefly"], answer: 2 },
+            { idiom: "Tirar la casa por la ventana", options: ["To clean house", "To spare no expense", "To move out", "To be messy"], answer: 1 },
+            { idiom: "Estar como pez en el agua", options: ["To swim well", "To feel out of place", "To be in one's element", "To be thirsty"], answer: 2 },
+            { idiom: "Quedarse de piedra", options: ["To be bored", "To be stunned", "To be strong", "To be heavy"], answer: 1 },
+            { idiom: "Costar un riñón", options: ["To be cheap", "To be painful", "To be very expensive", "To be healthy"], answer: 2 },
         ];
 
         let currentQuiz = 0;
@@ -598,6 +821,9 @@
             renderIdioms('commonIdioms', idioms.common);
             renderIdioms('bodyIdioms', idioms.body);
             renderIdioms('foodIdioms', idioms.food);
+            renderIdioms('animalIdioms', idioms.animal);
+            renderIdioms('weatherIdioms', idioms.weather);
+            renderIdioms('moneyIdioms', idioms.money);
             renderQuiz();
         });
     </script>

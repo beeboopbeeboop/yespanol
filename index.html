@@ -170,8 +170,9 @@
             border-radius: var(--radius-lg);
             padding: var(--space-3) var(--space-4);
             text-align: center;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            box-shadow: var(--glass-inner-glow), var(--glass-shadow);
         }
 
         .stat-value {
@@ -380,7 +381,9 @@
             font-weight: var(--weight-medium);
             color: var(--text-primary);
             cursor: pointer;
-            backdrop-filter: blur(20px);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            box-shadow: var(--glass-inner-glow), 0 4px 16px rgba(0, 0, 0, 0.25);
             transition: all var(--duration-fast) var(--ease-out);
         }
 
@@ -484,8 +487,9 @@
             color: inherit;
             position: relative;
             overflow: hidden;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            box-shadow: var(--glass-inner-glow), var(--glass-shadow);
             transition: all var(--duration-fast) var(--ease-out);
         }
 
@@ -841,6 +845,65 @@
             50% { opacity: 0.8; }
         }
 
+        /* Category Browse */
+        .category-section {
+            margin-bottom: var(--space-6);
+        }
+        .category-scroll {
+            display: flex;
+            gap: var(--space-3);
+            overflow-x: auto;
+            padding-bottom: var(--space-2);
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .category-scroll::-webkit-scrollbar { display: none; }
+        .category-pill {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-4);
+            min-width: 88px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            text-decoration: none;
+            color: var(--text-primary);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            box-shadow: var(--glass-inner-glow), 0 4px 12px rgba(0, 0, 0, 0.2);
+            scroll-snap-align: start;
+            transition: all var(--duration-fast) var(--ease-out);
+        }
+        .category-pill:active {
+            transform: scale(0.95);
+            background: var(--glass-bg-thick);
+        }
+        .category-icon {
+            font-size: 26px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+        .category-name {
+            font-size: var(--text-xs);
+            font-weight: var(--weight-medium);
+            color: var(--text-secondary);
+            text-align: center;
+        }
+        .category-pill.food { border-color: rgba(245, 158, 11, 0.25); }
+        .category-pill.food:active { background: rgba(245, 158, 11, 0.15); }
+        .category-pill.travel { border-color: rgba(14, 165, 233, 0.25); }
+        .category-pill.travel:active { background: rgba(14, 165, 233, 0.15); }
+        .category-pill.emotions { border-color: rgba(244, 63, 94, 0.25); }
+        .category-pill.emotions:active { background: rgba(244, 63, 94, 0.15); }
+        .category-pill.slang { border-color: rgba(168, 85, 247, 0.25); }
+        .category-pill.slang:active { background: rgba(168, 85, 247, 0.15); }
+        .category-pill.numbers { border-color: rgba(16, 185, 129, 0.25); }
+        .category-pill.numbers:active { background: rgba(16, 185, 129, 0.15); }
+        .category-pill.idioms { border-color: rgba(251, 191, 36, 0.25); }
+        .category-pill.idioms:active { background: rgba(251, 191, 36, 0.15); }
+
         /* Responsive */
         @media (min-width: 500px) {
             .lesson-grid { grid-template-columns: repeat(3, 1fr); }
@@ -903,15 +966,15 @@
                     <span class="mode-pill-icon">💜</span>
                     <span>Story</span>
                 </button>
-                <button class="mode-pill" data-mode="classic" role="tab">
+                <button class="mode-pill classic" data-mode="classic" role="tab">
                     <span class="mode-pill-icon">📚</span>
                     <span>Classic</span>
                 </button>
-                <button class="mode-pill" data-mode="speed" role="tab">
+                <button class="mode-pill speed" data-mode="speed" role="tab">
                     <span class="mode-pill-icon">⚡</span>
                     <span>Speed</span>
                 </button>
-                <button class="mode-pill" data-mode="review" role="tab">
+                <button class="mode-pill review" data-mode="review" role="tab">
                     <span class="mode-pill-icon">🔄</span>
                     <span>Review</span>
                 </button>
@@ -946,6 +1009,39 @@
                 <div class="fact-text" id="factText">Loading...</div>
                 <div class="fact-detail" id="factDetail"></div>
             </div>
+
+            <!-- Browse by Category -->
+            <section class="category-section">
+                <div class="section-header">
+                    <span class="section-title">Browse by Topic</span>
+                </div>
+                <div class="category-scroll">
+                    <a href="practice/flashcards.html?category=food" class="category-pill food">
+                        <span class="category-icon">🍽️</span>
+                        <span class="category-name">Food</span>
+                    </a>
+                    <a href="vocabulary/travel.html" class="category-pill travel">
+                        <span class="category-icon">✈️</span>
+                        <span class="category-name">Travel</span>
+                    </a>
+                    <a href="vocabulary/everyday.html" class="category-pill emotions">
+                        <span class="category-icon">💭</span>
+                        <span class="category-name">Feelings</span>
+                    </a>
+                    <a href="vocabulary/slang.html" class="category-pill slang">
+                        <span class="category-icon">🔥</span>
+                        <span class="category-name">Slang</span>
+                    </a>
+                    <a href="practice/flashcards.html?category=numbers" class="category-pill numbers">
+                        <span class="category-icon">🔢</span>
+                        <span class="category-name">Numbers</span>
+                    </a>
+                    <a href="vocabulary/idioms.html" class="category-pill idioms">
+                        <span class="category-icon">🎭</span>
+                        <span class="category-name">Idioms</span>
+                    </a>
+                </div>
+            </section>
 
             <!-- Grammar Section -->
             <section class="section">

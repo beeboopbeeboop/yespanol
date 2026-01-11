@@ -77,8 +77,14 @@
             border-radius: var(--card-radius);
             padding: 20px; margin-bottom: 12px;
         }
-        .card-por { border-left: 3px solid var(--por-color); }
-        .card-para { border-left: 3px solid var(--para-color); }
+        .card-por {
+            background: linear-gradient(135deg, var(--bg-glass) 0%, rgba(168, 85, 247, 0.08) 100%);
+            border: 1px solid rgba(168, 85, 247, 0.25);
+        }
+        .card-para {
+            background: linear-gradient(135deg, var(--bg-glass) 0%, rgba(45, 212, 191, 0.08) 100%);
+            border: 1px solid rgba(45, 212, 191, 0.25);
+        }
 
         .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
         .compare-card { padding: 16px; text-align: center; }

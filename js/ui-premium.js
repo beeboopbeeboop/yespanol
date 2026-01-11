@@ -387,7 +387,9 @@ const UI = (function() {
                 setTimeout(() => this._overlay?.remove(), 300);
             }
             if (this._sheet) {
-                this._sheet.classList.remove('open');
+                // Reset any inline transform and ensure transition is active
+                this._sheet.style.transition = 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)';
+                this._sheet.style.transform = 'translateY(100%)';
                 setTimeout(() => this._sheet?.remove(), 400);
             }
             document.body.style.overflow = '';

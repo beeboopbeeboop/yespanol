@@ -84,8 +84,14 @@
             border-radius: var(--card-radius);
             padding: 20px; margin-bottom: 12px;
         }
-        .card-ser { border-left: 3px solid var(--ser-color); }
-        .card-estar { border-left: 3px solid var(--estar-color); }
+        .card-ser {
+            background: linear-gradient(135deg, var(--bg-glass) 0%, rgba(96, 165, 250, 0.08) 100%);
+            border: 1px solid rgba(96, 165, 250, 0.25);
+        }
+        .card-estar {
+            background: linear-gradient(135deg, var(--bg-glass) 0%, rgba(249, 115, 22, 0.08) 100%);
+            border: 1px solid rgba(249, 115, 22, 0.25);
+        }
 
         /* Comparison cards */
         .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
