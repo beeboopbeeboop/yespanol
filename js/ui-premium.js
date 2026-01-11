@@ -331,11 +331,13 @@ const UI = (function() {
                 this._sheet.classList.add('open');
             });
 
-            // Close on overlay tap
-            this._overlay.addEventListener('click', () => {
-                this.hide();
-                onClose?.();
-            });
+            // Close on overlay tap (delay to prevent immediate close from triggering event)
+            setTimeout(() => {
+                this._overlay?.addEventListener('click', () => {
+                    this.hide();
+                    onClose?.();
+                });
+            }, 100);
 
             // Swipe to dismiss
             this._setupSwipeToDismiss(onClose);
