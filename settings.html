@@ -404,17 +404,18 @@
         }
 
         function exportData() {
-            const profile = Yespanol.load();
-            const dataStr = JSON.stringify(profile, null, 2);
+            // Use core.js export function
+            const dataStr = Yespanol.exportData();
             const blob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
 
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'yespanol-progress.json';
+            a.download = `yespanol-backup-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
 
             URL.revokeObjectURL(url);
+            showToast('Backup downloaded!');
         }
 
         function importData() {
@@ -427,17 +428,14 @@
                 const reader = new FileReader();
 
                 reader.onload = (event) => {
-                    try {
-                        const data = JSON.parse(event.target.result);
-                        if (data.version) {
-                            localStorage.setItem('yespanol_user', JSON.stringify(data));
-                            alert('Progress restored successfully!');
-                            location.reload();
-                        } else {
-                            alert('Invalid backup file.');
-                        }
-                    } catch (err) {
-                        alert('Failed to import: Invalid file format.');
+                    // Use core.js import function with validation
+                    const result = Yespanol.importData(event.target.result);
+
+                    if (result.success) {
+                        showToast('Progress restored successfully!');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        alert('Failed to import: ' + result.error);
                     }
                 };
 
@@ -450,10 +448,41 @@
         function resetProgress() {
             if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
                 if (confirm('Really? All your streaks, cards, and achievements will be lost forever.')) {
-                    localStorage.clear();
-                    location.href = 'index.html';
+                    // Use core.js function (keeps settings, creates backup first)
+                    Yespanol.resetProgress(true);
+                    showToast('Progress reset. Your backup is saved.');
+                    setTimeout(() => location.href = 'index.html', 1500);
                 }
             }
+        }
+
+        function showToast(message) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+                background: rgba(50, 215, 75, 0.9); color: #000; padding: 12px 24px;
+                border-radius: 12px; font-size: 0.9rem; font-weight: 500;
+                z-index: 1000; animation: fadeIn 0.3s ease;
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Update version display to match core.js
+        document.querySelector('.about-version').textContent = 'Version ' + Yespanol.VERSION;
+
+        // Show storage stats
+        const stats = Yespanol.getStorageStats();
+        if (stats.totalKB > 0) {
+            const storageInfo = document.createElement('div');
+            storageInfo.style.cssText = 'margin-top: 12px; font-size: 0.8rem; color: rgba(255,255,255,0.4);';
+            storageInfo.textContent = `Storage: ${stats.totalKB}KB used${stats.hasBackup ? ' (backup active)' : ''}`;
+            document.querySelector('.about-card').appendChild(storageInfo);
         }
     </script>
 </body>
