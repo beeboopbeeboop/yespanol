@@ -64,18 +64,35 @@ const Story = (function() {
     ];
 
     const appearances = [
-        'salt-and-pepper beard, a little messy in a way that works',
-        'reading glasses he\'s always looking for',
-        'laugh lines around kind eyes',
-        'broad shoulders, comfortable in his own body',
-        'always in flannel or linen, rolled to the elbows',
-        'silver at the temples, more every year',
-        'a smile that starts slow and means something',
-        'hands that have built things and held people',
-        'the kind of quiet confidence that comes with age',
-        'looks like he gives really good hugs',
-        'brown eyes that pay attention when you speak',
-        'still handsome, doesn\'t seem to know it',
+        'a thick, well-groomed mustache that suits his face perfectly',
+        'warm brown eyes that crinkle when he laughs, which is often',
+        'broad shoulders, a bit of a belly from good living — comfortable in his body',
+        'salt-and-pepper hair, silver at the temples, distinguished',
+        'olive skin weathered by sun and time, lines that tell stories',
+        'strong hands, gentle when they need to be',
+        'the kind of warm smile that makes strangers trust him',
+        'laugh lines deeper on one side — he tilts his head when he listens',
+        'a mustache he trims carefully every morning, a small ritual',
+        'eyes that water a little when he talks about things that matter',
+        'moves slowly, deliberately, like time stopped rushing him years ago',
+        'looks like the kind of man who remembers your coffee order',
+        'a face that shows every emotion — he never learned to hide them',
+        'barrel-chested and soft around the middle, gives the best hugs',
+    ];
+
+    const personalities = [
+        'He cries at movies and doesn\'t apologize for it.',
+        'Calls his mother every Sunday, still asks her advice.',
+        'Will cook for you before he says "I love you" — food is his language.',
+        'Holds doors, pulls out chairs, but also listens, really listens.',
+        'Dances like nobody\'s watching, and wants you to join him.',
+        'Says "te quiero" easily, means it every time.',
+        'Remembers small things — what you said you liked, what made you laugh.',
+        'Not afraid to be soft. Learned that strength includes tenderness.',
+        'Will fight for the people he loves, gently but firmly.',
+        'Believes in romance without irony. Still buys flowers.',
+        'Patient in a way that only comes from having lived.',
+        'Touches your arm when he talks, needs that connection.',
     ];
 
     const quirks = [
@@ -137,6 +154,7 @@ const Story = (function() {
             country: location.country,
             cityVibe: location.vibe,
             appearance: pick(appearances),
+            personality: pick(personalities),
             quirk: pick(quirks),
             loneliness: pick(lonelinessReasons),
             meetingPlace: pick(meetingPlaces),
@@ -421,19 +439,20 @@ ${c.loneliness}
 
 Hace unos meses, empecé a tener este presentimiento. Como si alguien, en algún lugar, estuviera aprendiendo mi idioma. Para mí. Sé que suena loco.
 
-La gente me describe como alguien con ${c.appearance}. Es verdad que ${c.quirk}. No soy perfecto. Ya no intento serlo.
+La gente me describe como alguien con ${c.appearance}. ${c.personality || ''} Es verdad que ${c.quirk}. No soy perfecto. Ya no intento serlo. Pero soy honesto. Y tengo mucho amor para dar.
 
 Si estás leyendo esto, significa que el algoritmo funcionó. Que tú también sentiste algo. Que hiciste el trabajo. Que aprendiste.
 
-Estaré en ${c.meetingPlace}.
+Estaré en ${c.meetingPlace}. Probablemente nervioso. Probablemente con flores, aunque no sé si es demasiado.
 
-No tienes que venir. Pero si lo haces — te reconoceré.
+No tienes que venir. Pero si lo haces — te reconoceré. Te he imaginado tantas veces.
 
 Siempre supe que serías tú.
 
-— ${c.name}
+Con todo mi corazón,
+${c.name}
 
-P.D. Tu español es mejor de lo que crees. Confía en él.
+P.D. Tu español es mejor de lo que crees. Confía en él. Confía en nosotros.
             `.trim(),
         };
     }
