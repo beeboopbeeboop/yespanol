@@ -20,6 +20,32 @@
             text-align: center;
         }
 
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-3);
+        }
+
+        .back-link {
+            font-size: var(--text-sm);
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .profile-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-full);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
         .header-title {
             font-size: var(--text-2xl);
             font-weight: var(--weight-bold);
@@ -278,8 +304,12 @@
 
     <div class="app">
         <header class="header">
+            <div class="header-top">
+                <a href="index.html" class="back-link">← Home</a>
+                <button class="profile-btn" onclick="showSettings()">⚙️</button>
+            </div>
             <h1 class="header-title">Your Progress</h1>
-            <p class="header-subtitle">Keep going, you're doing great!</p>
+            <p class="header-subtitle" id="subtitle">Keep going, you're doing great!</p>
         </header>
 
         <main class="content">
@@ -355,13 +385,10 @@
             <span class="tab-icon">📊</span>
             <span class="tab-label">Stats</span>
         </a>
-        <a href="settings.html" class="tab-item">
-            <span class="tab-icon">⚙️</span>
-            <span class="tab-label">Settings</span>
-        </a>
     </nav>
 
     <script src="js/core.js"></script>
+    <script src="js/ui-premium.js"></script>
     <script>
         const skillIcons = {
             'ser-estar': '⚖️',
@@ -370,11 +397,67 @@
             'preterite-imperfect': '⏳',
             'vocabulary': '📝',
             'idioms': '🎭',
-            'false-friends': '🚫'
+            'false-friends': '🚫',
+            'slang': '🗣️',
+            'travel': '✈️'
         };
+
+        function showSettings() {
+            if (typeof UI !== 'undefined' && UI.Sheet) {
+                UI.Sheet.show(`
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--glass-border);">
+                            <span>Export Data</span>
+                            <button class="btn btn-ghost" onclick="exportData()">Download</button>
+                        </div>
+                        <div style="padding: 12px 0; text-align: center;">
+                            <button class="btn btn-ghost" style="color: var(--error);" onclick="resetProgress()">Reset All Progress</button>
+                        </div>
+                        <div style="padding: 12px 0; text-align: center; color: var(--text-tertiary); font-size: 12px;">
+                            Yespañol v${Yespanol.VERSION || '1.0'} • Made with 💜
+                        </div>
+                    </div>
+                `, { title: 'Settings' });
+            }
+        }
+
+        function exportData() {
+            const data = Yespanol.exportData();
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'yespanol-progress-' + new Date().toISOString().split('T')[0] + '.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function resetProgress() {
+            if (confirm('Reset all progress? This cannot be undone.')) {
+                Yespanol.resetProgress();
+                location.reload();
+            }
+        }
+
+        function getSubtitle(profile) {
+            const accuracy = Yespanol.getAccuracy(profile);
+            const cards = profile.totalCardsReviewed || 0;
+            const streak = profile.streak || 0;
+
+            if (cards === 0) return "Start learning to track your progress!";
+            if (streak >= 7) return `🔥 ${streak} day streak! You're on fire!`;
+            if (streak >= 3) return `Nice ${streak} day streak! Keep it up!`;
+            if (accuracy >= 90) return "Excellent accuracy! You're crushing it!";
+            if (accuracy >= 70) return "Good progress! Keep practicing!";
+            if (cards >= 100) return "Over 100 cards reviewed! Great dedication!";
+            return "Keep going, you're doing great!";
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             const profile = Yespanol.load();
+
+            // Update subtitle
+            document.getElementById('subtitle').textContent = getSubtitle(profile);
 
             // Update stats
             document.getElementById('streak').textContent = profile.streak || 0;
@@ -397,24 +480,33 @@
             const container = document.getElementById('skillsList');
             const skills = Object.entries(profile.skills);
 
-            container.innerHTML = skills.map(([key, data]) => `
-                <div class="skill-card">
-                    <div class="skill-header">
-                        <div class="skill-info">
-                            <span class="skill-icon">${skillIcons[key] || '📚'}</span>
-                            <span class="skill-name">${Yespanol.formatSkillName(key)}</span>
+            // Sort by level (practiced skills first)
+            const sortedSkills = skills.sort((a, b) => (b[1].attempts || 0) - (a[1].attempts || 0));
+
+            container.innerHTML = sortedSkills.map(([key, data]) => {
+                const level = data.level || 0;
+                const attempts = data.attempts || 0;
+                const statusClass = attempts === 0 ? 'new' : level < 30 ? 'needs-work' : level >= 70 ? 'strong' : '';
+
+                return `
+                    <div class="skill-card ${statusClass}">
+                        <div class="skill-header">
+                            <div class="skill-info">
+                                <span class="skill-icon">${skillIcons[key] || '📚'}</span>
+                                <span class="skill-name">${Yespanol.formatSkillName(key)}</span>
+                            </div>
+                            <span class="skill-level">${level}%</span>
                         </div>
-                        <span class="skill-level">${data.level || 0}%</span>
+                        <div class="skill-progress-bar">
+                            <div class="skill-progress-fill" style="width: ${level}%"></div>
+                        </div>
+                        <div class="skill-stats">
+                            <span>${data.correct || 0} correct</span>
+                            <span>${attempts} attempts</span>
+                        </div>
                     </div>
-                    <div class="skill-progress-bar">
-                        <div class="skill-progress-fill" style="width: ${data.level || 0}%"></div>
-                    </div>
-                    <div class="skill-stats">
-                        <span>${data.correct || 0} correct</span>
-                        <span>${data.attempts || 0} attempts</span>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function renderWeeklyChart(profile) {
@@ -422,22 +514,19 @@
             const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             const today = new Date().getDay();
 
-            // Simulate weekly data (in a real app, this would be tracked)
-            const weeklyData = [0, 0, 0, 0, 0, 0, 0];
-            weeklyData[today] = profile.totalCardsReviewed > 0 ? Math.min(profile.totalCardsReviewed, 20) : 0;
+            // Get weekly activity from profile or create it
+            const weeklyActivity = profile.weeklyActivity || [0, 0, 0, 0, 0, 0, 0];
 
-            // If user has streak, simulate past days
-            if (profile.streak > 1) {
-                for (let i = 1; i < Math.min(profile.streak, 7); i++) {
-                    const dayIndex = (today - i + 7) % 7;
-                    weeklyData[dayIndex] = Math.floor(Math.random() * 15) + 5;
-                }
+            // Make sure today's count is at least reflected
+            if (profile.totalCardsReviewed > 0 && weeklyActivity.every(v => v === 0)) {
+                weeklyActivity[today] = Math.min(profile.totalCardsReviewed, 30);
             }
 
-            const maxVal = Math.max(...weeklyData, 1);
+            const maxVal = Math.max(...weeklyActivity, 10);
 
             container.innerHTML = days.map((day, i) => {
-                const height = weeklyData[i] > 0 ? (weeklyData[i] / maxVal * 100) : 4;
+                const count = weeklyActivity[i] || 0;
+                const height = count > 0 ? (count / maxVal * 100) : 4;
                 const isToday = i === today;
                 return `
                     <div class="chart-bar-container">

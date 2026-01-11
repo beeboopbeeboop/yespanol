@@ -849,10 +849,6 @@
             <span class="tab-icon">📊</span>
             <span class="tab-label">Stats</span>
         </a>
-        <a href="#" class="tab-item" onclick="event.preventDefault(); UI.Sheet.show(settingsContent(), { title: 'Settings' })">
-            <span class="tab-icon">⚙️</span>
-            <span class="tab-label">Settings</span>
-        </a>
     </nav>
 
     <!-- Welcome Modal -->
@@ -1000,23 +996,25 @@
 
             heroCard.classList.remove('story-mode');
 
-            const storyHints = [
-                'Every word you learn brings you closer...',
-                'Someone is waiting. Keep learning.',
-                'The algorithm is working. Trust it.',
-                'He asked about you today.',
-                'The message is almost ready.'
-            ];
-
             switch(mode) {
                 case 'story':
                     heroCard.classList.add('story-mode');
-                    const phase = typeof Story !== 'undefined' ? Story.getPhase(calculateOverallProgress(profile)) : 1;
-                    eyebrow.textContent = 'El Algoritmo del Amor';
-                    title.textContent = phase < 3 ? 'Continue Your Path' : 'He\'s Getting Closer';
-                    desc.textContent = storyHints[phase - 1] || storyHints[0];
-                    btn.textContent = 'Continue Story →';
-                    btn.onclick = () => goTo('practice/flashcards.html?mode=story');
+                    if (typeof Story !== 'undefined') {
+                        const story = Story.load();
+                        const phase = Story.getPhase(calculateOverallProgress(profile));
+                        const heroContent = Story.getHeroContent(story, phase);
+                        eyebrow.textContent = heroContent.eyebrow;
+                        title.textContent = heroContent.title;
+                        desc.textContent = heroContent.desc;
+                        btn.textContent = phase >= 7 ? 'Read the Letter →' : 'Continue Story →';
+                        btn.onclick = () => phase >= 7 ? goTo('mensaje.html') : goTo('practice/flashcards.html?mode=story');
+                    } else {
+                        eyebrow.textContent = 'El Algoritmo del Amor';
+                        title.textContent = 'Begin Your Journey';
+                        desc.textContent = 'Every word you learn brings you closer...';
+                        btn.textContent = 'Continue Story →';
+                        btn.onclick = () => goTo('practice/flashcards.html?mode=story');
+                    }
                     break;
                 case 'classic':
                     const rec = Yespanol.getRecommendedLesson(profile);
@@ -1128,12 +1126,14 @@
                 const overallProgress = calculateOverallProgress(profile);
                 const phase = Story.getPhase(overallProgress);
 
-                // Mystery card
+                // Mystery card - appears at phase 5, unlocks at phase 7
                 const mysteryCard = document.getElementById('mysteryCard');
-                if (phase >= 3 && mysteryCard) {
+                if (phase >= 5 && mysteryCard) {
                     mysteryCard.style.display = 'block';
-                    if (phase < 5) {
+                    if (phase < 7) {
                         mysteryCard.classList.add('locked');
+                        document.getElementById('mysteryTitle').textContent = 'El Mensaje';
+                        document.getElementById('mysteryDesc').textContent = 'Almost ready...';
                     } else {
                         mysteryCard.classList.remove('locked');
                         document.getElementById('mysteryTitle').textContent = 'El Mensaje';
@@ -1141,9 +1141,10 @@
                     }
                 }
 
-                // Random glitch (5% chance after phase 2)
-                if (phase >= 2 && Math.random() < 0.05) {
-                    setTimeout(() => showGlitch(Story.getGlitchMessage(story, phase)), 3000 + Math.random() * 5000);
+                // Random glitch - appears more frequently as you progress
+                const glitchChance = phase >= 5 ? 0.1 : phase >= 3 ? 0.06 : 0.03;
+                if (phase >= 2 && Math.random() < glitchChance) {
+                    setTimeout(() => showGlitch(Story.getGlitchMessage(story, phase)), 2000 + Math.random() * 4000);
                 }
             }
 
