@@ -47,26 +47,51 @@
             gap: var(--space-2);
         }
 
-        .level-badge {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            padding: 6px 12px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-full);
-            font-size: var(--text-xs);
-            font-weight: var(--weight-semibold);
-            color: var(--text-secondary);
+        /* Progress Ring */
+        .progress-ring-container {
+            position: relative;
+            width: 44px;
+            height: 44px;
         }
 
-        .level-badge .level-icon {
+        .progress-ring {
+            transform: rotate(-90deg);
+            filter: drop-shadow(0 0 6px var(--accent));
+        }
+
+        .progress-ring-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 3;
+        }
+
+        .progress-ring-fill {
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 3;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.6s ease, stroke 0.3s ease;
+        }
+
+        .progress-ring-container .ring-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             font-size: 14px;
         }
 
-        .level-badge.beginner { border-color: rgba(16, 185, 129, 0.3); color: #34d399; }
-        .level-badge.intermediate { border-color: rgba(59, 130, 246, 0.3); color: #60a5fa; }
-        .level-badge.advanced { border-color: rgba(168, 85, 247, 0.3); color: #c084fc; }
+        /* Ring glow colors based on progress */
+        .progress-ring-container.level-1 .progress-ring { filter: drop-shadow(0 0 8px #10b981); }
+        .progress-ring-container.level-1 .progress-ring-fill { stroke: #10b981; }
+        .progress-ring-container.level-2 .progress-ring { filter: drop-shadow(0 0 8px #3b82f6); }
+        .progress-ring-container.level-2 .progress-ring-fill { stroke: #3b82f6; }
+        .progress-ring-container.level-3 .progress-ring { filter: drop-shadow(0 0 8px #8b5cf6); }
+        .progress-ring-container.level-3 .progress-ring-fill { stroke: #8b5cf6; }
+        .progress-ring-container.level-4 .progress-ring { filter: drop-shadow(0 0 8px #f59e0b); }
+        .progress-ring-container.level-4 .progress-ring-fill { stroke: #f59e0b; }
+        .progress-ring-container.level-5 .progress-ring { filter: drop-shadow(0 0 10px #ef4444); }
+        .progress-ring-container.level-5 .progress-ring-fill { stroke: #ef4444; }
 
         .profile-btn {
             width: 36px;
@@ -834,16 +859,20 @@
             <div class="header-top">
                 <h1 class="logo">Yespañol</h1>
                 <div class="header-actions">
-                    <div class="level-badge" id="levelBadge">
-                        <span class="level-icon">🌱</span>
-                        <span id="levelText">Beginner</span>
+                    <div class="progress-ring-container" id="progressRing">
+                        <svg class="progress-ring" width="44" height="44">
+                            <circle class="progress-ring-bg" cx="22" cy="22" r="18"></circle>
+                            <circle class="progress-ring-fill" cx="22" cy="22" r="18"
+                                stroke-dasharray="113.1" stroke-dashoffset="113.1" id="ringFill"></circle>
+                        </svg>
+                        <span class="ring-center" id="ringPercent">0%</span>
                     </div>
                     <button class="profile-btn" onclick="UI.Sheet.show(settingsContent(), { title: 'Settings' })">
                         ⚙️
                     </button>
                 </div>
             </div>
-            <p class="greeting" id="greeting">¡Hola!</p>
+            <p class="greeting" id="greeting">¡Bienvenido!</p>
         </header>
 
         <!-- Offline Indicator -->
@@ -1241,27 +1270,62 @@
             document.getElementById('greeting').textContent = greeting;
         }
 
-        function updateLevelBadge(profile) {
-            const badge = document.getElementById('levelBadge');
-            const text = document.getElementById('levelText');
-            const level = profile.level || 'beginner';
+        function updateProgressRing(profile) {
+            const container = document.getElementById('progressRing');
+            const ring = document.getElementById('ringFill');
+            const percent = document.getElementById('ringPercent');
 
-            // Calculate actual level based on progress
+            // Calculate overall progress
             const progress = calculateOverallProgress(profile);
-            let displayLevel = level;
-            let icon = '🌱';
 
-            if (progress >= 70 || level === 'advanced') {
-                displayLevel = 'advanced';
-                icon = '🌟';
-            } else if (progress >= 30 || level === 'intermediate') {
-                displayLevel = 'intermediate';
-                icon = '🌿';
+            // Update ring (circumference = 2 * PI * r = 2 * 3.14159 * 18 ≈ 113.1)
+            const circumference = 113.1;
+            const offset = circumference - (progress / 100) * circumference;
+            ring.style.strokeDashoffset = offset;
+
+            // Update percentage display
+            percent.textContent = Math.round(progress) + '%';
+
+            // Set level class for glow color (5 tiers)
+            container.classList.remove('level-1', 'level-2', 'level-3', 'level-4', 'level-5');
+            if (progress >= 80) {
+                container.classList.add('level-5'); // Red/gold - mastery
+            } else if (progress >= 60) {
+                container.classList.add('level-4'); // Amber
+            } else if (progress >= 40) {
+                container.classList.add('level-3'); // Purple
+            } else if (progress >= 20) {
+                container.classList.add('level-2'); // Blue
+            } else {
+                container.classList.add('level-1'); // Green - beginner
             }
+        }
 
-            badge.className = `level-badge ${displayLevel}`;
-            badge.querySelector('.level-icon').textContent = icon;
-            text.textContent = displayLevel.charAt(0).toUpperCase() + displayLevel.slice(1);
+        function updateStoryElements(mode, profile) {
+            const mysteryCard = document.getElementById('mysteryCard');
+
+            if (mode === 'story' && typeof Story !== 'undefined') {
+                const story = Story.load();
+                const overallProgress = calculateOverallProgress(profile);
+                const phase = Story.getPhase(overallProgress);
+
+                // Show mystery card in story mode at phase 5+
+                if (phase >= 5 && mysteryCard) {
+                    mysteryCard.style.display = 'block';
+                    if (phase < 7) {
+                        mysteryCard.classList.add('locked');
+                        document.getElementById('mysteryTitle').textContent = 'El Mensaje';
+                        document.getElementById('mysteryDesc').textContent = 'Almost ready...';
+                    } else {
+                        mysteryCard.classList.remove('locked');
+                        document.getElementById('mysteryTitle').textContent = 'El Mensaje';
+                        document.getElementById('mysteryDesc').textContent = 'He wrote to you.';
+                    }
+                }
+            } else {
+                // Hide mystery card in non-story modes
+                if (mysteryCard) mysteryCard.style.display = 'none';
+            }
         }
 
         function updateOnlineStatus() {
@@ -1371,8 +1435,8 @@
             // Personalized greeting
             updateGreeting(profile);
 
-            // Update level badge
-            updateLevelBadge(profile);
+            // Update progress ring
+            updateProgressRing(profile);
 
             // Offline detection
             updateOnlineStatus();
@@ -1428,13 +1492,14 @@
                     pill.classList.add('active');
                     localStorage.setItem('yespanol_mode', pill.dataset.mode);
                     updateUIForMode(pill.dataset.mode, profile);
+                    updateStoryElements(pill.dataset.mode, profile);
                 });
             });
 
             updateUIForMode(savedMode, profile);
 
-            // Story mode features
-            if (typeof Story !== 'undefined') {
+            // Story mode features - ONLY show when in story mode
+            if (savedMode === 'story' && typeof Story !== 'undefined') {
                 const story = Story.load();
                 const overallProgress = calculateOverallProgress(profile);
                 const phase = Story.getPhase(overallProgress);
@@ -1459,6 +1524,10 @@
                 if (phase >= 2 && Math.random() < glitchChance) {
                     setTimeout(() => showGlitch(Story.getGlitchMessage(story, phase)), 2000 + Math.random() * 4000);
                 }
+            } else {
+                // Hide mystery card in non-story modes
+                const mysteryCard = document.getElementById('mysteryCard');
+                if (mysteryCard) mysteryCard.style.display = 'none';
             }
 
             // Pull to refresh
