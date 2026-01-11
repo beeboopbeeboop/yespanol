@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>Así Se Habla - Yespañol</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-glass: rgba(255, 255, 255, 0.06);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --text-primary: #f5f5f7;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-tertiary: rgba(255, 255, 255, 0.4);
+            --accent: #ff6b4a;
+            --success: #32d74b;
+            --mexico: #006847;
+            --spain: #c60b1e;
+            --argentina: #74acdf;
+            --colombia: #fcd116;
+            --chile: #0039a6;
+            --card-radius: 20px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-container {
+            min-height: 100%;
+            padding: 56px 20px calc(80px + var(--safe-bottom));
+        }
+
+        .back-btn {
+            position: fixed; top: 16px; left: 16px; z-index: 100;
+            background: var(--bg-glass); border: 1px solid var(--border-glass);
+            border-radius: 12px; padding: 10px 16px; color: var(--text-primary);
+            font-size: 0.85rem; text-decoration: none;
+            backdrop-filter: blur(20px);
+        }
+        .back-btn:active { transform: scale(0.96); }
+
+        .lesson-header { text-align: center; margin-bottom: 24px; }
+        .lesson-icon { font-size: 3rem; margin-bottom: 12px; }
+        .lesson-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+        .lesson-subtitle { color: var(--text-secondary); font-size: 0.95rem; }
+
+        /* Country selector */
+        .country-selector {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px 0 16px;
+            margin-bottom: 24px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .country-selector::-webkit-scrollbar { display: none; }
+
+        .country-btn {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .country-btn:active { transform: scale(0.96); }
+        .country-btn.active {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+            font-weight: 600;
+        }
+        .country-flag { font-size: 1.1rem; }
+
+        .intro-card {
+            background: linear-gradient(135deg, rgba(255, 107, 74, 0.1) 0%, var(--bg-glass) 100%);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            padding: 16px;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .section { margin-bottom: 32px; }
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .slang-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            padding: 18px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .slang-card:active { transform: scale(0.98); }
+        .slang-card.expanded { background: rgba(255, 107, 74, 0.08); }
+
+        .slang-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .slang-word {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .slang-translation {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .slang-country-tag {
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: var(--text-tertiary);
+        }
+
+        .slang-details {
+            display: none;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border-glass);
+        }
+        .slang-card.expanded .slang-details { display: block; }
+
+        .slang-example {
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        .slang-example-es { margin-bottom: 4px; color: var(--accent); }
+        .slang-example-en { font-size: 0.85rem; color: var(--text-tertiary); font-style: italic; }
+
+        .slang-note {
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+            display: flex;
+            gap: 6px;
+            align-items: flex-start;
+        }
+
+        .slang-formal {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            background: rgba(255,255,255,0.05);
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+
+        .warning-tag {
+            display: inline-block;
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            background: rgba(255, 69, 58, 0.2);
+            color: #ff6b6b;
+            border-radius: 4px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        .quiz-section {
+            background: linear-gradient(135deg, var(--bg-glass) 0%, rgba(255, 107, 74, 0.05) 100%);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            padding: 24px;
+            margin: 32px 0;
+        }
+        .quiz-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; }
+        .quiz-prompt { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 8px; }
+        .quiz-word { font-size: 1.4rem; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+        .quiz-country { font-size: 0.8rem; color: var(--text-tertiary); margin-bottom: 16px; }
+        .quiz-options { display: grid; gap: 10px; }
+        .quiz-option {
+            padding: 14px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quiz-option:active { transform: scale(0.98); }
+        .quiz-option.correct { background: var(--success); color: #000; border-color: var(--success); }
+        .quiz-option.incorrect { background: #ff453a; color: #fff; border-color: #ff453a; }
+
+        .cta-section { text-align: center; padding: 32px 0; }
+        .cta-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 16px 32px; background: var(--accent);
+            color: #000; font-size: 1rem; font-weight: 600;
+            border-radius: 14px; border: none; cursor: pointer;
+        }
+        .cta-btn:active { transform: scale(0.96); }
+
+        .score-display {
+            position: fixed; bottom: 20px; right: 20px;
+            background: var(--bg-glass); backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px; padding: 12px 20px;
+            display: flex; align-items: center; gap: 10px;
+            z-index: 50;
+        }
+        .score-label { font-size: 0.75rem; color: var(--text-secondary); }
+        .score-value { font-size: 1.2rem; font-weight: 700; color: var(--success); }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-btn">← Back</a>
+
+    <div class="app-container">
+        <header class="lesson-header">
+            <div class="lesson-icon">🗣️</div>
+            <h1 class="lesson-title">Así Se Habla</h1>
+            <p class="lesson-subtitle">How people really talk on the street</p>
+        </header>
+
+        <div class="country-selector">
+            <button class="country-btn active" data-country="all">
+                <span class="country-flag">🌎</span>
+                <span>All</span>
+            </button>
+            <button class="country-btn" data-country="mexico">
+                <span class="country-flag">🇲🇽</span>
+                <span>México</span>
+            </button>
+            <button class="country-btn" data-country="spain">
+                <span class="country-flag">🇪🇸</span>
+                <span>España</span>
+            </button>
+            <button class="country-btn" data-country="argentina">
+                <span class="country-flag">🇦🇷</span>
+                <span>Argentina</span>
+            </button>
+            <button class="country-btn" data-country="colombia">
+                <span class="country-flag">🇨🇴</span>
+                <span>Colombia</span>
+            </button>
+            <button class="country-btn" data-country="chile">
+                <span class="country-flag">🇨🇱</span>
+                <span>Chile</span>
+            </button>
+        </div>
+
+        <div class="intro-card">
+            <strong>Warning:</strong> This is how people actually talk! Some expressions are very informal and may be inappropriate in formal settings. Tap any card to see examples and usage notes.
+        </div>
+
+        <div id="slangContainer"></div>
+
+        <section class="quiz-section">
+            <div class="quiz-title">🎯 Street Smarts Quiz</div>
+            <div id="quizContainer"></div>
+        </section>
+
+        <section class="cta-section">
+            <button class="cta-btn" onclick="location.href='../practice/flashcards.html'">
+                Practice Flashcards →
+            </button>
+        </section>
+    </div>
+
+    <div class="score-display">
+        <span class="score-label">Score</span>
+        <span class="score-value" id="scoreValue">0/0</span>
+    </div>
+
+    <script src="../js/core.js"></script>
+    <script>
+        const slangData = {
+            mexico: [
+                { word: "¿Qué onda?", meaning: "What's up?", formal: "¿Qué tal? / ¿Cómo estás?", example: "¡Hey güey! ¿Qué onda?", exampleEn: "Hey dude! What's up?", note: "Very common greeting among friends", vulgar: false },
+                { word: "Chido/Chida", meaning: "Cool / Awesome", formal: "Genial / Excelente", example: "Está bien chido tu carro.", exampleEn: "Your car is really cool.", note: "Universally used in Mexico", vulgar: false },
+                { word: "Güey", meaning: "Dude / Bro", formal: "Amigo / Compañero", example: "No manches, güey.", exampleEn: "No way, dude.", note: "Can be used every other word in casual speech", vulgar: false },
+                { word: "No manches", meaning: "No way! / You're kidding!", formal: "¡No puede ser!", example: "¿Reprobaste? ¡No manches!", exampleEn: "You failed? No way!", note: "Clean version of a stronger expression", vulgar: false },
+                { word: "Neta", meaning: "Truth / For real", formal: "La verdad / En serio", example: "¿Neta? ¿Es neta?", exampleEn: "Really? Is that for real?", note: "La neta = the real truth", vulgar: false },
+                { word: "Chela", meaning: "Beer", formal: "Cerveza", example: "Vamos por unas chelas.", exampleEn: "Let's go get some beers.", note: "Very common, not vulgar at all", vulgar: false },
+                { word: "Fresa", meaning: "Preppy / Snobby person", formal: "Presumido", example: "Esa chava es muy fresa.", exampleEn: "That girl is really preppy.", note: "Literally means 'strawberry'", vulgar: false },
+                { word: "Padre", meaning: "Cool / Great", formal: "Genial", example: "¡Qué padre tu fiesta!", exampleEn: "Your party was so cool!", note: "Literally 'father' - very Mexican", vulgar: false },
+            ],
+            spain: [
+                { word: "Tío/Tía", meaning: "Dude / Girl", formal: "Amigo/a", example: "¡Tío, qué fuerte!", exampleEn: "Dude, that's intense!", note: "Literally 'uncle/aunt' - used constantly", vulgar: false },
+                { word: "Mola", meaning: "It's cool", formal: "Es genial", example: "Tu camiseta mola mucho.", exampleEn: "Your t-shirt is really cool.", note: "Molar = to be cool (verb)", vulgar: false },
+                { word: "Flipar", meaning: "To freak out / be amazed", formal: "Sorprenderse", example: "Estoy flipando con esto.", exampleEn: "I'm freaking out about this.", note: "Can be positive or negative", vulgar: false },
+                { word: "Currar", meaning: "To work", formal: "Trabajar", example: "Tengo que currar mañana.", exampleEn: "I have to work tomorrow.", note: "Very common in Spain", vulgar: false },
+                { word: "Quedada", meaning: "Meetup / Hangout", formal: "Reunión", example: "Hay una quedada el sábado.", exampleEn: "There's a meetup on Saturday.", note: "From 'quedar' (to meet up)", vulgar: false },
+                { word: "Majo/Maja", meaning: "Nice / Cool (person)", formal: "Simpático", example: "Tu novio es muy majo.", exampleEn: "Your boyfriend is really nice.", note: "Commonly used in central Spain", vulgar: false },
+                { word: "Guay", meaning: "Cool", formal: "Genial", example: "¡Qué guay!", exampleEn: "How cool!", note: "Classic Spanish slang", vulgar: false },
+                { word: "
+
+", meaning: "To party", formal: "Salir de fiesta", example: "¿Vamos a
+
+ esta noche?", exampleEn: "Shall we go partying tonight?", note: "Very common among young people", vulgar: false },
+            ],
+            argentina: [
+                { word: "Che", meaning: "Hey / Dude", formal: "Oye", example: "Che, ¿vamos al cine?", exampleEn: "Hey, shall we go to the movies?", note: "Iconic Argentine expression", vulgar: false },
+                { word: "Boludo/a", meaning: "Dude / Idiot (friendly)", formal: "Amigo / Tonto", example: "¡Qué hacés, boludo!", exampleEn: "What's up, dude!", note: "Can be friendly or insulting depending on tone", vulgar: true },
+                { word: "Bárbaro", meaning: "Great / Awesome", formal: "Excelente", example: "¡Qué bárbaro!", exampleEn: "How awesome!", note: "Very positive", vulgar: false },
+                { word: "Morfar", meaning: "To eat", formal: "Comer", example: "Vamos a morfar algo.", exampleEn: "Let's go eat something.", note: "From Lunfardo (Buenos Aires slang)", vulgar: false },
+                { word: "Afanar", meaning: "To steal", formal: "Robar", example: "Me afanaron el celular.", exampleEn: "They stole my phone.", note: "Very common slang", vulgar: false },
+                { word: "Laburo", meaning: "Work / Job", formal: "Trabajo", example: "Tengo mucho laburo hoy.", exampleEn: "I have a lot of work today.", note: "From Italian 'lavoro'", vulgar: false },
+                { word: "Mina", meaning: "Girl / Woman", formal: "Chica / Mujer", example: "Esa mina es muy linda.", exampleEn: "That girl is very pretty.", note: "Common but somewhat objectifying", vulgar: false },
+                { word: "Pibe/Piba", meaning: "Kid / Guy / Girl", formal: "Chico/a", example: "Es un buen pibe.", exampleEn: "He's a good guy.", note: "Very commonly used", vulgar: false },
+            ],
+            colombia: [
+                { word: "Parcero/Parce", meaning: "Buddy / Bro", formal: "Amigo", example: "¿Qué más, parce?", exampleEn: "What's up, bro?", note: "Very Colombian", vulgar: false },
+                { word: "Bacano", meaning: "Cool / Awesome", formal: "Genial", example: "¡Qué bacano tu apartamento!", exampleEn: "Your apartment is so cool!", note: "Can also be 'bacán'", vulgar: false },
+                { word: "Chimba", meaning: "Cool / Great", formal: "Genial", example: "¡Esa película está chimba!", exampleEn: "That movie is great!", note: "Can be vulgar in other contexts", vulgar: true },
+                { word: "Berraco", meaning: "Tough / Badass / Angry", formal: "Fuerte / Valiente", example: "Ese man es muy berraco.", exampleEn: "That guy is really tough.", note: "Context-dependent meaning", vulgar: false },
+                { word: "Rumbear", meaning: "To party", formal: "Ir de fiesta", example: "Vamos a rumbear el fin de semana.", exampleEn: "Let's party this weekend.", note: "Very common in Colombia", vulgar: false },
+                { word: "Guaro", meaning: "Aguardiente (liquor)", formal: "Aguardiente", example: "¿Nos tomamos unos guaros?", exampleEn: "Shall we have some aguardiente?", note: "National drink of Colombia", vulgar: false },
+                { word: "Paila", meaning: "Too bad / Tough luck", formal: "Qué pena / Mala suerte", example: "¿No hay más entradas? Paila.", exampleEn: "No more tickets? Tough luck.", note: "Literally means 'pan'", vulgar: false },
+                { word: "¿Quiubo?", meaning: "What's up?", formal: "¿Qué hubo? / ¿Cómo estás?", example: "¡Quiubo, parce!", exampleEn: "What's up, bro!", note: "Contraction of '¿Qué hubo?'", vulgar: false },
+            ],
+            chile: [
+                { word: "Po", meaning: "(emphasis particle)", formal: "Pues", example: "Sí po, obvio.", exampleEn: "Yeah, obviously.", note: "Added to everything in Chile", vulgar: false },
+                { word: "Cachai", meaning: "You know? / Get it?", formal: "¿Entiendes?", example: "Es difícil, ¿cachai?", exampleEn: "It's difficult, you know?", note: "From English 'to catch'", vulgar: false },
+                { word: "Bacán", meaning: "Cool / Awesome", formal: "Genial", example: "Tu polola es bacán.", exampleEn: "Your girlfriend is cool.", note: "Very common", vulgar: false },
+                { word: "Pololo/Polola", meaning: "Boyfriend/Girlfriend", formal: "Novio/Novia", example: "Te presento a mi polola.", exampleEn: "Let me introduce my girlfriend.", note: "Uniquely Chilean", vulgar: false },
+                { word: "Fome", meaning: "Boring / Lame", formal: "Aburrido", example: "Esta fiesta está fome.", exampleEn: "This party is boring.", note: "Very commonly used", vulgar: false },
+                { word: "Carrete", meaning: "Party", formal: "Fiesta", example: "Hay un carrete el viernes.", exampleEn: "There's a party on Friday.", note: "Also 'carretear' = to party", vulgar: false },
+                { word: "Al tiro", meaning: "Right away", formal: "Inmediatamente", example: "Lo hago al tiro.", exampleEn: "I'll do it right away.", note: "Very Chilean expression", vulgar: false },
+                { word: "Wea/Weón", meaning: "Thing / Dude", formal: "Cosa / Tipo", example: "Pásame esa wea.", exampleEn: "Pass me that thing.", note: "Extremely common but vulgar origins", vulgar: true },
+            ]
+        };
+
+        let selectedCountry = 'all';
+        let currentQuiz = 0;
+        let score = 0;
+        let answered = 0;
+        let quizPool = [];
+
+        function getAllSlang() {
+            let all = [];
+            for (const [country, items] of Object.entries(slangData)) {
+                items.forEach(item => all.push({ ...item, country }));
+            }
+            return all;
+        }
+
+        function getFilteredSlang() {
+            if (selectedCountry === 'all') return getAllSlang();
+            return slangData[selectedCountry].map(item => ({ ...item, country: selectedCountry }));
+        }
+
+        function getCountryName(code) {
+            const names = { mexico: 'México', spain: 'España', argentina: 'Argentina', colombia: 'Colombia', chile: 'Chile' };
+            return names[code] || code;
+        }
+
+        function getCountryFlag(code) {
+            const flags = { mexico: '🇲🇽', spain: '🇪🇸', argentina: '🇦🇷', colombia: '🇨🇴', chile: '🇨🇱' };
+            return flags[code] || '🌎';
+        }
+
+        function renderSlang() {
+            const container = document.getElementById('slangContainer');
+            const items = getFilteredSlang();
+
+            container.innerHTML = items.map((item, idx) => `
+                <div class="slang-card" onclick="this.classList.toggle('expanded')">
+                    <div class="slang-header">
+                        <div>
+                            <div class="slang-word">
+                                ${item.word}
+                                ${item.vulgar ? '<span class="warning-tag">informal</span>' : ''}
+                            </div>
+                            <div class="slang-translation">${item.meaning}</div>
+                        </div>
+                        <div class="slang-country-tag">${getCountryFlag(item.country)} ${getCountryName(item.country)}</div>
+                    </div>
+                    <div class="slang-details">
+                        <div class="slang-example">
+                            <div class="slang-example-es">"${item.example}"</div>
+                            <div class="slang-example-en">${item.exampleEn}</div>
+                        </div>
+                        <div class="slang-note">
+                            <span>💡</span>
+                            <span>${item.note}</span>
+                        </div>
+                        <div class="slang-formal">Formal: <strong>${item.formal}</strong></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function setupQuiz() {
+            quizPool = getAllSlang().sort(() => Math.random() - 0.5).slice(0, 8);
+            currentQuiz = 0;
+            score = 0;
+            answered = 0;
+            document.getElementById('scoreValue').textContent = '0/0';
+            renderQuiz();
+        }
+
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+
+            if (currentQuiz >= quizPool.length) {
+                container.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 12px;">🎉</div>
+                        <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 8px;">Quiz Complete!</div>
+                        <div style="color: var(--success); font-size: 1.3rem; font-weight: 700;">${score}/${quizPool.length}</div>
+                        <button class="cta-btn" onclick="setupQuiz()" style="margin-top: 16px;">Try Again</button>
+                    </div>
+                `;
+                return;
+            }
+
+            const q = quizPool[currentQuiz];
+            const wrongAnswers = getAllSlang()
+                .filter(s => s.word !== q.word)
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 3)
+                .map(s => s.meaning);
+
+            const options = [...wrongAnswers, q.meaning].sort(() => Math.random() - 0.5);
+
+            container.innerHTML = `
+                <div class="quiz-prompt">What does this mean?</div>
+                <div class="quiz-word">${q.word}</div>
+                <div class="quiz-country">${getCountryFlag(q.country)} ${getCountryName(q.country)}</div>
+                <div class="quiz-options">
+                    ${options.map((opt, i) => `
+                        <div class="quiz-option" onclick="checkAnswer('${opt.replace(/'/g, "\\'")}', '${q.meaning.replace(/'/g, "\\'")}')">${opt}</div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function checkAnswer(selected, correct) {
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+                if (opt.textContent === correct) opt.classList.add('correct');
+                else if (opt.textContent === selected) opt.classList.add('incorrect');
+            });
+
+            if (selected === correct) score++;
+            answered++;
+            document.getElementById('scoreValue').textContent = `${score}/${answered}`;
+
+            if (typeof Yespanol !== 'undefined') {
+                Yespanol.recordAttempt(`slang-${currentQuiz}`, 'vocabulary', selected === correct);
+            }
+
+            setTimeout(() => {
+                currentQuiz++;
+                renderQuiz();
+            }, 1200);
+        }
+
+        // Country selector
+        document.querySelectorAll('.country-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.country-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedCountry = btn.dataset.country;
+                renderSlang();
+            });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSlang();
+            setupQuiz();
+        });
+    </script>
+</body>
+</html>
