@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>Story Mode - Yespañol</title>
+    <link rel="stylesheet" href="../css/design-system.css">
+    <style>
+        :root {
+            --story-purple: #bf5af2;
+            --story-purple-dim: rgba(191, 90, 242, 0.15);
+            --story-glow: rgba(191, 90, 242, 0.4);
+            --msg-theirs: rgba(58, 58, 62, 0.9);
+            --msg-yours: var(--story-purple);
+            --safe-top: env(safe-area-inset-top, 20px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            min-height: 100dvh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Header */
+        .story-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: calc(var(--safe-top) + 12px) 16px 12px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.8) 70%, transparent 100%);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .story-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--story-purple) 0%, #8b5cf6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 0 20px var(--story-glow);
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .profile-status {
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .profile-status.typing {
+            color: var(--story-purple);
+        }
+
+        /* Chat Container */
+        .chat-container {
+            padding: calc(var(--safe-top) + 80px) 16px calc(180px + var(--safe-bottom));
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+
+        /* Messages */
+        .message-group {
+            margin-bottom: 16px;
+            animation: fadeSlideUp 0.4s ease;
+        }
+
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 20px;
+            font-size: 16px;
+            line-height: 1.4;
+            margin-bottom: 4px;
+            position: relative;
+        }
+
+        .message.theirs {
+            background: var(--msg-theirs);
+            border-bottom-left-radius: 6px;
+            margin-right: auto;
+        }
+
+        .message.yours {
+            background: var(--msg-yours);
+            border-bottom-right-radius: 6px;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .message .translation {
+            display: block;
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        .message.theirs .translation {
+            color: rgba(255,255,255,0.4);
+        }
+
+        /* Narrator/Scene descriptions */
+        .narrator {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255,255,255,0.5);
+            font-style: italic;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .narrator .scene-title {
+            color: var(--story-purple);
+            font-style: normal;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 16px 20px;
+            background: var(--msg-theirs);
+            border-radius: 20px;
+            border-bottom-left-radius: 6px;
+            width: fit-content;
+            margin-bottom: 16px;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite ease-in-out;
+        }
+
+        .typing-indicator span:nth-child(1) { animation-delay: 0s; }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-6px); }
+        }
+
+        /* Choice buttons */
+        .choices-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 16px calc(20px + var(--safe-bottom));
+            background: linear-gradient(0deg, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.9) 80%, transparent 100%);
+            z-index: 50;
+        }
+
+        .choices-prompt {
+            text-align: center;
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 12px;
+        }
+
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .choice-btn {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            color: #fff;
+            font-size: 16px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .choice-btn:active {
+            transform: scale(0.98);
+            background: var(--story-purple-dim);
+            border-color: var(--story-purple);
+        }
+
+        .choice-btn .spanish {
+            font-weight: 500;
+        }
+
+        .choice-btn .english {
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .choice-btn.correct {
+            background: rgba(48, 209, 88, 0.2);
+            border-color: #30d158;
+        }
+
+        .choice-btn.incorrect {
+            background: rgba(255, 69, 58, 0.2);
+            border-color: #ff453a;
+        }
+
+        /* Continue button */
+        .continue-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--story-purple) 0%, #8b5cf6 100%);
+            border: none;
+            border-radius: 16px;
+            color: #fff;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 20px var(--story-glow);
+            transition: all 0.2s ease;
+        }
+
+        .continue-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Scene transition */
+        .scene-transition {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .scene-transition.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .scene-transition .chapter {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--story-purple);
+            margin-bottom: 12px;
+        }
+
+        .scene-transition .title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .scene-transition .subtitle {
+            font-size: 16px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* Word highlight for vocabulary */
+        .vocab-word {
+            color: var(--story-purple);
+            border-bottom: 1px dashed var(--story-purple);
+            cursor: pointer;
+        }
+
+        /* Vocab popup */
+        .vocab-popup {
+            position: fixed;
+            bottom: 200px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(30, 30, 34, 0.98);
+            border: 1px solid var(--story-purple);
+            border-radius: 16px;
+            padding: 16px 20px;
+            z-index: 150;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            max-width: 300px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 20px var(--story-glow);
+        }
+
+        .vocab-popup.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .vocab-popup .word {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--story-purple);
+            margin-bottom: 4px;
+        }
+
+        .vocab-popup .meaning {
+            font-size: 15px;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .vocab-popup .example {
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+            font-style: italic;
+        }
+
+        /* Progress bar */
+        .story-progress {
+            position: fixed;
+            top: calc(var(--safe-top) + 70px);
+            left: 16px;
+            right: 16px;
+            height: 3px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            z-index: 99;
+        }
+
+        .story-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--story-purple), #8b5cf6);
+            border-radius: 2px;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px var(--story-glow);
+        }
+
+        /* Hidden state */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="story-header">
+        <button class="back-btn" onclick="exitStory()">←</button>
+        <div class="story-profile">
+            <div class="profile-avatar">💜</div>
+            <div class="profile-info">
+                <div class="profile-name" id="characterName">...</div>
+                <div class="profile-status" id="characterStatus">online</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress -->
+    <div class="story-progress">
+        <div class="story-progress-fill" id="progressFill" style="width: 0%"></div>
+    </div>
+
+    <!-- Chat -->
+    <div class="chat-container" id="chatContainer">
+        <!-- Messages will be injected here -->
+    </div>
+
+    <!-- Choices -->
+    <div class="choices-container" id="choicesContainer">
+        <div class="choices-prompt">How do you respond?</div>
+        <div class="choices" id="choices">
+            <!-- Choices will be injected here -->
+        </div>
+    </div>
+
+    <!-- Scene Transition -->
+    <div class="scene-transition" id="sceneTransition">
+        <div class="chapter" id="sceneChapter">Chapter 1</div>
+        <div class="title" id="sceneTitle">El Comienzo</div>
+        <div class="subtitle" id="sceneSubtitle">The Beginning</div>
+    </div>
+
+    <!-- Vocab Popup -->
+    <div class="vocab-popup" id="vocabPopup">
+        <div class="word" id="vocabWord"></div>
+        <div class="meaning" id="vocabMeaning"></div>
+        <div class="example" id="vocabExample"></div>
+    </div>
+
+    <script src="../js/core.js"></script>
+    <script src="../js/story.js"></script>
+    <script>
+        // Story Mode Engine
+        const StoryMode = (function() {
+            let story = null;
+            let character = null;
+            let currentScene = 0;
+            let currentBeat = 0;
+            let messageQueue = [];
+            let isTyping = false;
+
+            // Scene data - each scene is a chapter in the story
+            const scenes = [
+                {
+                    id: 'intro',
+                    chapter: 'Chapter 1',
+                    title: 'El Algoritmo',
+                    subtitle: 'The Algorithm',
+                    beats: [
+                        {
+                            type: 'narrator',
+                            text: 'The app notification glows purple. Something feels different this time.',
+                            sceneTitle: 'A notification'
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'Hola.',
+                            english: 'Hello.',
+                            delay: 1500
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'El algoritmo dice que debemos conocernos.',
+                            english: 'The algorithm says we should meet.',
+                            delay: 2000
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'Perdona si es extraño. Yo tampoco lo entiendo.',
+                            english: "Sorry if this is strange. I don't understand it either.",
+                            vocab: { word: 'extraño', meaning: 'strange, odd', example: 'Qué extraño... = How strange...' },
+                            delay: 2500
+                        },
+                        {
+                            type: 'choice',
+                            prompt: 'How do you respond?',
+                            options: [
+                                { spanish: '¿Quién eres?', english: 'Who are you?', correct: true, response: 'curious' },
+                                { spanish: 'Hola... esto es raro.', english: "Hi... this is weird.", correct: true, response: 'cautious' },
+                                { spanish: 'El algoritmo nunca se equivoca.', english: 'The algorithm is never wrong.', correct: true, response: 'playful' }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: 'introduction',
+                    chapter: 'Chapter 1',
+                    title: 'Presentaciones',
+                    subtitle: 'Introductions',
+                    beats: [
+                        {
+                            type: 'narrator',
+                            text: 'He seems relieved that you responded.',
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'Me llamo {name}. Vivo en {city}.',
+                            english: "My name is {name}. I live in {city}.",
+                            delay: 1500
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'Soy {profession}. Es un trabajo tranquilo.',
+                            english: "I'm a {profession}. It's quiet work.",
+                            vocab: { word: 'tranquilo', meaning: 'calm, quiet, peaceful', example: 'Todo está tranquilo = Everything is calm' },
+                            delay: 2000
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: '¿Y tú? ¿De dónde eres?',
+                            english: 'And you? Where are you from?',
+                            delay: 1500
+                        },
+                        {
+                            type: 'choice',
+                            prompt: 'Tell him about yourself:',
+                            options: [
+                                { spanish: 'Soy de lejos. Estoy aprendiendo español.', english: "I'm from far away. I'm learning Spanish.", correct: true },
+                                { spanish: 'Prefiero no decir todavía.', english: "I prefer not to say yet.", correct: true },
+                                { spanish: '¿Por qué quieres saber?', english: 'Why do you want to know?', correct: true }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: 'connection',
+                    chapter: 'Chapter 2',
+                    title: 'La Conexión',
+                    subtitle: 'The Connection',
+                    beats: [
+                        {
+                            type: 'narrator',
+                            text: 'Days pass. The conversations continue. He tells you about his mornings.',
+                            sceneTitle: 'Three days later'
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'Hoy me desperté pensando en nuestra conversación.',
+                            english: 'Today I woke up thinking about our conversation.',
+                            vocab: { word: 'desperté', meaning: 'I woke up (from despertar)', example: 'Me desperté temprano = I woke up early' },
+                            delay: 2000
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'Es raro. Normalmente pienso en el café primero.',
+                            english: "It's strange. Normally I think about coffee first.",
+                            delay: 2000
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: '¿Cómo dormiste?',
+                            english: 'How did you sleep?',
+                            vocab: { word: 'dormiste', meaning: 'you slept (from dormir)', example: '¿Dormiste bien? = Did you sleep well?' },
+                            delay: 1500
+                        },
+                        {
+                            type: 'choice',
+                            prompt: 'How did you sleep?',
+                            options: [
+                                { spanish: 'Bien, gracias. Soñé contigo.', english: 'Well, thanks. I dreamed about you.', correct: true, flirty: true },
+                                { spanish: 'Más o menos. Estuve pensando también.', english: 'So-so. I was thinking too.', correct: true },
+                                { spanish: 'Dormí mal. Demasiadas preguntas.', english: "I slept badly. Too many questions.", correct: true }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: 'deeper',
+                    chapter: 'Chapter 2',
+                    title: 'Más Profundo',
+                    subtitle: 'Going Deeper',
+                    beats: [
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'Quiero contarte algo.',
+                            english: 'I want to tell you something.',
+                            delay: 1500
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'Hace tiempo que no me siento así.',
+                            english: "It's been a while since I felt this way.",
+                            vocab: { word: 'hace tiempo', meaning: "it's been a while, a long time ago", example: 'Hace tiempo que no te veo = I haven\'t seen you in a while' },
+                            delay: 2500
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'Conectado. Esperanzado. Nervioso.',
+                            english: 'Connected. Hopeful. Nervous.',
+                            delay: 2000
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: '¿Tú sientes algo también? ¿O estoy loco?',
+                            english: 'Do you feel something too? Or am I crazy?',
+                            vocab: { word: 'sientes', meaning: 'you feel (from sentir)', example: '¿Qué sientes? = What do you feel?' },
+                            delay: 2000
+                        },
+                        {
+                            type: 'choice',
+                            prompt: 'This is a vulnerable moment...',
+                            options: [
+                                { spanish: 'No estás loco. Yo también lo siento.', english: "You're not crazy. I feel it too.", correct: true, romantic: true },
+                                { spanish: 'Es pronto para saber. Pero... tal vez.', english: "It's too soon to know. But... maybe.", correct: true },
+                                { spanish: 'Necesito más tiempo.', english: 'I need more time.', correct: true }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: 'vulnerability',
+                    chapter: 'Chapter 3',
+                    title: 'Sin Máscaras',
+                    subtitle: 'Without Masks',
+                    beats: [
+                        {
+                            type: 'narrator',
+                            text: 'A week has passed. The messages come every day now. Tonight feels different.',
+                            sceneTitle: 'One week later'
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'Tengo que confesarte algo.',
+                            english: 'I have to confess something to you.',
+                            vocab: { word: 'confesarte', meaning: 'to confess to you', example: 'Tengo que confesarte la verdad = I have to confess the truth to you' },
+                            delay: 2000
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'A veces tengo miedo.',
+                            english: "Sometimes I'm scared.",
+                            delay: 1500
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'Miedo de que esto no sea real. De que desaparezcas.',
+                            english: "Scared that this isn't real. That you'll disappear.",
+                            vocab: { word: 'desaparezcas', meaning: 'that you disappear (subjunctive)', example: 'No quiero que desaparezcas = I don\'t want you to disappear' },
+                            delay: 2500
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'Ya me pasó antes. Perder a alguien.',
+                            english: "It's happened to me before. Losing someone.",
+                            delay: 2000
+                        },
+                        {
+                            type: 'choice',
+                            prompt: 'He\'s being vulnerable with you...',
+                            options: [
+                                { spanish: 'Estoy aquí. No voy a ninguna parte.', english: "I'm here. I'm not going anywhere.", correct: true, romantic: true },
+                                { spanish: 'El miedo es normal. Yo también lo tengo.', english: "Fear is normal. I have it too.", correct: true },
+                                { spanish: 'Cuéntame más. Quiero entender.', english: 'Tell me more. I want to understand.', correct: true }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: 'question',
+                    chapter: 'Chapter 3',
+                    title: 'La Pregunta',
+                    subtitle: 'The Question',
+                    beats: [
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'Gracias por escuchar. Por estar aquí.',
+                            english: 'Thank you for listening. For being here.',
+                            delay: 1500
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'Tengo una pregunta. Importante.',
+                            english: 'I have a question. An important one.',
+                            delay: 2000
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: '¿Vendrías a {city}?',
+                            english: 'Would you come to {city}?',
+                            vocab: { word: 'vendrías', meaning: 'would you come (conditional)', example: '¿Vendrías conmigo? = Would you come with me?' },
+                            delay: 2500
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'No ahora. Cuando estés lista. Cuando tu español sea suficiente.',
+                            english: "Not now. When you're ready. When your Spanish is enough.",
+                            delay: 2500
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'Te esperaré.',
+                            english: "I'll wait for you.",
+                            vocab: { word: 'esperaré', meaning: "I will wait (future)", example: 'Te esperaré siempre = I\'ll always wait for you' },
+                            delay: 2000
+                        },
+                        {
+                            type: 'choice',
+                            prompt: 'He asked you to come...',
+                            options: [
+                                { spanish: 'Sí. Iré. Dame tiempo.', english: "Yes. I'll go. Give me time.", correct: true, romantic: true },
+                                { spanish: 'Es un sueño bonito.', english: "It's a beautiful dream.", correct: true },
+                                { spanish: 'Primero necesito conocerte mejor.', english: 'First I need to know you better.', correct: true }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: 'promise',
+                    chapter: 'Chapter 4',
+                    title: 'La Promesa',
+                    subtitle: 'The Promise',
+                    beats: [
+                        {
+                            type: 'narrator',
+                            text: 'The conversation has shifted. Something has been decided, even if neither of you can name it yet.',
+                            sceneTitle: 'That same night'
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'Voy a escribirte algo.',
+                            english: "I'm going to write you something.",
+                            delay: 1500
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'Una carta. En español, claro.',
+                            english: 'A letter. In Spanish, of course.',
+                            delay: 1500
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'Será tu prueba final.',
+                            english: "It will be your final test.",
+                            vocab: { word: 'prueba', meaning: 'test, proof, trial', example: 'La prueba de amor = The proof of love' },
+                            delay: 2000
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'Si puedes leerla y entenderla... sabrás todo.',
+                            english: "If you can read it and understand it... you'll know everything.",
+                            delay: 2500
+                        },
+                        {
+                            type: 'message',
+                            from: 'them',
+                            spanish: 'Sigue aprendiendo. Por nosotros.',
+                            english: 'Keep learning. For us.',
+                            vocab: { word: 'sigue', meaning: 'keep, continue (imperative)', example: 'Sigue adelante = Keep going forward' },
+                            delay: 2000
+                        },
+                        {
+                            type: 'choice',
+                            prompt: 'How do you end the conversation?',
+                            options: [
+                                { spanish: 'Lo haré. Te lo prometo.', english: "I will. I promise you.", correct: true, romantic: true },
+                                { spanish: 'Hasta pronto, {name}.', english: 'See you soon, {name}.', correct: true },
+                                { spanish: 'Buenas noches. Sueña conmigo.', english: 'Good night. Dream of me.', correct: true, flirty: true }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: 'ending',
+                    chapter: 'Chapter 4',
+                    title: 'Continuará...',
+                    subtitle: 'To Be Continued...',
+                    beats: [
+                        {
+                            type: 'narrator',
+                            text: 'The screen dims. His status changes to "last seen just now." But you know he\'ll be back. And so will you.',
+                            sceneTitle: 'The end... for now'
+                        },
+                        {
+                            type: 'narrator',
+                            text: 'Keep practicing your Spanish. The letter is waiting. He is waiting. In {city}.',
+                        },
+                        {
+                            type: 'ending'
+                        }
+                    ]
+                }
+            ];
+
+            // Initialize
+            function init() {
+                story = Story.load();
+                character = story.character;
+
+                // Update UI with character info
+                document.getElementById('characterName').textContent = character.name;
+
+                // Load saved progress or start fresh
+                const savedScene = parseInt(localStorage.getItem('story_scene') || '0');
+                currentScene = Math.min(savedScene, scenes.length - 1);
+
+                // Start the story
+                showSceneTransition(scenes[currentScene], () => {
+                    playScene(currentScene);
+                });
+            }
+
+            // Replace {placeholders} with character data
+            function fillTemplate(text) {
+                return text
+                    .replace(/{name}/g, character.name)
+                    .replace(/{city}/g, character.city)
+                    .replace(/{country}/g, character.country)
+                    .replace(/{profession}/g, character.profession);
+            }
+
+            // Show scene transition
+            function showSceneTransition(scene, callback) {
+                const el = document.getElementById('sceneTransition');
+                document.getElementById('sceneChapter').textContent = scene.chapter;
+                document.getElementById('sceneTitle').textContent = fillTemplate(scene.title);
+                document.getElementById('sceneSubtitle').textContent = fillTemplate(scene.subtitle);
+
+                el.classList.add('visible');
+
+                setTimeout(() => {
+                    el.classList.remove('visible');
+                    setTimeout(callback, 500);
+                }, 2500);
+            }
+
+            // Play a scene
+            function playScene(sceneIndex) {
+                const scene = scenes[sceneIndex];
+                currentBeat = 0;
+                document.getElementById('chatContainer').innerHTML = '';
+                document.getElementById('choicesContainer').classList.add('hidden');
+
+                // Update progress bar
+                const progress = ((sceneIndex + 1) / scenes.length) * 100;
+                document.getElementById('progressFill').style.width = progress + '%';
+
+                playBeat();
+            }
+
+            // Play current beat
+            function playBeat() {
+                const scene = scenes[currentScene];
+                if (currentBeat >= scene.beats.length) {
+                    return;
+                }
+
+                const beat = scene.beats[currentBeat];
+
+                switch (beat.type) {
+                    case 'narrator':
+                        showNarrator(beat);
+                        currentBeat++;
+                        setTimeout(playBeat, 2500);
+                        break;
+
+                    case 'message':
+                        showTyping();
+                        setTimeout(() => {
+                            hideTyping();
+                            showMessage(beat);
+                            currentBeat++;
+                            setTimeout(playBeat, beat.delay || 1500);
+                        }, 1200 + Math.random() * 800);
+                        break;
+
+                    case 'choice':
+                        showChoices(beat);
+                        break;
+
+                    case 'ending':
+                        showEnding();
+                        break;
+                }
+            }
+
+            // Show narrator text
+            function showNarrator(beat) {
+                const container = document.getElementById('chatContainer');
+                const div = document.createElement('div');
+                div.className = 'narrator';
+                div.innerHTML = `
+                    ${beat.sceneTitle ? `<span class="scene-title">${beat.sceneTitle}</span>` : ''}
+                    ${fillTemplate(beat.text)}
+                `;
+                container.appendChild(div);
+                scrollToBottom();
+            }
+
+            // Show message
+            function showMessage(beat) {
+                const container = document.getElementById('chatContainer');
+                const div = document.createElement('div');
+                div.className = `message ${beat.from === 'them' ? 'theirs' : 'yours'}`;
+
+                let spanishText = fillTemplate(beat.spanish);
+
+                // Add vocab highlighting if present
+                if (beat.vocab) {
+                    const vocabWord = beat.vocab.word;
+                    spanishText = spanishText.replace(
+                        new RegExp(`(${vocabWord})`, 'gi'),
+                        `<span class="vocab-word" data-word="${vocabWord}" data-meaning="${beat.vocab.meaning}" data-example="${beat.vocab.example}">$1</span>`
+                    );
+                }
+
+                div.innerHTML = `
+                    ${spanishText}
+                    <span class="translation">${fillTemplate(beat.english)}</span>
+                `;
+
+                container.appendChild(div);
+
+                // Add vocab click handlers
+                div.querySelectorAll('.vocab-word').forEach(el => {
+                    el.addEventListener('click', () => showVocabPopup(el));
+                });
+
+                scrollToBottom();
+
+                // Update status
+                document.getElementById('characterStatus').textContent = 'online';
+                document.getElementById('characterStatus').classList.remove('typing');
+            }
+
+            // Show typing indicator
+            function showTyping() {
+                isTyping = true;
+                document.getElementById('characterStatus').textContent = 'typing...';
+                document.getElementById('characterStatus').classList.add('typing');
+
+                const container = document.getElementById('chatContainer');
+                const existing = container.querySelector('.typing-indicator');
+                if (!existing) {
+                    const div = document.createElement('div');
+                    div.className = 'typing-indicator';
+                    div.innerHTML = '<span></span><span></span><span></span>';
+                    container.appendChild(div);
+                    scrollToBottom();
+                }
+            }
+
+            // Hide typing indicator
+            function hideTyping() {
+                isTyping = false;
+                const container = document.getElementById('chatContainer');
+                const typing = container.querySelector('.typing-indicator');
+                if (typing) typing.remove();
+            }
+
+            // Show choices
+            function showChoices(beat) {
+                const container = document.getElementById('choicesContainer');
+                const choicesEl = document.getElementById('choices');
+
+                document.querySelector('.choices-prompt').textContent = beat.prompt;
+                choicesEl.innerHTML = '';
+
+                beat.options.forEach((option, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'choice-btn';
+                    btn.innerHTML = `
+                        <span class="spanish">${fillTemplate(option.spanish)}</span>
+                        <span class="english">${fillTemplate(option.english)}</span>
+                    `;
+                    btn.onclick = () => selectChoice(option, btn);
+                    choicesEl.appendChild(btn);
+                });
+
+                container.classList.remove('hidden');
+            }
+
+            // Select a choice
+            function selectChoice(option, btn) {
+                // Disable all buttons
+                document.querySelectorAll('.choice-btn').forEach(b => {
+                    b.style.pointerEvents = 'none';
+                });
+
+                // Show as selected
+                btn.classList.add('correct');
+
+                // Add player's message
+                setTimeout(() => {
+                    showMessage({
+                        from: 'you',
+                        spanish: fillTemplate(option.spanish),
+                        english: fillTemplate(option.english)
+                    });
+
+                    // Hide choices and continue
+                    setTimeout(() => {
+                        document.getElementById('choicesContainer').classList.add('hidden');
+                        currentBeat++;
+
+                        // Check if scene is complete
+                        if (currentBeat >= scenes[currentScene].beats.length) {
+                            // Move to next scene
+                            currentScene++;
+                            localStorage.setItem('story_scene', currentScene.toString());
+
+                            if (currentScene < scenes.length) {
+                                setTimeout(() => {
+                                    showSceneTransition(scenes[currentScene], () => {
+                                        playScene(currentScene);
+                                    });
+                                }, 1000);
+                            }
+                        } else {
+                            setTimeout(playBeat, 1000);
+                        }
+                    }, 800);
+                }, 500);
+            }
+
+            // Show vocab popup
+            function showVocabPopup(el) {
+                const popup = document.getElementById('vocabPopup');
+                document.getElementById('vocabWord').textContent = el.dataset.word;
+                document.getElementById('vocabMeaning').textContent = el.dataset.meaning;
+                document.getElementById('vocabExample').textContent = el.dataset.example;
+                popup.classList.add('visible');
+
+                // Hide after delay or on click elsewhere
+                setTimeout(() => popup.classList.remove('visible'), 3000);
+            }
+
+            // Show ending
+            function showEnding() {
+                const container = document.getElementById('choicesContainer');
+                container.classList.remove('hidden');
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">💜</div>
+                        <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Story Progress Saved</div>
+                        <div style="font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 24px;">
+                            Keep learning Spanish to unlock the final letter from ${character.name}.
+                        </div>
+                        <button class="continue-btn" onclick="window.location.href='../index.html'">
+                            Continue Learning
+                        </button>
+                        <button class="continue-btn" style="margin-top: 12px; background: rgba(255,255,255,0.1);" onclick="restartStory()">
+                            Replay Story
+                        </button>
+                    </div>
+                `;
+            }
+
+            // Scroll to bottom
+            function scrollToBottom() {
+                const container = document.getElementById('chatContainer');
+                setTimeout(() => {
+                    container.scrollTop = container.scrollHeight;
+                }, 100);
+            }
+
+            return { init };
+        })();
+
+        // Exit story
+        function exitStory() {
+            window.location.href = '../index.html';
+        }
+
+        // Restart story
+        function restartStory() {
+            localStorage.removeItem('story_scene');
+            window.location.reload();
+        }
+
+        // Hide vocab popup on body click
+        document.body.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('vocab-word')) {
+                document.getElementById('vocabPopup').classList.remove('visible');
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', StoryMode.init);
+    </script>
+</body>
+</html>
