@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish Practice - Intermediate</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #eee;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e94560;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #e94560;
+            margin-bottom: 0.5rem;
+        }
+
+        .level-badge {
+            display: inline-block;
+            background: #e94560;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        nav {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        nav button {
+            background: #0f3460;
+            color: #eee;
+            border: 2px solid #e94560;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        nav button:hover, nav button.active {
+            background: #e94560;
+            color: white;
+        }
+
+        .section {
+            display: none;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        h2 {
+            color: #e94560;
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+        }
+
+        h3 {
+            color: #fff;
+            margin: 1.5rem 0 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .exercise {
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .exercise p {
+            margin-bottom: 0.75rem;
+        }
+
+        input[type="text"] {
+            background: #0f3460;
+            border: 2px solid #e94560;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            width: 150px;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #fff;
+        }
+
+        button.check-btn {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.25rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-left: 0.5rem;
+        }
+
+        button.check-btn:hover {
+            background: #ff6b6b;
+        }
+
+        .feedback {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .feedback.correct {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+
+        .feedback.incorrect {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        .vocab-card {
+            background: #0f3460;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .vocab-card:hover {
+            transform: translateX(5px);
+        }
+
+        .vocab-word {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #e94560;
+        }
+
+        .vocab-translation {
+            color: #aaa;
+            font-style: italic;
+            display: none;
+        }
+
+        .vocab-card.revealed .vocab-translation {
+            display: block;
+        }
+
+        .vocab-example {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #ccc;
+            display: none;
+        }
+
+        .vocab-card.revealed .vocab-example {
+            display: block;
+        }
+
+        .conjugation-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .conjugation-table th, .conjugation-table td {
+            padding: 0.5rem;
+            border: 1px solid #e94560;
+            text-align: left;
+        }
+
+        .conjugation-table th {
+            background: #e94560;
+            color: white;
+        }
+
+        .conjugation-table tr:nth-child(even) {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 1.5rem;
+            margin: 1rem 0;
+            color: #e94560;
+        }
+
+        .tip {
+            background: rgba(233, 69, 96, 0.1);
+            border-left: 4px solid #e94560;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .reading-passage {
+            background: #0f3460;
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .question {
+            margin: 1rem 0;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .option {
+            background: rgba(255,255,255,0.05);
+            padding: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .option:hover {
+            border-color: #e94560;
+        }
+
+        .option.selected {
+            border-color: #e94560;
+            background: rgba(233, 69, 96, 0.2);
+        }
+
+        .option.correct-answer {
+            border-color: #2ecc71;
+            background: rgba(46, 204, 113, 0.2);
+        }
+
+        .option.wrong-answer {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.2);
+        }
+
+        .shuffle-btn {
+            background: #0f3460;
+            color: #eee;
+            border: 2px solid #e94560;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        .shuffle-btn:hover {
+            background: #e94560;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: #666;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Practica tu Espanol</h1>
+            <span class="level-badge">Nivel Intermedio (B1-B2)</span>
+        </header>
+
+        <nav>
+            <button class="active" onclick="showSection('vocab')">Vocabulario</button>
+            <button onclick="showSection('conjugation')">Conjugaciones</button>
+            <button onclick="showSection('fillblank')">Completa</button>
+            <button onclick="showSection('reading')">Lectura</button>
+            <button onclick="showSection('subjunctive')">Subjuntivo</button>
+        </nav>
+
+        <!-- VOCABULARY SECTION -->
+        <div id="vocab" class="section active">
+            <h2>Vocabulario Intermedio</h2>
+            <p style="margin-bottom: 1rem; color: #aaa;">Click en cada tarjeta para revelar la traduccion y ejemplo.</p>
+
+            <button class="shuffle-btn" onclick="shuffleVocab()">Mezclar tarjetas</button>
+
+            <div id="vocab-container">
+                <div class="vocab-card" onclick="this.classList.toggle('revealed')">
+                    <div class="vocab-word">desarrollar</div>
+                    <div class="vocab-translation">to develop</div>
+                    <div class="vocab-example">"Necesitamos desarrollar nuevas estrategias para el mercado."</div>
+                </div>
+
+                <div class="vocab-card" onclick="this.classList.toggle('revealed')">
+                    <div class="vocab-word">sin embargo</div>
+                    <div class="vocab-translation">however, nevertheless</div>
+                    <div class="vocab-example">"El proyecto es dificil; sin embargo, vamos a terminarlo a tiempo."</div>
+                </div>
+
+                <div class="vocab-card" onclick="this.classList.toggle('revealed')">
+                    <div class="vocab-word">aprovechar</div>
+                    <div class="vocab-translation">to take advantage of, to make the most of</div>
+                    <div class="vocab-example">"Hay que aprovechar cada oportunidad que se presenta."</div>
+                </div>
+
+                <div class="vocab-card" onclick="this.classList.toggle('revealed')">
+                    <div class="vocab-word">destacar</div>
+                    <div class="vocab-translation">to stand out, to highlight</div>
+                    <div class="vocab-example">"Quiero destacar la importancia de este tema."</div>
+                </div>
+
+                <div class="vocab-card" onclick="this.classList.toggle('revealed')">
+                    <div class="vocab-word">a pesar de</div>
+                    <div class="vocab-translation">despite, in spite of</div>
+                    <div class="vocab-example">"A pesar de la lluvia, fuimos al parque."</div>
+                </div>
+
+                <div class="vocab-card" onclick="this.classList.toggle('revealed')">
+                    <div class="vocab-word">lograr</div>
+                    <div class="vocab-translation">to achieve, to manage to</div>
+                    <div class="vocab-example">"Finalmente logre entender la leccion."</div>
+                </div>
+
+                <div class="vocab-card" onclick="this.classList.toggle('revealed')">
+                    <div class="vocab-word">a menudo</div>
+                    <div class="vocab-translation">often, frequently</div>
+                    <div class="vocab-example">"A menudo voy al gimnasio por las mananas."</div>
+                </div>
+
+                <div class="vocab-card" onclick="this.classList.toggle('revealed')">
+                    <div class="vocab-word">realizar</div>
+                    <div class="vocab-translation">to carry out, to accomplish (NOT "to realize")</div>
+                    <div class="vocab-example">"Vamos a realizar una investigacion sobre el tema."</div>
+                </div>
+
+                <div class="vocab-card" onclick="this.classList.toggle('revealed')">
+                    <div class="vocab-word">mediante</div>
+                    <div class="vocab-translation">through, by means of</div>
+                    <div class="vocab-example">"Lo conseguimos mediante mucho trabajo y dedicacion."</div>
+                </div>
+
+                <div class="vocab-card" onclick="this.classList.toggle('revealed')">
+                    <div class="vocab-word">en cuanto a</div>
+                    <div class="vocab-translation">as for, regarding</div>
+                    <div class="vocab-example">"En cuanto a tu pregunta, todavia no tengo respuesta."</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONJUGATION SECTION -->
+        <div id="conjugation" class="section">
+            <h2>Tiempos Verbales Intermedios</h2>
+
+            <h3>Preterito Imperfecto</h3>
+            <div class="tip">Usamos el imperfecto para describir acciones habituales en el pasado, descripciones, y acciones en progreso.</div>
+
+            <table class="conjugation-table">
+                <tr><th>Persona</th><th>HABLAR</th><th>COMER</th><th>VIVIR</th></tr>
+                <tr><td>yo</td><td>hablaba</td><td>comia</td><td>vivia</td></tr>
+                <tr><td>tu</td><td>hablabas</td><td>comias</td><td>vivias</td></tr>
+                <tr><td>el/ella</td><td>hablaba</td><td>comia</td><td>vivia</td></tr>
+                <tr><td>nosotros</td><td>hablabamos</td><td>comiamos</td><td>viviamos</td></tr>
+                <tr><td>ellos/ellas</td><td>hablaban</td><td>comian</td><td>vivian</td></tr>
+            </table>
+
+            <h3>Condicional</h3>
+            <div class="tip">El condicional expresa situaciones hipoteticas, deseos, y cortesia. Se forma con el infinitivo + terminaciones.</div>
+
+            <table class="conjugation-table">
+                <tr><th>Persona</th><th>HABLAR</th><th>COMER</th><th>VIVIR</th></tr>
+                <tr><td>yo</td><td>hablaria</td><td>comeria</td><td>viviria</td></tr>
+                <tr><td>tu</td><td>hablarias</td><td>comerias</td><td>vivirias</td></tr>
+                <tr><td>el/ella</td><td>hablaria</td><td>comeria</td><td>viviria</td></tr>
+                <tr><td>nosotros</td><td>hablariamos</td><td>comeriamos</td><td>viviriamos</td></tr>
+                <tr><td>ellos/ellas</td><td>hablarian</td><td>comerian</td><td>vivirian</td></tr>
+            </table>
+
+            <h3>Verbos Irregulares en Condicional</h3>
+            <table class="conjugation-table">
+                <tr><th>Infinitivo</th><th>Raiz</th><th>Ejemplo (yo)</th></tr>
+                <tr><td>tener</td><td>tendr-</td><td>tendria</td></tr>
+                <tr><td>poder</td><td>podr-</td><td>podria</td></tr>
+                <tr><td>saber</td><td>sabr-</td><td>sabria</td></tr>
+                <tr><td>hacer</td><td>har-</td><td>haria</td></tr>
+                <tr><td>decir</td><td>dir-</td><td>diria</td></tr>
+                <tr><td>querer</td><td>querr-</td><td>querria</td></tr>
+                <tr><td>venir</td><td>vendr-</td><td>vendria</td></tr>
+                <tr><td>salir</td><td>saldr-</td><td>saldria</td></tr>
+            </table>
+        </div>
+
+        <!-- FILL IN THE BLANK SECTION -->
+        <div id="fillblank" class="section">
+            <h2>Completa las Oraciones</h2>
+            <p style="margin-bottom: 1rem; color: #aaa;">Escribe la forma correcta del verbo entre parentesis.</p>
+
+            <div class="exercise" data-answer="hablaba">
+                <p>Cuando era nino, yo siempre <input type="text" id="ex1"> con mi abuela en espanol. (HABLAR - imperfecto)</p>
+                <button class="check-btn" onclick="checkAnswer('ex1', 'hablaba')">Verificar</button>
+                <div class="feedback" id="fb1"></div>
+            </div>
+
+            <div class="exercise" data-answer="podria">
+                <p>Si tuviera mas tiempo, <input type="text" id="ex2"> aprender otro idioma. (PODER - condicional)</p>
+                <button class="check-btn" onclick="checkAnswer('ex2', 'podria')">Verificar</button>
+                <div class="feedback" id="fb2"></div>
+            </div>
+
+            <div class="exercise" data-answer="comian">
+                <p>Mis abuelos <input type="text" id="ex3"> paella todos los domingos. (COMER - imperfecto)</p>
+                <button class="check-btn" onclick="checkAnswer('ex3', 'comian')">Verificar</button>
+                <div class="feedback" id="fb3"></div>
+            </div>
+
+            <div class="exercise" data-answer="haria">
+                <p>Yo <input type="text" id="ex4"> cualquier cosa por mi familia. (HACER - condicional)</p>
+                <button class="check-btn" onclick="checkAnswer('ex4', 'haria')">Verificar</button>
+                <div class="feedback" id="fb4"></div>
+            </div>
+
+            <div class="exercise" data-answer="viviamos">
+                <p>En aquella epoca, nosotros <input type="text" id="ex5"> en un pueblo pequeno. (VIVIR - imperfecto)</p>
+                <button class="check-btn" onclick="checkAnswer('ex5', 'viviamos')">Verificar</button>
+                <div class="feedback" id="fb5"></div>
+            </div>
+
+            <div class="exercise" data-answer="diria">
+                <p>Ella nunca <input type="text" id="ex6"> una mentira. (DECIR - condicional)</p>
+                <button class="check-btn" onclick="checkAnswer('ex6', 'diria')">Verificar</button>
+                <div class="feedback" id="fb6"></div>
+            </div>
+
+            <div class="score-display" id="score">Puntuacion: 0/6</div>
+        </div>
+
+        <!-- READING SECTION -->
+        <div id="reading" class="section">
+            <h2>Comprension de Lectura</h2>
+
+            <div class="reading-passage">
+                <strong>El Trabajo Remoto</strong><br><br>
+                Desde hace unos anos, el trabajo remoto se ha convertido en una opcion cada vez mas popular. Muchas empresas han descubierto que sus empleados pueden ser igual de productivos trabajando desde casa. Sin embargo, no todo es perfecto. Algunos trabajadores echan de menos la interaccion con sus companeros, mientras que otros disfrutan de la flexibilidad que ofrece este nuevo modelo.<br><br>
+                A pesar de los desafios, parece que el trabajo remoto ha llegado para quedarse. Las empresas estan invirtiendo en herramientas digitales y los empleados estan aprendiendo a mantener un equilibrio entre su vida personal y profesional. En cuanto al futuro, muchos expertos creen que veremos un modelo hibrido, donde los trabajadores dividen su tiempo entre la oficina y el hogar.
+            </div>
+
+            <div class="question">
+                <p><strong>1. Segun el texto, que han descubierto las empresas?</strong></p>
+                <div class="options" id="q1">
+                    <div class="option" onclick="selectOption(this, 'q1', false)">A) Que los empleados prefieren la oficina</div>
+                    <div class="option" onclick="selectOption(this, 'q1', true)">B) Que los empleados pueden ser productivos desde casa</div>
+                    <div class="option" onclick="selectOption(this, 'q1', false)">C) Que el trabajo remoto es imposible</div>
+                </div>
+            </div>
+
+            <div class="question">
+                <p><strong>2. Que echan de menos algunos trabajadores?</strong></p>
+                <div class="options" id="q2">
+                    <div class="option" onclick="selectOption(this, 'q2', false)">A) El salario de la oficina</div>
+                    <div class="option" onclick="selectOption(this, 'q2', false)">B) Las vacaciones largas</div>
+                    <div class="option" onclick="selectOption(this, 'q2', true)">C) La interaccion con companeros</div>
+                </div>
+            </div>
+
+            <div class="question">
+                <p><strong>3. Que significa "ha llegado para quedarse"?</strong></p>
+                <div class="options" id="q3">
+                    <div class="option" onclick="selectOption(this, 'q3', false)">A) Es algo temporal</div>
+                    <div class="option" onclick="selectOption(this, 'q3', true)">B) Es algo permanente</div>
+                    <div class="option" onclick="selectOption(this, 'q3', false)">C) Es algo del pasado</div>
+                </div>
+            </div>
+
+            <div class="question">
+                <p><strong>4. Que predicen los expertos para el futuro?</strong></p>
+                <div class="options" id="q4">
+                    <div class="option" onclick="selectOption(this, 'q4', false)">A) Solo trabajo en oficina</div>
+                    <div class="option" onclick="selectOption(this, 'q4', false)">B) Solo trabajo remoto</div>
+                    <div class="option" onclick="selectOption(this, 'q4', true)">C) Un modelo hibrido</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUBJUNCTIVE SECTION -->
+        <div id="subjunctive" class="section">
+            <h2>El Subjuntivo</h2>
+
+            <div class="tip">
+                <strong>Cuando usar el subjuntivo:</strong><br>
+                - Deseos: "Espero que vengas"<br>
+                - Dudas: "Dudo que sea verdad"<br>
+                - Emociones: "Me alegra que estes aqui"<br>
+                - Mandatos indirectos: "Quiero que estudies"<br>
+                - Expresiones impersonales: "Es importante que practiques"
+            </div>
+
+            <h3>Presente de Subjuntivo - Regulares</h3>
+            <table class="conjugation-table">
+                <tr><th>Persona</th><th>HABLAR</th><th>COMER</th><th>VIVIR</th></tr>
+                <tr><td>yo</td><td>hable</td><td>coma</td><td>viva</td></tr>
+                <tr><td>tu</td><td>hables</td><td>comas</td><td>vivas</td></tr>
+                <tr><td>el/ella</td><td>hable</td><td>coma</td><td>viva</td></tr>
+                <tr><td>nosotros</td><td>hablemos</td><td>comamos</td><td>vivamos</td></tr>
+                <tr><td>ellos/ellas</td><td>hablen</td><td>coman</td><td>vivan</td></tr>
+            </table>
+
+            <h3>Irregulares Comunes</h3>
+            <table class="conjugation-table">
+                <tr><th>Verbo</th><th>yo</th><th>tu</th><th>el/ella</th><th>nosotros</th><th>ellos</th></tr>
+                <tr><td>ser</td><td>sea</td><td>seas</td><td>sea</td><td>seamos</td><td>sean</td></tr>
+                <tr><td>estar</td><td>este</td><td>estes</td><td>este</td><td>estemos</td><td>esten</td></tr>
+                <tr><td>ir</td><td>vaya</td><td>vayas</td><td>vaya</td><td>vayamos</td><td>vayan</td></tr>
+                <tr><td>tener</td><td>tenga</td><td>tengas</td><td>tenga</td><td>tengamos</td><td>tengan</td></tr>
+                <tr><td>hacer</td><td>haga</td><td>hagas</td><td>haga</td><td>hagamos</td><td>hagan</td></tr>
+                <tr><td>saber</td><td>sepa</td><td>sepas</td><td>sepa</td><td>sepamos</td><td>sepan</td></tr>
+            </table>
+
+            <h3>Practica el Subjuntivo</h3>
+
+            <div class="exercise">
+                <p>Espero que tu <input type="text" id="sub1"> a la fiesta. (VENIR)</p>
+                <button class="check-btn" onclick="checkAnswer('sub1', 'vengas')">Verificar</button>
+                <div class="feedback" id="fbsub1"></div>
+            </div>
+
+            <div class="exercise">
+                <p>Dudo que ellos <input type="text" id="sub2"> la verdad. (SABER)</p>
+                <button class="check-btn" onclick="checkAnswer('sub2', 'sepan')">Verificar</button>
+                <div class="feedback" id="fbsub2"></div>
+            </div>
+
+            <div class="exercise">
+                <p>Es importante que nosotros <input type="text" id="sub3"> espanol todos los dias. (PRACTICAR)</p>
+                <button class="check-btn" onclick="checkAnswer('sub3', 'practiquemos')">Verificar</button>
+                <div class="feedback" id="fbsub3"></div>
+            </div>
+
+            <div class="exercise">
+                <p>Quiero que ella <input type="text" id="sub4"> feliz. (SER)</p>
+                <button class="check-btn" onclick="checkAnswer('sub4', 'sea')">Verificar</button>
+                <div class="feedback" id="fbsub4"></div>
+            </div>
+
+            <div class="exercise">
+                <p>Me alegra que ustedes <input type="text" id="sub5"> aqui. (ESTAR)</p>
+                <button class="check-btn" onclick="checkAnswer('sub5', 'esten')">Verificar</button>
+                <div class="feedback" id="fbsub5"></div>
+            </div>
+        </div>
+
+        <footer>
+            Practica un poco cada dia. La consistencia es la clave.
+        </footer>
+    </div>
+
+    <script>
+        let score = 0;
+        let totalAnswered = 0;
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function checkAnswer(inputId, correctAnswer) {
+            const input = document.getElementById(inputId);
+            const feedback = document.getElementById('fb' + inputId.replace('ex', '').replace('sub', 'sub'));
+            const userAnswer = input.value.toLowerCase().trim();
+
+            // Remove accents for comparison (simple normalization)
+            const normalize = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+            if (normalize(userAnswer) === normalize(correctAnswer) || userAnswer === correctAnswer) {
+                feedback.textContent = 'Correcto!';
+                feedback.className = 'feedback correct';
+                input.style.borderColor = '#2ecc71';
+                if (!input.dataset.answered) {
+                    score++;
+                    totalAnswered++;
+                    input.dataset.answered = 'true';
+                }
+            } else {
+                feedback.textContent = 'Incorrecto. La respuesta es: ' + correctAnswer;
+                feedback.className = 'feedback incorrect';
+                input.style.borderColor = '#e74c3c';
+                if (!input.dataset.answered) {
+                    totalAnswered++;
+                    input.dataset.answered = 'true';
+                }
+            }
+
+            updateScore();
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = 'Puntuacion: ' + score + '/' + totalAnswered;
+        }
+
+        function selectOption(element, questionId, isCorrect) {
+            const options = document.querySelectorAll('#' + questionId + ' .option');
+
+            // Don't allow re-answering
+            if (document.querySelector('#' + questionId + ' .correct-answer, #' + questionId + ' .wrong-answer')) {
+                return;
+            }
+
+            options.forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+
+            setTimeout(() => {
+                if (isCorrect) {
+                    element.classList.add('correct-answer');
+                } else {
+                    element.classList.add('wrong-answer');
+                    // Show correct answer
+                    options.forEach(opt => {
+                        if (opt.onclick.toString().includes('true')) {
+                            opt.classList.add('correct-answer');
+                        }
+                    });
+                }
+            }, 300);
+        }
+
+        function shuffleVocab() {
+            const container = document.getElementById('vocab-container');
+            const cards = Array.from(container.children);
+
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                container.appendChild(cards[j]);
+                cards.splice(j, 1);
+            }
+        }
+    </script>
+</body>
+</html>
