@@ -43,6 +43,67 @@
     --story: #bf5af2;
     --story-subtle: rgba(191, 90, 242, 0.15);
 
+    /* ========================================
+       MODE-SPECIFIC COLOR PALETTES
+       Each section has its own distinct identity
+       ======================================== */
+
+    /* Grammar - Deep Indigo (structured, intellectual) */
+    --grammar: #6366f1;
+    --grammar-light: #818cf8;
+    --grammar-dark: #4f46e5;
+    --grammar-subtle: rgba(99, 102, 241, 0.12);
+    --grammar-glow: rgba(99, 102, 241, 0.4);
+
+    /* Vocabulary - Teal/Cyan (expansive, fresh) */
+    --vocab: #14b8a6;
+    --vocab-light: #2dd4bf;
+    --vocab-dark: #0d9488;
+    --vocab-subtle: rgba(20, 184, 166, 0.12);
+    --vocab-glow: rgba(20, 184, 166, 0.4);
+
+    /* Idioms - Violet/Magenta (creative, expressive) */
+    --idiom: #a855f7;
+    --idiom-light: #c084fc;
+    --idiom-dark: #9333ea;
+    --idiom-subtle: rgba(168, 85, 247, 0.12);
+    --idiom-glow: rgba(168, 85, 247, 0.4);
+
+    /* False Friends - Rose/Coral (warning, attention) */
+    --danger-mode: #f43f5e;
+    --danger-mode-light: #fb7185;
+    --danger-mode-dark: #e11d48;
+    --danger-mode-subtle: rgba(244, 63, 94, 0.12);
+    --danger-mode-glow: rgba(244, 63, 94, 0.4);
+
+    /* Slang - Amber/Orange (energetic, casual, warm) */
+    --slang: #f59e0b;
+    --slang-light: #fbbf24;
+    --slang-dark: #d97706;
+    --slang-subtle: rgba(245, 158, 11, 0.12);
+    --slang-glow: rgba(245, 158, 11, 0.4);
+
+    /* Travel - Sky Blue (exploration, freedom) */
+    --travel: #0ea5e9;
+    --travel-light: #38bdf8;
+    --travel-dark: #0284c7;
+    --travel-subtle: rgba(14, 165, 233, 0.12);
+    --travel-glow: rgba(14, 165, 233, 0.4);
+
+    /* Practice/Tools - Emerald (growth, progress) */
+    --practice: #10b981;
+    --practice-light: #34d399;
+    --practice-dark: #059669;
+    --practice-subtle: rgba(16, 185, 129, 0.12);
+    --practice-glow: rgba(16, 185, 129, 0.4);
+
+    /* Quiz - Electric Blue (challenge, focus) */
+    --quiz: #3b82f6;
+    --quiz-light: #60a5fa;
+    --quiz-dark: #2563eb;
+    --quiz-subtle: rgba(59, 130, 246, 0.12);
+    --quiz-glow: rgba(59, 130, 246, 0.4);
+
     /* Spacing scale (4pt grid) */
     --space-1: 4px;
     --space-2: 8px;

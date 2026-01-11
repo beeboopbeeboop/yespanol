@@ -430,6 +430,61 @@
             border-radius: var(--radius-sm);
         }
 
+        /* Color-coded lesson cards */
+        .lesson-card.grammar-card {
+            border-left: 3px solid var(--grammar);
+            background: linear-gradient(135deg, var(--glass-bg) 0%, var(--grammar-subtle) 100%);
+        }
+        .lesson-card.grammar-card .lesson-icon { filter: drop-shadow(0 0 8px var(--grammar-glow)); }
+        .lesson-card.grammar-card .lesson-progress-fill { background: linear-gradient(90deg, var(--grammar), var(--grammar-light)); }
+
+        .lesson-card.vocab-card {
+            border-left: 3px solid var(--vocab);
+            background: linear-gradient(135deg, var(--glass-bg) 0%, var(--vocab-subtle) 100%);
+        }
+        .lesson-card.vocab-card .lesson-icon { filter: drop-shadow(0 0 8px var(--vocab-glow)); }
+
+        .lesson-card.idiom-card {
+            border-left: 3px solid var(--idiom);
+            background: linear-gradient(135deg, var(--glass-bg) 0%, var(--idiom-subtle) 100%);
+        }
+        .lesson-card.idiom-card .lesson-icon { filter: drop-shadow(0 0 8px var(--idiom-glow)); }
+
+        .lesson-card.danger-card {
+            border-left: 3px solid var(--danger-mode);
+            background: linear-gradient(135deg, var(--glass-bg) 0%, var(--danger-mode-subtle) 100%);
+        }
+        .lesson-card.danger-card .lesson-icon { filter: drop-shadow(0 0 8px var(--danger-mode-glow)); }
+
+        .lesson-card.travel-card {
+            border-left: 3px solid var(--travel);
+            background: linear-gradient(135deg, var(--glass-bg) 0%, var(--travel-subtle) 100%);
+        }
+        .lesson-card.travel-card .lesson-icon { filter: drop-shadow(0 0 8px var(--travel-glow)); }
+
+        .lesson-card.slang-card {
+            border-left: 3px solid var(--slang);
+            background: linear-gradient(135deg, var(--glass-bg) 0%, var(--slang-subtle) 100%);
+        }
+        .lesson-card.slang-card .lesson-icon { filter: drop-shadow(0 0 8px var(--slang-glow)); }
+
+        .lesson-card.practice-card {
+            border-left: 3px solid var(--practice);
+            background: linear-gradient(135deg, var(--glass-bg) 0%, var(--practice-subtle) 100%);
+        }
+        .lesson-card.practice-card .lesson-icon { filter: drop-shadow(0 0 8px var(--practice-glow)); }
+
+        .lesson-card.quiz-card {
+            border-left: 3px solid var(--quiz);
+            background: linear-gradient(135deg, var(--glass-bg) 0%, var(--quiz-subtle) 100%);
+        }
+        .lesson-card.quiz-card .lesson-icon { filter: drop-shadow(0 0 8px var(--quiz-glow)); }
+
+        /* Section title colors */
+        .section-title.grammar-title { color: var(--grammar-light); }
+        .section-title.vocab-title { color: var(--vocab-light); }
+        .section-title.tools-title { color: var(--practice-light); }
+
         /* Mystery Card */
         .mystery-card {
             background: linear-gradient(135deg, var(--glass-bg) 0%, rgba(191, 90, 242, 0.1) 100%);
@@ -660,10 +715,10 @@
             <!-- Grammar Section -->
             <section class="section">
                 <div class="section-header">
-                    <span class="section-title">Grammar</span>
+                    <span class="section-title grammar-title">Grammar</span>
                 </div>
                 <div class="lesson-grid stagger-children" id="grammarGrid">
-                    <a href="grammar/ser-estar.html" class="lesson-card card-interactive" data-skill="ser-estar">
+                    <a href="grammar/ser-estar.html" class="lesson-card card-interactive grammar-card" data-skill="ser-estar">
                         <span class="lesson-icon">⚖️</span>
                         <div class="lesson-title">Ser vs Estar</div>
                         <div class="lesson-desc">The essential distinction</div>
@@ -674,7 +729,7 @@
                             <span class="lesson-progress-text" data-skill-pct="ser-estar">0%</span>
                         </div>
                     </a>
-                    <a href="grammar/por-para.html" class="lesson-card card-interactive" data-skill="por-para">
+                    <a href="grammar/por-para.html" class="lesson-card card-interactive grammar-card" data-skill="por-para">
                         <span class="lesson-icon">🔀</span>
                         <div class="lesson-title">Por vs Para</div>
                         <div class="lesson-desc">Context is everything</div>
@@ -685,7 +740,7 @@
                             <span class="lesson-progress-text" data-skill-pct="por-para">0%</span>
                         </div>
                     </a>
-                    <a href="grammar/subjunctive.html" class="lesson-card card-interactive" data-skill="subjunctive">
+                    <a href="grammar/subjunctive.html" class="lesson-card card-interactive grammar-card" data-skill="subjunctive">
                         <span class="lesson-icon">💭</span>
                         <div class="lesson-title">Subjunctive</div>
                         <div class="lesson-desc">Express wishes & doubt</div>
@@ -696,7 +751,7 @@
                             <span class="lesson-progress-text" data-skill-pct="subjunctive">0%</span>
                         </div>
                     </a>
-                    <a href="grammar/preterite-imperfect.html" class="lesson-card card-interactive" data-skill="preterite-imperfect">
+                    <a href="grammar/preterite-imperfect.html" class="lesson-card card-interactive grammar-card" data-skill="preterite-imperfect">
                         <span class="lesson-icon">⏳</span>
                         <div class="lesson-title">Past Tenses</div>
                         <div class="lesson-desc">Preterite vs Imperfect</div>
@@ -713,30 +768,30 @@
             <!-- Vocabulary Section -->
             <section class="section">
                 <div class="section-header">
-                    <span class="section-title">Vocabulary</span>
+                    <span class="section-title vocab-title">Vocabulary</span>
                 </div>
                 <div class="lesson-grid stagger-children">
-                    <a href="vocabulary/everyday.html" class="lesson-card card-interactive">
+                    <a href="vocabulary/everyday.html" class="lesson-card card-interactive vocab-card">
                         <span class="lesson-icon">🗣️</span>
                         <div class="lesson-title">Everyday</div>
                         <div class="lesson-desc">Common words</div>
                     </a>
-                    <a href="vocabulary/idioms.html" class="lesson-card card-interactive">
+                    <a href="vocabulary/idioms.html" class="lesson-card card-interactive idiom-card">
                         <span class="lesson-icon">🎭</span>
                         <div class="lesson-title">Idioms</div>
                         <div class="lesson-desc">Sound native</div>
                     </a>
-                    <a href="vocabulary/false-friends.html" class="lesson-card card-interactive">
+                    <a href="vocabulary/false-friends.html" class="lesson-card card-interactive danger-card">
                         <span class="lesson-icon">🚫</span>
                         <div class="lesson-title">False Friends</div>
                         <div class="lesson-desc">Avoid traps</div>
                     </a>
-                    <a href="vocabulary/travel.html" class="lesson-card card-interactive">
+                    <a href="vocabulary/travel.html" class="lesson-card card-interactive travel-card">
                         <span class="lesson-icon">✈️</span>
                         <div class="lesson-title">Travel</div>
                         <div class="lesson-desc">Navigate anywhere</div>
                     </a>
-                    <a href="vocabulary/slang.html" class="lesson-card card-interactive">
+                    <a href="vocabulary/slang.html" class="lesson-card card-interactive slang-card">
                         <span class="lesson-icon">🔥</span>
                         <div class="lesson-title">Así Se Habla</div>
                         <div class="lesson-desc">Street Spanish by country</div>
@@ -747,25 +802,25 @@
             <!-- Tools Section -->
             <section class="section">
                 <div class="section-header">
-                    <span class="section-title">Tools</span>
+                    <span class="section-title tools-title">Tools</span>
                 </div>
                 <div class="lesson-grid stagger-children">
-                    <a href="practice/flashcards.html" class="lesson-card card-interactive full">
+                    <a href="practice/flashcards.html" class="lesson-card card-interactive practice-card full">
                         <span class="lesson-icon">🃏</span>
                         <div class="lesson-title">Flashcards</div>
                         <div class="lesson-desc">Spaced repetition — your mistakes become your curriculum</div>
                     </a>
-                    <a href="practice/reading.html" class="lesson-card card-interactive">
+                    <a href="practice/reading.html" class="lesson-card card-interactive practice-card">
                         <span class="lesson-icon">📖</span>
                         <div class="lesson-title">Reading</div>
                         <div class="lesson-desc">Real Spanish texts</div>
                     </a>
-                    <a href="practice/quiz.html" class="lesson-card card-interactive">
+                    <a href="practice/quiz.html" class="lesson-card card-interactive quiz-card">
                         <span class="lesson-icon">🎯</span>
                         <div class="lesson-title">Quiz Mode</div>
                         <div class="lesson-desc">Test yourself</div>
                     </a>
-                    <a href="progress.html" class="lesson-card card-interactive">
+                    <a href="progress.html" class="lesson-card card-interactive practice-card">
                         <span class="lesson-icon">📊</span>
                         <div class="lesson-title">Progress</div>
                         <div class="lesson-desc">Your journey</div>
