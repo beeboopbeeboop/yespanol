@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>Travel Vocabulary - Yespanol</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-glass: rgba(255, 255, 255, 0.06);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --text-primary: #f5f5f7;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-tertiary: rgba(255, 255, 255, 0.4);
+            --accent: #ff6b4a;
+            --success: #32d74b;
+            --travel-color: #30d158;
+            --card-radius: 20px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-container {
+            min-height: 100%;
+            padding: 56px 20px calc(80px + var(--safe-bottom));
+        }
+
+        .back-btn {
+            position: fixed; top: 16px; left: 16px; z-index: 100;
+            background: var(--bg-glass); border: 1px solid var(--border-glass);
+            border-radius: 12px; padding: 10px 16px; color: var(--text-primary);
+            font-size: 0.85rem; text-decoration: none;
+            backdrop-filter: blur(20px);
+        }
+        .back-btn:active { transform: scale(0.96); }
+
+        .lesson-header { text-align: center; margin-bottom: 32px; }
+        .lesson-icon { font-size: 3rem; margin-bottom: 12px; }
+        .lesson-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+        .lesson-subtitle { color: var(--text-secondary); font-size: 0.95rem; }
+
+        .progress-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: 32px; }
+        .progress-fill { height: 100%; background: var(--travel-color); border-radius: 2px; transition: width 0.5s ease; }
+
+        .section { margin-bottom: 32px; }
+        .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+        .phrase-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-left: 3px solid var(--travel-color);
+            border-radius: var(--card-radius);
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .phrase-card:active { transform: scale(0.98); }
+        .phrase-card.revealed { background: rgba(48, 209, 88, 0.08); }
+
+        .phrase-spanish {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--travel-color);
+            margin-bottom: 4px;
+        }
+
+        .phrase-pronunciation {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            font-style: italic;
+            margin-bottom: 6px;
+        }
+
+        .phrase-english {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .phrase-context {
+            display: none;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-glass);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .phrase-card.revealed .phrase-context { display: block; }
+
+        .scenario-card {
+            background: linear-gradient(135deg, var(--bg-glass) 0%, rgba(48, 209, 88, 0.08) 100%);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .scenario-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dialogue {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .dialogue-line {
+            margin-bottom: 10px;
+        }
+        .dialogue-line:last-child { margin-bottom: 0; }
+
+        .dialogue-speaker {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            margin-bottom: 2px;
+        }
+
+        .dialogue-spanish {
+            font-size: 0.95rem;
+            color: var(--travel-color);
+            margin-bottom: 2px;
+        }
+
+        .dialogue-english {
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+            font-style: italic;
+        }
+
+        .vocab-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .vocab-item {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 10px;
+            padding: 10px 12px;
+            text-align: center;
+        }
+
+        .vocab-item-spanish {
+            font-weight: 600;
+            color: var(--travel-color);
+            font-size: 0.9rem;
+        }
+
+        .vocab-item-english {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+        }
+
+        .quiz-section {
+            background: linear-gradient(135deg, var(--bg-glass) 0%, rgba(48, 209, 88, 0.05) 100%);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            padding: 24px;
+            margin: 32px 0;
+        }
+
+        .quiz-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; }
+        .quiz-scenario { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 12px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 10px; }
+        .quiz-question { font-size: 1rem; font-weight: 500; margin-bottom: 16px; }
+        .quiz-options { display: grid; gap: 10px; }
+        .quiz-option {
+            padding: 14px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quiz-option:active { transform: scale(0.98); }
+        .quiz-option.correct { background: var(--success); color: #000; border-color: var(--success); }
+        .quiz-option.incorrect { background: #ff453a; color: #fff; border-color: #ff453a; }
+
+        .cta-section { text-align: center; padding: 32px 0; }
+        .cta-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 16px 32px; background: var(--accent);
+            color: #000; font-size: 1rem; font-weight: 600;
+            border-radius: 14px; border: none; cursor: pointer;
+        }
+        .cta-btn:active { transform: scale(0.96); }
+
+        .score-display {
+            position: fixed; bottom: 20px; right: 20px;
+            background: var(--bg-glass); backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px; padding: 12px 20px;
+            display: flex; align-items: center; gap: 10px;
+            z-index: 50;
+        }
+        .score-label { font-size: 0.75rem; color: var(--text-secondary); }
+        .score-value { font-size: 1.2rem; font-weight: 700; color: var(--success); }
+
+        .tip-card {
+            background: rgba(48, 209, 88, 0.1);
+            border-left: 3px solid var(--travel-color);
+            border-radius: 0 12px 12px 0;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .tip-card strong { color: var(--travel-color); }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-btn">← Back</a>
+
+    <div class="app-container">
+        <header class="lesson-header">
+            <div class="lesson-icon">✈️</div>
+            <h1 class="lesson-title">Travel Spanish</h1>
+            <p class="lesson-subtitle">Navigate anywhere in the Spanish-speaking world</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <div class="tip-card">
+            <strong>Travel tip:</strong> Tap any phrase to see usage context. These are real-world phrases you'll actually need!
+        </div>
+
+        <!-- Airport -->
+        <section class="section">
+            <h2 class="section-title">🛫 At the Airport</h2>
+            <div id="airport"></div>
+
+            <div class="scenario-card">
+                <div class="scenario-title">📝 Sample Dialogue: Check-in</div>
+                <div class="dialogue">
+                    <div class="dialogue-line">
+                        <div class="dialogue-speaker">Agent:</div>
+                        <div class="dialogue-spanish">¿Me permite su pasaporte?</div>
+                        <div class="dialogue-english">May I see your passport?</div>
+                    </div>
+                    <div class="dialogue-line">
+                        <div class="dialogue-speaker">You:</div>
+                        <div class="dialogue-spanish">Aquí tiene. ¿Puedo elegir asiento de ventanilla?</div>
+                        <div class="dialogue-english">Here you go. Can I choose a window seat?</div>
+                    </div>
+                    <div class="dialogue-line">
+                        <div class="dialogue-speaker">Agent:</div>
+                        <div class="dialogue-spanish">Por supuesto. Su vuelo sale de la puerta 23.</div>
+                        <div class="dialogue-english">Of course. Your flight departs from gate 23.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hotel -->
+        <section class="section">
+            <h2 class="section-title">🏨 At the Hotel</h2>
+            <div id="hotel"></div>
+
+            <div class="vocab-grid">
+                <div class="vocab-item">
+                    <div class="vocab-item-spanish">habitación</div>
+                    <div class="vocab-item-english">room</div>
+                </div>
+                <div class="vocab-item">
+                    <div class="vocab-item-spanish">llave</div>
+                    <div class="vocab-item-english">key</div>
+                </div>
+                <div class="vocab-item">
+                    <div class="vocab-item-spanish">recepción</div>
+                    <div class="vocab-item-english">front desk</div>
+                </div>
+                <div class="vocab-item">
+                    <div class="vocab-item-spanish">ascensor</div>
+                    <div class="vocab-item-english">elevator</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Restaurant -->
+        <section class="section">
+            <h2 class="section-title">🍽️ At a Restaurant</h2>
+            <div id="restaurant"></div>
+
+            <div class="scenario-card">
+                <div class="scenario-title">📝 Sample Dialogue: Ordering</div>
+                <div class="dialogue">
+                    <div class="dialogue-line">
+                        <div class="dialogue-speaker">Waiter:</div>
+                        <div class="dialogue-spanish">¿Están listos para pedir?</div>
+                        <div class="dialogue-english">Are you ready to order?</div>
+                    </div>
+                    <div class="dialogue-line">
+                        <div class="dialogue-speaker">You:</div>
+                        <div class="dialogue-spanish">Sí, me gustaría la paella, por favor.</div>
+                        <div class="dialogue-english">Yes, I'd like the paella, please.</div>
+                    </div>
+                    <div class="dialogue-line">
+                        <div class="dialogue-speaker">Waiter:</div>
+                        <div class="dialogue-spanish">¿Y para beber?</div>
+                        <div class="dialogue-english">And to drink?</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Getting Around -->
+        <section class="section">
+            <h2 class="section-title">🚕 Getting Around</h2>
+            <div id="transport"></div>
+        </section>
+
+        <!-- Emergencies -->
+        <section class="section">
+            <h2 class="section-title">🚨 Emergencies</h2>
+            <div id="emergency"></div>
+        </section>
+
+        <!-- Quiz -->
+        <section class="quiz-section">
+            <div class="quiz-title">🎯 Travel Scenario Quiz</div>
+            <div id="quizContainer"></div>
+        </section>
+
+        <section class="cta-section">
+            <button class="cta-btn" onclick="location.href='../practice/flashcards.html?category=vocabulary'">
+                Practice Flashcards →
+            </button>
+        </section>
+    </div>
+
+    <div class="score-display">
+        <span class="score-label">Score</span>
+        <span class="score-value" id="scoreValue">0/0</span>
+    </div>
+
+    <script src="../js/core.js"></script>
+    <script>
+        const phrases = {
+            airport: [
+                { spanish: "¿Dónde está la puerta de embarque?", pron: "DOHN-deh ehs-TAH lah PWEHR-tah deh ehm-BAHR-keh", english: "Where is the boarding gate?", context: "Use at the airport when looking for your departure gate." },
+                { spanish: "Mi vuelo está retrasado.", pron: "mee BWEH-loh ehs-TAH reh-trah-SAH-doh", english: "My flight is delayed.", context: "To explain or ask about flight delays." },
+                { spanish: "¿Hay conexión wifi?", pron: "eye koh-nehk-SYOHN WEE-fee", english: "Is there wifi?", context: "Essential phrase for staying connected during travel." },
+                { spanish: "Tengo una escala en Madrid.", pron: "TEHN-goh OO-nah ehs-KAH-lah ehn mah-DREED", english: "I have a layover in Madrid.", context: "Explaining your travel itinerary." },
+            ],
+            hotel: [
+                { spanish: "Tengo una reserva a nombre de...", pron: "TEHN-goh OO-nah reh-SEHR-bah ah NOHM-breh deh", english: "I have a reservation under the name...", context: "Standard phrase for hotel check-in." },
+                { spanish: "¿A qué hora es el desayuno?", pron: "ah keh OH-rah ehs ehl deh-sah-YOO-noh", english: "What time is breakfast?", context: "Ask this at check-in to plan your morning." },
+                { spanish: "¿Puede llamar un taxi?", pron: "PWEH-deh yah-MAHR oon TAHK-see", english: "Can you call a taxi?", context: "Request from the front desk when you need transport." },
+                { spanish: "El aire acondicionado no funciona.", pron: "ehl AY-reh ah-kohn-dee-syoh-NAH-doh noh foon-SYOH-nah", english: "The air conditioning doesn't work.", context: "Report room issues to the front desk." },
+            ],
+            restaurant: [
+                { spanish: "Una mesa para dos, por favor.", pron: "OO-nah MEH-sah PAH-rah dohs pohr fah-BOHR", english: "A table for two, please.", context: "First thing to say when entering a restaurant." },
+                { spanish: "¿Cuál es el plato del día?", pron: "kwahl ehs ehl PLAH-toh dehl DEE-ah", english: "What is the dish of the day?", context: "Many restaurants offer daily specials - often the best value!" },
+                { spanish: "La cuenta, por favor.", pron: "lah KWEHN-tah pohr fah-BOHR", english: "The check, please.", context: "When you're ready to pay and leave." },
+                { spanish: "¿Está incluida la propina?", pron: "ehs-TAH een-kloo-EE-dah lah proh-PEE-nah", english: "Is the tip included?", context: "Important to ask as tipping customs vary by country." },
+            ],
+            transport: [
+                { spanish: "¿Cuánto cuesta ir a...?", pron: "KWAHN-toh KWEHS-tah eer ah", english: "How much to go to...?", context: "Always ask the price before getting in a taxi." },
+                { spanish: "Pare aquí, por favor.", pron: "PAH-reh ah-KEE pohr fah-BOHR", english: "Stop here, please.", context: "Tell the driver where to drop you off." },
+                { spanish: "¿Dónde está la parada de metro?", pron: "DOHN-deh ehs-TAH lah pah-RAH-dah deh MEH-troh", english: "Where is the metro station?", context: "Essential for navigating cities with subway systems." },
+                { spanish: "¿Este autobús va a...?", pron: "EHS-teh ow-toh-BOOS bah ah", english: "Does this bus go to...?", context: "Always confirm before boarding a bus." },
+            ],
+            emergency: [
+                { spanish: "¡Necesito ayuda!", pron: "neh-seh-SEE-toh ah-YOO-dah", english: "I need help!", context: "General emergency phrase to get attention." },
+                { spanish: "Llame a la policía.", pron: "YAH-meh ah lah poh-lee-SEE-ah", english: "Call the police.", context: "In case of theft or emergency." },
+                { spanish: "¿Dónde está el hospital?", pron: "DOHN-deh ehs-TAH ehl ohs-pee-TAHL", english: "Where is the hospital?", context: "For medical emergencies." },
+                { spanish: "He perdido mi pasaporte.", pron: "eh pehr-DEE-doh mee pah-sah-POHR-teh", english: "I've lost my passport.", context: "Report to police and your embassy." },
+            ]
+        };
+
+        const quizQuestions = [
+            {
+                scenario: "You arrive at a restaurant with a friend.",
+                question: "How do you ask for a table?",
+                options: ["La cuenta, por favor.", "Una mesa para dos, por favor.", "¿Dónde está el baño?", "Tengo una reserva."],
+                answer: 1
+            },
+            {
+                scenario: "You're at the airport and can't find your gate.",
+                question: "What do you ask?",
+                options: ["¿Cuánto cuesta?", "Mi vuelo está retrasado.", "¿Dónde está la puerta de embarque?", "Pare aquí, por favor."],
+                answer: 2
+            },
+            {
+                scenario: "You're in a taxi and want to stop.",
+                question: "What do you say?",
+                options: ["¿Este taxi va a...?", "La cuenta, por favor.", "Pare aquí, por favor.", "Tengo una escala."],
+                answer: 2
+            },
+            {
+                scenario: "You're checking into your hotel.",
+                question: "How do you say you have a reservation?",
+                options: ["¿Hay wifi?", "La llave, por favor.", "Tengo una reserva a nombre de...", "¿A qué hora es el desayuno?"],
+                answer: 2
+            },
+            {
+                scenario: "You've finished your meal.",
+                question: "How do you ask for the bill?",
+                options: ["El menú, por favor.", "¿Cuál es el plato del día?", "Una mesa para dos.", "La cuenta, por favor."],
+                answer: 3
+            },
+        ];
+
+        let currentQuiz = 0;
+        let score = 0;
+        let answered = 0;
+
+        function renderPhrases(containerId, items) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = items.map(item => `
+                <div class="phrase-card" onclick="this.classList.toggle('revealed')">
+                    <div class="phrase-spanish">${item.spanish}</div>
+                    <div class="phrase-pronunciation">${item.pron}</div>
+                    <div class="phrase-english">${item.english}</div>
+                    <div class="phrase-context">💡 ${item.context}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+
+            if (currentQuiz >= quizQuestions.length) {
+                container.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 12px;">🎉</div>
+                        <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 8px;">Quiz Complete!</div>
+                        <div style="color: var(--success); font-size: 1.3rem; font-weight: 700;">${score}/${quizQuestions.length}</div>
+                        <button class="cta-btn" onclick="resetQuiz()" style="margin-top: 16px;">Try Again</button>
+                    </div>
+                `;
+                document.getElementById('progressFill').style.width = '100%';
+                return;
+            }
+
+            const q = quizQuestions[currentQuiz];
+            container.innerHTML = `
+                <div class="quiz-scenario">📍 Scenario: ${q.scenario}</div>
+                <div class="quiz-question">${q.question}</div>
+                <div class="quiz-options">
+                    ${q.options.map((opt, i) => `
+                        <div class="quiz-option" onclick="checkAnswer(${i})">${opt}</div>
+                    `).join('')}
+                </div>
+            `;
+
+            document.getElementById('progressFill').style.width = `${(currentQuiz / quizQuestions.length) * 100}%`;
+        }
+
+        function checkAnswer(selected) {
+            const q = quizQuestions[currentQuiz];
+            const options = document.querySelectorAll('.quiz-option');
+
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+            options[q.answer].classList.add('correct');
+
+            if (selected === q.answer) {
+                score++;
+            } else {
+                options[selected].classList.add('incorrect');
+            }
+
+            answered++;
+            document.getElementById('scoreValue').textContent = `${score}/${answered}`;
+
+            if (typeof Yespanol !== 'undefined') {
+                Yespanol.recordAttempt(`travel-${currentQuiz}`, 'vocabulary', selected === q.answer);
+            }
+
+            setTimeout(() => {
+                currentQuiz++;
+                renderQuiz();
+            }, 1200);
+        }
+
+        function resetQuiz() {
+            currentQuiz = 0;
+            score = 0;
+            answered = 0;
+            document.getElementById('scoreValue').textContent = '0/0';
+            renderQuiz();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPhrases('airport', phrases.airport);
+            renderPhrases('hotel', phrases.hotel);
+            renderPhrases('restaurant', phrases.restaurant);
+            renderPhrases('transport', phrases.transport);
+            renderPhrases('emergency', phrases.emergency);
+            renderQuiz();
+        });
+    </script>
+</body>
+</html>

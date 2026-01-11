@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>Past Tenses - Yespanol</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-glass: rgba(255, 255, 255, 0.06);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --text-primary: #f5f5f7;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-tertiary: rgba(255, 255, 255, 0.4);
+            --accent: #ff6b4a;
+            --success: #32d74b;
+            --warning: #ffd60a;
+            --danger: #ff453a;
+            --preterite-color: #ff6b4a;
+            --imperfect-color: #64d2ff;
+            --card-radius: 20px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-container {
+            min-height: 100%;
+            padding: 56px 20px calc(80px + var(--safe-bottom));
+        }
+
+        .back-btn {
+            position: fixed; top: 16px; left: 16px; z-index: 100;
+            background: var(--bg-glass); border: 1px solid var(--border-glass);
+            border-radius: 12px; padding: 10px 16px; color: var(--text-primary);
+            font-size: 0.85rem; text-decoration: none;
+            backdrop-filter: blur(20px);
+        }
+        .back-btn:active { transform: scale(0.96); }
+
+        .lesson-header { text-align: center; margin-bottom: 32px; }
+        .lesson-icon { font-size: 3rem; margin-bottom: 12px; }
+        .lesson-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+        .lesson-subtitle { color: var(--text-secondary); font-size: 0.95rem; }
+
+        .progress-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: 32px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--preterite-color), var(--imperfect-color)); border-radius: 2px; transition: width 0.5s ease; }
+
+        .section { margin-bottom: 32px; }
+        .section-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 16px; }
+        .section-title .pret { color: var(--preterite-color); }
+        .section-title .imp { color: var(--imperfect-color); }
+
+        .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .compare-card { padding: 16px; text-align: center; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: var(--card-radius); }
+        .compare-card h3 { font-size: 1.2rem; margin-bottom: 8px; }
+        .compare-card.pret h3 { color: var(--preterite-color); }
+        .compare-card.imp h3 { color: var(--imperfect-color); }
+        .compare-card p { font-size: 0.8rem; color: var(--text-secondary); }
+
+        .card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            padding: 20px; margin-bottom: 12px;
+        }
+        .card-pret { border-left: 3px solid var(--preterite-color); }
+        .card-imp { border-left: 3px solid var(--imperfect-color); }
+
+        .rule-box { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
+        .rule-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 2px; }
+        .rule-content h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; }
+        .rule-content p { font-size: 0.85rem; color: var(--text-secondary); }
+
+        .example {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px; padding: 14px;
+            margin: 12px 0; font-size: 0.95rem;
+        }
+        .example-spanish { margin-bottom: 4px; }
+        .example-spanish .highlight-pret { color: var(--preterite-color); font-weight: 600; }
+        .example-spanish .highlight-imp { color: var(--imperfect-color); font-weight: 600; }
+        .example-english { color: var(--text-secondary); font-size: 0.85rem; font-style: italic; }
+
+        .tip-box {
+            background: rgba(255, 214, 10, 0.08);
+            border-left: 3px solid var(--warning);
+            border-radius: 0 12px 12px 0;
+            padding: 16px; margin: 16px 0;
+        }
+        .tip-title { font-size: 0.85rem; font-weight: 600; color: var(--warning); margin-bottom: 6px; }
+        .tip-text { font-size: 0.85rem; color: var(--text-secondary); }
+
+        .time-markers {
+            display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0;
+        }
+        .time-marker {
+            background: rgba(255,255,255,0.08);
+            padding: 6px 12px; border-radius: 8px;
+            font-size: 0.8rem;
+        }
+        .time-marker.pret { border: 1px solid rgba(255, 107, 74, 0.3); color: var(--preterite-color); }
+        .time-marker.imp { border: 1px solid rgba(100, 210, 255, 0.3); color: var(--imperfect-color); }
+
+        .conj-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 16px 0; }
+        .conj-table th { text-align: left; padding: 10px; color: var(--text-secondary); font-weight: 500; border-bottom: 1px solid var(--border-glass); }
+        .conj-table td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .conj-table .pronoun { color: var(--text-secondary); }
+        .conj-table .pret-form { color: var(--preterite-color); font-weight: 500; }
+        .conj-table .imp-form { color: var(--imperfect-color); font-weight: 500; }
+
+        .quiz-card {
+            background: linear-gradient(135deg, var(--bg-glass) 0%, rgba(255, 107, 74, 0.05) 100%);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            padding: 24px; margin: 24px 0;
+        }
+        .quiz-question { font-size: 1.1rem; margin-bottom: 8px; }
+        .quiz-sentence { font-size: 1.2rem; font-weight: 500; margin-bottom: 20px; }
+        .quiz-sentence .blank { background: rgba(255,255,255,0.1); padding: 4px 16px; border-radius: 8px; }
+        .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .quiz-btn {
+            padding: 14px; border-radius: 12px;
+            font-size: 1rem; font-weight: 600;
+            border: 2px solid transparent; cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .quiz-btn.pret { background: rgba(255, 107, 74, 0.15); color: var(--preterite-color); border-color: rgba(255, 107, 74, 0.3); }
+        .quiz-btn.imp { background: rgba(100, 210, 255, 0.15); color: var(--imperfect-color); border-color: rgba(100, 210, 255, 0.3); }
+        .quiz-btn:active { transform: scale(0.96); }
+        .quiz-btn.correct { background: var(--success); color: #000; border-color: var(--success); }
+        .quiz-btn.incorrect { background: var(--danger); color: #fff; border-color: var(--danger); }
+        .quiz-feedback { margin-top: 16px; padding: 14px; border-radius: 12px; display: none; }
+        .quiz-feedback.show { display: block; }
+        .quiz-feedback.correct { background: rgba(50, 215, 75, 0.15); color: var(--success); }
+        .quiz-feedback.incorrect { background: rgba(255, 69, 58, 0.15); color: var(--danger); }
+
+        .cta-section { text-align: center; padding: 32px 0; }
+        .cta-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 16px 32px; background: var(--accent);
+            color: #000; font-size: 1rem; font-weight: 600;
+            border-radius: 14px; border: none; cursor: pointer;
+        }
+        .cta-btn:active { transform: scale(0.96); }
+
+        .score-display {
+            position: fixed; bottom: 20px; right: 20px;
+            background: var(--bg-glass); backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px; padding: 12px 20px;
+            display: flex; align-items: center; gap: 10px;
+            z-index: 50;
+        }
+        .score-label { font-size: 0.75rem; color: var(--text-secondary); }
+        .score-value { font-size: 1.2rem; font-weight: 700; color: var(--success); }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-btn">← Back</a>
+
+    <div class="app-container">
+        <header class="lesson-header">
+            <div class="lesson-icon">⏳</div>
+            <h1 class="lesson-title">Past Tenses</h1>
+            <p class="lesson-subtitle">Preterite vs Imperfect — Know the difference</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <!-- Intro -->
+        <section class="section">
+            <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 20px;">
+                Spanish has two main past tenses: the preterite and the imperfect. Both describe past actions, but they're used in very different situations. Think of the preterite as a snapshot and the imperfect as a video.
+            </p>
+
+            <div class="compare-grid">
+                <div class="compare-card pret">
+                    <h3>Preterite</h3>
+                    <p>Completed actions with clear beginning/end</p>
+                </div>
+                <div class="compare-card imp">
+                    <h3>Imperfect</h3>
+                    <p>Ongoing, habitual, or background actions</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Preterite -->
+        <section class="section">
+            <h2 class="section-title"><span class="pret">Preterite</span> — The Snapshot</h2>
+
+            <div class="card card-pret">
+                <div class="rule-box">
+                    <span class="rule-icon">📸</span>
+                    <div class="rule-content">
+                        <h4>Completed Actions</h4>
+                        <p>One-time events with a clear start and end</p>
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">Ayer <span class="highlight-pret">comí</span> una pizza.</div>
+                    <div class="example-english">Yesterday I ate a pizza. (completed action)</div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish"><span class="highlight-pret">Llegué</span> a las ocho.</div>
+                    <div class="example-english">I arrived at eight. (specific moment)</div>
+                </div>
+            </div>
+
+            <div class="card card-pret">
+                <div class="rule-box">
+                    <span class="rule-icon">🔢</span>
+                    <div class="rule-content">
+                        <h4>Specific Number of Times</h4>
+                        <p>Countable occurrences in the past</p>
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish"><span class="highlight-pret">Fui</span> a España tres veces.</div>
+                    <div class="example-english">I went to Spain three times.</div>
+                </div>
+            </div>
+
+            <div class="card card-pret">
+                <h4 style="margin-bottom: 12px;">Preterite Time Markers</h4>
+                <div class="time-markers">
+                    <span class="time-marker pret">ayer</span>
+                    <span class="time-marker pret">anoche</span>
+                    <span class="time-marker pret">la semana pasada</span>
+                    <span class="time-marker pret">el año pasado</span>
+                    <span class="time-marker pret">de repente</span>
+                    <span class="time-marker pret">una vez</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Imperfect -->
+        <section class="section">
+            <h2 class="section-title"><span class="imp">Imperfect</span> — The Video</h2>
+
+            <div class="card card-imp">
+                <div class="rule-box">
+                    <span class="rule-icon">🎬</span>
+                    <div class="rule-content">
+                        <h4>Ongoing/Background Actions</h4>
+                        <p>Actions without clear beginning or end</p>
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">Mientras <span class="highlight-imp">caminaba</span>, vi un pájaro.</div>
+                    <div class="example-english">While I was walking, I saw a bird.</div>
+                </div>
+            </div>
+
+            <div class="card card-imp">
+                <div class="rule-box">
+                    <span class="rule-icon">🔄</span>
+                    <div class="rule-content">
+                        <h4>Habitual Actions</h4>
+                        <p>Things you used to do regularly</p>
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish">De niño, <span class="highlight-imp">jugaba</span> al fútbol todos los días.</div>
+                    <div class="example-english">As a child, I used to play soccer every day.</div>
+                </div>
+            </div>
+
+            <div class="card card-imp">
+                <div class="rule-box">
+                    <span class="rule-icon">🎭</span>
+                    <div class="rule-content">
+                        <h4>Descriptions & States</h4>
+                        <p>Age, feelings, weather, time, physical/mental states</p>
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish"><span class="highlight-imp">Tenía</span> diez años cuando llegué a España.</div>
+                    <div class="example-english">I was ten years old when I arrived in Spain.</div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish"><span class="highlight-imp">Hacía</span> mucho frío esa noche.</div>
+                    <div class="example-english">It was very cold that night.</div>
+                </div>
+            </div>
+
+            <div class="card card-imp">
+                <h4 style="margin-bottom: 12px;">Imperfect Time Markers</h4>
+                <div class="time-markers">
+                    <span class="time-marker imp">siempre</span>
+                    <span class="time-marker imp">a menudo</span>
+                    <span class="time-marker imp">todos los días</span>
+                    <span class="time-marker imp">de niño/joven</span>
+                    <span class="time-marker imp">mientras</span>
+                    <span class="time-marker imp">generalmente</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Using Together -->
+        <section class="section">
+            <h2 class="section-title">⚡ Using Both Together</h2>
+            <div class="card">
+                <div class="tip-box" style="margin: 0 0 16px 0;">
+                    <div class="tip-title">The Classic Pattern</div>
+                    <div class="tip-text"><strong>Imperfect</strong> sets the scene (background), <strong>Preterite</strong> interrupts with an action.</div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish"><span class="highlight-imp">Caminaba</span> por el parque cuando <span class="highlight-pret">vi</span> a mi amigo.</div>
+                    <div class="example-english">I was walking through the park when I saw my friend.</div>
+                </div>
+                <div class="example">
+                    <div class="example-spanish"><span class="highlight-imp">Dormía</span> cuando <span class="highlight-pret">sonó</span> el teléfono.</div>
+                    <div class="example-english">I was sleeping when the phone rang.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Conjugation -->
+        <section class="section">
+            <h2 class="section-title">📝 Conjugation Reference</h2>
+            <div class="card">
+                <h4 style="margin-bottom: 12px;">Preterite: HABLAR</h4>
+                <table class="conj-table">
+                    <tbody>
+                        <tr><td class="pronoun">yo</td><td class="pret-form">hablé</td></tr>
+                        <tr><td class="pronoun">tú</td><td class="pret-form">hablaste</td></tr>
+                        <tr><td class="pronoun">él/ella</td><td class="pret-form">habló</td></tr>
+                        <tr><td class="pronoun">nosotros</td><td class="pret-form">hablamos</td></tr>
+                        <tr><td class="pronoun">ellos</td><td class="pret-form">hablaron</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card">
+                <h4 style="margin-bottom: 12px;">Imperfect: HABLAR</h4>
+                <table class="conj-table">
+                    <tbody>
+                        <tr><td class="pronoun">yo</td><td class="imp-form">hablaba</td></tr>
+                        <tr><td class="pronoun">tú</td><td class="imp-form">hablabas</td></tr>
+                        <tr><td class="pronoun">él/ella</td><td class="imp-form">hablaba</td></tr>
+                        <tr><td class="pronoun">nosotros</td><td class="imp-form">hablábamos</td></tr>
+                        <tr><td class="pronoun">ellos</td><td class="imp-form">hablaban</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Quiz -->
+        <section class="section">
+            <h2 class="section-title">🎯 Quick Practice</h2>
+            <div id="quizContainer"></div>
+        </section>
+
+        <section class="cta-section">
+            <button class="cta-btn" onclick="goToFlashcards()">
+                Practice Flashcards →
+            </button>
+        </section>
+    </div>
+
+    <div class="score-display">
+        <span class="score-label">Score</span>
+        <span class="score-value" id="scoreValue">0/0</span>
+    </div>
+
+    <script src="../js/core.js"></script>
+    <script>
+        const quizQuestions = [
+            { sentence: "Ayer ___ una película muy buena.", answer: "preterite", hint: "Completed action (yesterday)" },
+            { sentence: "Cuando era niño, ___ al parque todos los días.", answer: "imperfect", hint: "Habitual action (used to)" },
+            { sentence: "Mientras ___ la cena, sonó el teléfono.", answer: "imperfect", hint: "Background/ongoing action" },
+            { sentence: "El año pasado ___ a México tres veces.", answer: "preterite", hint: "Specific number of times" },
+            { sentence: "___ las ocho de la noche cuando llegué.", answer: "imperfect", hint: "Time description" },
+            { sentence: "De repente, ___ un ruido extraño.", answer: "preterite", hint: "Sudden, completed action" },
+            { sentence: "Ella siempre ___ vestidos rojos.", answer: "imperfect", hint: "Habitual action (always)" },
+            { sentence: "Anoche ___ muy bien.", answer: "preterite", hint: "Completed action (last night)" },
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = 0;
+
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+
+            if (currentQuestion >= quizQuestions.length) {
+                container.innerHTML = `
+                    <div class="quiz-card" style="text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 16px;">🎉</div>
+                        <div class="quiz-question">Quiz Complete!</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--success); margin: 16px 0;">
+                            ${score}/${quizQuestions.length}
+                        </div>
+                        <button class="cta-btn" onclick="resetQuiz()" style="margin-top: 16px;">Try Again</button>
+                    </div>
+                `;
+                document.getElementById('progressFill').style.width = '100%';
+                return;
+            }
+
+            const q = quizQuestions[currentQuestion];
+            container.innerHTML = `
+                <div class="quiz-card">
+                    <div class="quiz-question">Which tense would you use?</div>
+                    <div class="quiz-sentence">${q.sentence.replace('___', '<span class="blank">?</span>')}</div>
+                    <div class="quiz-options">
+                        <button class="quiz-btn pret" onclick="checkAnswer('preterite')">Preterite</button>
+                        <button class="quiz-btn imp" onclick="checkAnswer('imperfect')">Imperfect</button>
+                    </div>
+                    <div class="quiz-feedback" id="feedback"></div>
+                </div>
+            `;
+
+            document.getElementById('progressFill').style.width = `${(currentQuestion / quizQuestions.length) * 100}%`;
+        }
+
+        function checkAnswer(selected) {
+            const q = quizQuestions[currentQuestion];
+            const feedback = document.getElementById('feedback');
+            const buttons = document.querySelectorAll('.quiz-btn');
+
+            buttons.forEach(b => b.disabled = true);
+
+            const selectedBtn = selected === 'preterite' ? buttons[0] : buttons[1];
+            const correctBtn = q.answer === 'preterite' ? buttons[0] : buttons[1];
+
+            if (selected === q.answer) {
+                selectedBtn.classList.add('correct');
+                feedback.className = 'quiz-feedback show correct';
+                feedback.textContent = `✓ Correct! ${q.hint}`;
+                score++;
+            } else {
+                selectedBtn.classList.add('incorrect');
+                correctBtn.classList.add('correct');
+                feedback.className = 'quiz-feedback show incorrect';
+                feedback.textContent = `✗ Use ${q.answer}. ${q.hint}`;
+            }
+
+            answered++;
+            document.getElementById('scoreValue').textContent = `${score}/${answered}`;
+
+            if (typeof Yespanol !== 'undefined') {
+                Yespanol.recordAttempt(`preterite-imperfect-${currentQuestion}`, 'preterite-imperfect', selected === q.answer);
+            }
+
+            setTimeout(() => {
+                currentQuestion++;
+                renderQuiz();
+            }, 1500);
+        }
+
+        function resetQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            answered = 0;
+            document.getElementById('scoreValue').textContent = '0/0';
+            renderQuiz();
+        }
+
+        function goToFlashcards() {
+            location.href = '../practice/flashcards.html?category=preterite-imperfect';
+        }
+
+        document.addEventListener('DOMContentLoaded', renderQuiz);
+    </script>
+</body>
+</html>
