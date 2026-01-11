@@ -417,11 +417,15 @@
 
     <!-- Chat -->
     <div class="chat-container" id="chatContainer">
-        <!-- Messages will be injected here -->
+        <!-- Loading state -->
+        <div class="narrator" id="loadingState">
+            <span class="scene-title">Loading...</span>
+            Preparing your story...
+        </div>
     </div>
 
     <!-- Choices -->
-    <div class="choices-container" id="choicesContainer">
+    <div class="choices-container hidden" id="choicesContainer">
         <div class="choices-prompt">How do you respond?</div>
         <div class="choices" id="choices">
             <!-- Choices will be injected here -->
@@ -824,20 +828,55 @@
 
             // Initialize
             function init() {
-                story = Story.load();
-                character = story.character;
+                try {
+                    // Check if Story module exists
+                    if (typeof Story === 'undefined') {
+                        console.error('Story module not loaded');
+                        showError('Story module failed to load. Please refresh.');
+                        return;
+                    }
 
-                // Update UI with character info
-                document.getElementById('characterName').textContent = character.name;
+                    story = Story.load();
+                    if (!story || !story.character) {
+                        console.error('Failed to load story data');
+                        showError('Failed to load story. Please refresh.');
+                        return;
+                    }
 
-                // Load saved progress or start fresh
-                const savedScene = parseInt(localStorage.getItem('story_scene') || '0');
-                currentScene = Math.min(savedScene, scenes.length - 1);
+                    character = story.character;
 
-                // Start the story
-                showSceneTransition(scenes[currentScene], () => {
-                    playScene(currentScene);
-                });
+                    // Update UI with character info
+                    document.getElementById('characterName').textContent = character.name;
+
+                    // Load saved progress or start fresh
+                    const savedScene = parseInt(localStorage.getItem('story_scene') || '0');
+                    currentScene = Math.min(savedScene, scenes.length - 1);
+
+                    // Hide choices initially
+                    document.getElementById('choicesContainer').classList.add('hidden');
+
+                    // Start the story
+                    showSceneTransition(scenes[currentScene], () => {
+                        playScene(currentScene);
+                    });
+                } catch (err) {
+                    console.error('Story init error:', err);
+                    showError('Something went wrong. Please refresh.');
+                }
+            }
+
+            // Show error message
+            function showError(msg) {
+                const container = document.getElementById('chatContainer');
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px; color: rgba(255,255,255,0.6);">
+                        <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+                        <div style="margin-bottom: 20px;">${msg}</div>
+                        <button onclick="location.reload()" style="padding: 12px 24px; background: var(--story-purple); border: none; border-radius: 12px; color: white; font-size: 16px; cursor: pointer;">
+                            Refresh
+                        </button>
+                    </div>
+                `;
             }
 
             // Replace {placeholders} with character data
@@ -1115,8 +1154,33 @@
             }
         });
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', StoryMode.init);
+        // Initialize with fallbacks
+        function startStory() {
+            // Small delay to ensure all scripts are loaded
+            setTimeout(() => {
+                try {
+                    StoryMode.init();
+                } catch (err) {
+                    console.error('Failed to start story:', err);
+                    document.getElementById('chatContainer').innerHTML = `
+                        <div style="text-align: center; padding: 40px 20px; color: rgba(255,255,255,0.6);">
+                            <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+                            <div style="margin-bottom: 20px;">Failed to load story. Please refresh.</div>
+                            <button onclick="location.reload()" style="padding: 12px 24px; background: #bf5af2; border: none; border-radius: 12px; color: white; font-size: 16px; cursor: pointer;">
+                                Refresh
+                            </button>
+                        </div>
+                    `;
+                }
+            }, 100);
+        }
+
+        // Try multiple init strategies
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', startStory);
+        } else {
+            startStory();
+        }
     </script>
 </body>
 </html>
