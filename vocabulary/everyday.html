@@ -215,6 +215,24 @@
             <div class="vocab-grid" id="time"></div>
         </section>
 
+        <!-- Feelings -->
+        <section class="section">
+            <h2 class="section-title">💭 Feelings & States</h2>
+            <div class="vocab-grid" id="feelings"></div>
+        </section>
+
+        <!-- Useful Phrases -->
+        <section class="section">
+            <h2 class="section-title">💬 Useful Phrases</h2>
+            <div class="vocab-grid" id="phrases"></div>
+        </section>
+
+        <!-- Common Adjectives -->
+        <section class="section">
+            <h2 class="section-title">✨ Common Adjectives</h2>
+            <div class="vocab-grid" id="adjectives"></div>
+        </section>
+
         <!-- Quiz Section -->
         <section class="quiz-section">
             <div class="quiz-title">🎯 Quick Quiz</div>
@@ -257,6 +275,36 @@
                 { word: "a menudo", pron: "ah meh-NOO-doh", translation: "often", example: "Voy al gym a menudo.", exampleEn: "I go to the gym often." },
                 { word: "de vez en cuando", pron: "deh behz ehn KWAHN-doh", translation: "from time to time", example: "De vez en cuando como pizza.", exampleEn: "From time to time I eat pizza." },
                 { word: "en seguida", pron: "ehn seh-GEE-dah", translation: "right away", example: "Te llamo en seguida.", exampleEn: "I'll call you right away." },
+                { word: "hace rato", pron: "AH-seh RAH-toh", translation: "a while ago", example: "Llegué hace rato.", exampleEn: "I arrived a while ago." },
+                { word: "todavía", pron: "toh-dah-BEE-ah", translation: "still / yet", example: "Todavía no he comido.", exampleEn: "I haven't eaten yet." },
+            ],
+            feelings: [
+                { word: "tener ganas de", pron: "teh-NEHR GAH-nahs deh", translation: "to feel like (doing)", example: "Tengo ganas de bailar.", exampleEn: "I feel like dancing." },
+                { word: "estar harto/a", pron: "ehs-TAHR AHR-toh", translation: "to be fed up", example: "Estoy harto de esperar.", exampleEn: "I'm fed up with waiting." },
+                { word: "dar igual", pron: "dahr ee-GWAHL", translation: "to not matter / don't care", example: "Me da igual lo que digan.", exampleEn: "I don't care what they say." },
+                { word: "estar agotado/a", pron: "ehs-TAHR ah-goh-TAH-doh", translation: "to be exhausted", example: "Estoy agotada del trabajo.", exampleEn: "I'm exhausted from work." },
+                { word: "tener sueño", pron: "teh-NEHR SWEH-nyoh", translation: "to be sleepy", example: "Tengo mucho sueño.", exampleEn: "I'm very sleepy." },
+                { word: "estar emocionado/a", pron: "ehs-TAHR eh-moh-syoh-NAH-doh", translation: "to be excited", example: "Estoy emocionada por el viaje.", exampleEn: "I'm excited about the trip." },
+                { word: "tener prisa", pron: "teh-NEHR PREE-sah", translation: "to be in a hurry", example: "No puedo hablar, tengo prisa.", exampleEn: "I can't talk, I'm in a hurry." },
+            ],
+            phrases: [
+                { word: "¡Qué va!", pron: "keh bah", translation: "No way! / Not at all!", example: "¿Estás cansado? —¡Qué va!", exampleEn: "Are you tired? —Not at all!" },
+                { word: "¡No me digas!", pron: "noh meh DEE-gahs", translation: "You don't say! / Really?!", example: "Me casé ayer. —¡No me digas!", exampleEn: "I got married yesterday. —You don't say!" },
+                { word: "¡Venga!", pron: "BEHN-gah", translation: "Come on! / Let's go! / OK!", example: "¡Venga, nos vamos!", exampleEn: "Come on, let's go!" },
+                { word: "Vale", pron: "BAH-leh", translation: "OK / Alright (Spain)", example: "¿Quedamos a las 8? —Vale.", exampleEn: "Shall we meet at 8? —OK." },
+                { word: "¡Qué rollo!", pron: "keh ROH-yoh", translation: "What a drag / How boring!", example: "Otra reunión, ¡qué rollo!", exampleEn: "Another meeting, what a drag!" },
+                { word: "¡Ni hablar!", pron: "nee ah-BLAHR", translation: "No way! / Absolutely not!", example: "¿Puedo coger tu coche? —¡Ni hablar!", exampleEn: "Can I take your car? —No way!" },
+                { word: "¡Qué guay!", pron: "keh gwy", translation: "How cool! (Spain)", example: "¡Qué guay es este lugar!", exampleEn: "This place is so cool!" },
+                { word: "¡Qué padre!", pron: "keh PAH-dreh", translation: "How cool! (Mexico)", example: "¡Qué padre tu camiseta!", exampleEn: "Your t-shirt is so cool!" },
+            ],
+            adjectives: [
+                { word: "genial", pron: "heh-NYAHL", translation: "great / awesome", example: "La fiesta estuvo genial.", exampleEn: "The party was awesome." },
+                { word: "impresionante", pron: "eem-preh-syoh-NAHN-teh", translation: "impressive / amazing", example: "La vista es impresionante.", exampleEn: "The view is amazing." },
+                { word: "pesado/a", pron: "peh-SAH-doh", translation: "annoying / heavy", example: "No seas pesado.", exampleEn: "Don't be annoying." },
+                { word: "cursi", pron: "KOOR-see", translation: "cheesy / corny", example: "Esa película es muy cursi.", exampleEn: "That movie is really cheesy." },
+                { word: "mono/a", pron: "MOH-noh", translation: "cute (Spain)", example: "¡Qué mono es tu perro!", exampleEn: "Your dog is so cute!" },
+                { word: "chévere", pron: "CHEH-beh-reh", translation: "cool / great (Latin Am.)", example: "¡Qué chévere!", exampleEn: "How cool!" },
+                { word: "flojo/a", pron: "FLOH-hoh", translation: "weak / lazy", example: "Hoy me siento muy flojo.", exampleEn: "I feel very lazy today." },
             ]
         };
 
@@ -266,6 +314,13 @@
             { word: "ahora mismo", options: ["yesterday", "tomorrow", "right now", "never"], answer: 2 },
             { word: "¿Qué tal?", options: ["What's that?", "How's it going?", "What time?", "Who is it?"], answer: 1 },
             { word: "de vez en cuando", options: ["always", "never", "from time to time", "immediately"], answer: 2 },
+            { word: "tener ganas de", options: ["to have hands", "to feel like doing", "to be strong", "to hold"], answer: 1 },
+            { word: "¡Qué va!", options: ["What's up?", "Go away!", "No way! / Not at all!", "Let's go!"], answer: 2 },
+            { word: "estar harto/a", options: ["to be full", "to be fed up", "to be happy", "to be hurt"], answer: 1 },
+            { word: "genial", options: ["genius", "general", "great / awesome", "gentle"], answer: 2 },
+            { word: "¡Ni hablar!", options: ["Don't speak", "Absolutely not!", "Stop talking", "Please speak"], answer: 1 },
+            { word: "tener prisa", options: ["to be early", "to be in a hurry", "to be imprisoned", "to be pressed"], answer: 1 },
+            { word: "pesado/a", options: ["heavy / annoying", "light", "patient", "peaceful"], answer: 0 },
         ];
 
         let currentQuiz = 0;
@@ -354,6 +409,9 @@
             renderVocab('greetings', vocabulary.greetings);
             renderVocab('verbs', vocabulary.verbs);
             renderVocab('time', vocabulary.time);
+            renderVocab('feelings', vocabulary.feelings);
+            renderVocab('phrases', vocabulary.phrases);
+            renderVocab('adjectives', vocabulary.adjectives);
             renderQuiz();
         });
     </script>
