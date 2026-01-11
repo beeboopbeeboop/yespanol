@@ -11,11 +11,16 @@
     --bg-secondary: #2c2c2e;
     --bg-tertiary: #3a3a3c;
 
-    /* Glass morphism */
-    --glass-bg: rgba(28, 28, 30, 0.72);
-    --glass-bg-thick: rgba(28, 28, 30, 0.92);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-highlight: rgba(255, 255, 255, 0.05);
+    /* Glass morphism - VisionOS inspired */
+    --glass-bg: rgba(38, 38, 42, 0.78);
+    --glass-bg-thick: rgba(38, 38, 42, 0.92);
+    --glass-bg-light: rgba(48, 48, 54, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-border-strong: rgba(255, 255, 255, 0.18);
+    --glass-highlight: rgba(255, 255, 255, 0.08);
+    --glass-inner-glow: inset 0 1px 1px rgba(255, 255, 255, 0.06);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+    --glass-blur: blur(24px);
 
     /* Text hierarchy */
     --text-primary: #ffffff;

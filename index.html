@@ -170,8 +170,9 @@
             border-radius: var(--radius-lg);
             padding: var(--space-3) var(--space-4);
             text-align: center;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            box-shadow: var(--glass-inner-glow), var(--glass-shadow);
         }
 
         .stat-value {
@@ -380,7 +381,9 @@
             font-weight: var(--weight-medium);
             color: var(--text-primary);
             cursor: pointer;
-            backdrop-filter: blur(20px);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            box-shadow: var(--glass-inner-glow), 0 4px 16px rgba(0, 0, 0, 0.25);
             transition: all var(--duration-fast) var(--ease-out);
         }
 
@@ -484,8 +487,9 @@
             color: inherit;
             position: relative;
             overflow: hidden;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            box-shadow: var(--glass-inner-glow), var(--glass-shadow);
             transition: all var(--duration-fast) var(--ease-out);
         }
 
