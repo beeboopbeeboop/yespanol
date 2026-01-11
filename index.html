@@ -1273,28 +1273,29 @@
         function updateProgressRing(profile) {
             const container = document.getElementById('progressRing');
             const ring = document.getElementById('ringFill');
-            const percent = document.getElementById('ringPercent');
+            const center = document.getElementById('ringPercent');
 
-            // Calculate overall progress
-            const progress = calculateOverallProgress(profile);
+            // Get XP-based level progress
+            const level = profile.level || 1;
+            const progress = Yespanol.getLevelProgress(profile);
 
             // Update ring (circumference = 2 * PI * r = 2 * 3.14159 * 18 ≈ 113.1)
             const circumference = 113.1;
             const offset = circumference - (progress / 100) * circumference;
             ring.style.strokeDashoffset = offset;
 
-            // Update percentage display
-            percent.textContent = Math.round(progress) + '%';
+            // Show level number in center
+            center.textContent = level;
 
-            // Set level class for glow color (5 tiers)
+            // Set level class for glow color (based on level tiers)
             container.classList.remove('level-1', 'level-2', 'level-3', 'level-4', 'level-5');
-            if (progress >= 80) {
-                container.classList.add('level-5'); // Red/gold - mastery
-            } else if (progress >= 60) {
+            if (level >= 12) {
+                container.classList.add('level-5'); // Red/gold - master
+            } else if (level >= 9) {
                 container.classList.add('level-4'); // Amber
-            } else if (progress >= 40) {
+            } else if (level >= 6) {
                 container.classList.add('level-3'); // Purple
-            } else if (progress >= 20) {
+            } else if (level >= 3) {
                 container.classList.add('level-2'); // Blue
             } else {
                 container.classList.add('level-1'); // Green - beginner

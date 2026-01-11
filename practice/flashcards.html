@@ -7,6 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Flashcards — Yespañol</title>
     <link rel="stylesheet" href="../css/design-system.css">
+    <script src="../js/core.js"></script>
     <style>
         :root {
             --bg-primary: #000000;
@@ -175,6 +176,99 @@
 
         .flashcard.swiping-left {
             box-shadow: 0 0 40px rgba(255, 69, 58, 0.3);
+        }
+
+        /* Card flip animation */
+        .flashcard {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .flashcard .card-front,
+        .flashcard .card-back {
+            backface-visibility: hidden;
+            transition: transform 0.5s ease;
+        }
+
+        .flashcard.flipped .card-front {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard.flipped .card-back {
+            transform: rotateY(0deg);
+        }
+
+        /* XP Popup */
+        .xp-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 20px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
+        }
+
+        .xp-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            animation: xpBounce 0.6s ease;
+        }
+
+        @keyframes xpBounce {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        /* Level up popup */
+        .levelup-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.95) 0%, rgba(139, 92, 246, 0.95) 100%);
+            color: white;
+            padding: 32px 48px;
+            border-radius: 24px;
+            text-align: center;
+            z-index: 1001;
+            opacity: 0;
+            pointer-events: none;
+            box-shadow: 0 0 60px rgba(168, 85, 247, 0.6);
+        }
+
+        .levelup-popup.show {
+            opacity: 1;
+            pointer-events: auto;
+            animation: levelUpPop 0.5s ease;
+        }
+
+        @keyframes levelUpPop {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            70% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .levelup-icon { font-size: 4rem; margin-bottom: 16px; }
+        .levelup-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+        .levelup-level { font-size: 3rem; font-weight: 800; }
+
+        /* Confetti canvas */
+        #confettiCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 999;
         }
 
         .flashcard.behind {
@@ -476,6 +570,19 @@
 <body>
     <div class="ambient-bg"></div>
 
+    <!-- XP Popup -->
+    <div class="xp-popup" id="xpPopup">+10 XP</div>
+
+    <!-- Level Up Popup -->
+    <div class="levelup-popup" id="levelupPopup">
+        <div class="levelup-icon">🎉</div>
+        <div class="levelup-title">Level Up!</div>
+        <div class="levelup-level" id="newLevel">2</div>
+    </div>
+
+    <!-- Confetti Canvas -->
+    <canvas id="confettiCanvas"></canvas>
+
     <div class="app-container">
         <header class="header">
             <a href="../index.html" class="back-btn">←</a>
@@ -699,6 +806,105 @@
             { category: 'Vocabulary', word: 'bacán (S. America)', pronunciation: 'bah-KAHN', answer: 'cool/great', example: '"Tu casa es bacán."' },
             { category: 'Vocabulary', word: 'mola (Spain)', pronunciation: 'MOH-lah', answer: 'it\'s cool', example: '"Eso mola mucho."' },
             { category: 'Vocabulary', word: 'flipar (Spain)', pronunciation: 'flee-PAHR', answer: 'to freak out/be amazed', example: '"Estoy flipando."' },
+
+            // Numbers & Time
+            { category: 'Numbers', word: 'ciento uno', pronunciation: 'see-EN-toh OO-noh', answer: '101', example: 'Numbers 100+ use "ciento" not "cien"' },
+            { category: 'Numbers', word: 'doscientos/as', pronunciation: 'dohs-see-EN-tohs', answer: '200', example: 'Hundreds agree in gender: doscientas personas' },
+            { category: 'Numbers', word: 'mil', pronunciation: 'meel', answer: '1,000', example: '"Dos mil veinticinco" = 2025' },
+            { category: 'Numbers', word: 'un millón de', pronunciation: 'oon mee-YOHN deh', answer: '1,000,000', example: 'Use "de" before nouns: "un millón de dólares"' },
+            { category: 'Time', word: '¿Qué hora es?', pronunciation: 'keh OH-rah ehs', answer: 'What time is it?', example: 'Response: "Son las tres" (It\'s 3:00)' },
+            { category: 'Time', word: 'Es la una y media', pronunciation: 'ehs lah OO-nah ee MEH-dyah', answer: 'It\'s 1:30', example: '1:00 uses "Es la" (singular), others use "Son las"' },
+            { category: 'Time', word: 'a las ocho de la mañana', pronunciation: 'ah lahs OH-choh...', answer: 'at 8 in the morning', example: '"de la mañana/tarde/noche" specifies time of day' },
+            { category: 'Time', word: 'en punto', pronunciation: 'en POON-toh', answer: 'on the dot, sharp', example: '"A las cinco en punto" = At 5:00 sharp' },
+            { category: 'Time', word: 'cuarto', pronunciation: 'KWAHR-toh', answer: 'quarter (15 min)', example: '"Son las dos y cuarto" = 2:15' },
+            { category: 'Time', word: 'menos', pronunciation: 'MEH-nohs', answer: 'minus/to (time)', example: '"Son las tres menos diez" = 2:50 (10 to 3)' },
+
+            // Question Words
+            { category: 'Questions', word: '¿Cuánto/a?', pronunciation: 'KWAHN-toh', answer: 'How much?', example: '"¿Cuánto cuesta?" = How much does it cost?' },
+            { category: 'Questions', word: '¿Cuántos/as?', pronunciation: 'KWAHN-tohs', answer: 'How many?', example: '"¿Cuántas personas?" = How many people?' },
+            { category: 'Questions', word: '¿Cuál/Cuáles?', pronunciation: 'kwahl/KWAH-lehs', answer: 'Which one(s)?', example: '"¿Cuál prefieres?" = Which do you prefer?' },
+            { category: 'Questions', word: '¿Por qué?', pronunciation: 'pohr keh', answer: 'Why?', example: '"¿Por qué no vienes?" = Why don\'t you come?' },
+            { category: 'Questions', word: '¿Para qué?', pronunciation: 'PAH-rah keh', answer: 'What for?', example: '"¿Para qué es esto?" = What is this for?' },
+            { category: 'Questions', word: '¿Cómo?', pronunciation: 'KOH-moh', answer: 'How?', example: '"¿Cómo se dice...?" = How do you say...?' },
+            { category: 'Questions', word: '¿Dónde?', pronunciation: 'DOHN-deh', answer: 'Where?', example: '"¿De dónde eres?" = Where are you from?' },
+            { category: 'Questions', word: '¿Adónde?', pronunciation: 'ah-DOHN-deh', answer: 'To where?', example: '"¿Adónde vas?" = Where are you going (to)?' },
+            { category: 'Questions', word: '¿Cuándo?', pronunciation: 'KWAHN-doh', answer: 'When?', example: '"¿Cuándo llegaste?" = When did you arrive?' },
+            { category: 'Questions', word: '¿Quién/Quiénes?', pronunciation: 'kee-EHN', answer: 'Who?', example: '"¿Quién es?" = Who is it?' },
+
+            // Connectors & Fillers
+            { category: 'Connectors', word: 'además', pronunciation: 'ah-deh-MAHS', answer: 'besides, furthermore', example: '"Además, tenemos otro problema."' },
+            { category: 'Connectors', word: 'por lo tanto', pronunciation: 'pohr loh TAHN-toh', answer: 'therefore', example: '"Por lo tanto, no puedo ir."' },
+            { category: 'Connectors', word: 'aunque', pronunciation: 'OWN-keh', answer: 'although, even though', example: '"Aunque llueva, iré." (+ subjunctive for uncertainty)' },
+            { category: 'Connectors', word: 'mientras', pronunciation: 'mee-EHN-trahs', answer: 'while, whereas', example: '"Mientras trabajas, yo cocino."' },
+            { category: 'Connectors', word: 'en cambio', pronunciation: 'en KAHM-byoh', answer: 'on the other hand', example: '"Él es alto; en cambio, ella es baja."' },
+            { category: 'Connectors', word: 'por eso', pronunciation: 'pohr EH-soh', answer: 'that\'s why', example: '"Por eso te llamé."' },
+            { category: 'Connectors', word: 'o sea', pronunciation: 'oh SEH-ah', answer: 'in other words, like', example: '"O sea, no entiendes."' },
+            { category: 'Connectors', word: 'es decir', pronunciation: 'ehs deh-SEER', answer: 'that is to say', example: '"Es decir, necesitamos más tiempo."' },
+            { category: 'Connectors', word: 'bueno/pues', pronunciation: 'BWEH-noh/pwehs', answer: 'well... (filler)', example: '"Bueno, pues... no sé qué decir."' },
+            { category: 'Connectors', word: 'entonces', pronunciation: 'ehn-TOHN-sehs', answer: 'so, then', example: '"Entonces, ¿qué hacemos?"' },
+            { category: 'Connectors', word: 'de hecho', pronunciation: 'deh EH-choh', answer: 'in fact, actually', example: '"De hecho, ya lo sabía."' },
+            { category: 'Connectors', word: 'a pesar de', pronunciation: 'ah peh-SAHR deh', answer: 'despite, in spite of', example: '"A pesar de todo, seguimos."' },
+            { category: 'Connectors', word: 'en cuanto', pronunciation: 'en KWAHN-toh', answer: 'as soon as', example: '"En cuanto llegue, te llamo."' },
+            { category: 'Connectors', word: 'así que', pronunciation: 'ah-SEE keh', answer: 'so (result)', example: '"Estaba cansado, así que me dormí."' },
+            { category: 'Connectors', word: 'ya que', pronunciation: 'yah keh', answer: 'since, given that', example: '"Ya que estás aquí, ayúdame."' },
+
+            // Survival Phrases
+            { category: 'Survival', word: '¿Me puede ayudar?', pronunciation: 'meh PWEH-deh ah-yoo-DAHR', answer: 'Can you help me?', example: 'Polite way to ask for help' },
+            { category: 'Survival', word: 'No entiendo', pronunciation: 'noh ehn-tee-EHN-doh', answer: 'I don\'t understand', example: '"Lo siento, no entiendo."' },
+            { category: 'Survival', word: '¿Puede repetir?', pronunciation: 'PWEH-deh reh-peh-TEER', answer: 'Can you repeat?', example: 'Add "más despacio" for "more slowly"' },
+            { category: 'Survival', word: '¿Cuánto cuesta?', pronunciation: 'KWAHN-toh KWEHS-tah', answer: 'How much does it cost?', example: '"¿Cuánto cuestan?" for plural items' },
+            { category: 'Survival', word: 'La cuenta, por favor', pronunciation: 'lah KWEHN-tah...', answer: 'The check, please', example: 'Use in restaurants' },
+            { category: 'Survival', word: '¿Dónde está el baño?', pronunciation: 'DOHN-deh ehs-TAH...', answer: 'Where is the bathroom?', example: 'Essential phrase!' },
+            { category: 'Survival', word: '¿Habla inglés?', pronunciation: 'AH-blah een-GLEHS', answer: 'Do you speak English?', example: 'Use as last resort' },
+            { category: 'Survival', word: 'Quisiera...', pronunciation: 'kee-see-EH-rah', answer: 'I would like...', example: 'More polite than "quiero"' },
+            { category: 'Survival', word: 'Lo siento', pronunciation: 'loh see-EHN-toh', answer: 'I\'m sorry', example: '"Perdón" also works for excuse me' },
+            { category: 'Survival', word: 'Con permiso', pronunciation: 'kohn pehr-MEE-soh', answer: 'Excuse me (passing by)', example: 'Use when squeezing past someone' },
+            { category: 'Survival', word: 'Tengo una reservación', pronunciation: 'TEHN-goh OO-nah...', answer: 'I have a reservation', example: 'For hotels/restaurants' },
+            { category: 'Survival', word: '¿A qué hora...?', pronunciation: 'ah keh OH-rah', answer: 'At what time...?', example: '"¿A qué hora abre?" = What time does it open?' },
+            { category: 'Survival', word: 'Me perdí', pronunciation: 'meh pehr-DEE', answer: 'I\'m lost', example: '"Estoy perdido/a" also works' },
+            { category: 'Survival', word: 'Necesito un médico', pronunciation: 'neh-seh-SEE-toh...', answer: 'I need a doctor', example: 'Emergency phrase' },
+            { category: 'Survival', word: '¿Tiene wifi?', pronunciation: 'tee-EH-neh WEE-fee', answer: 'Do you have wifi?', example: '"¿Cuál es la contraseña?" = What\'s the password?' },
+
+            // More Subjunctive
+            { category: 'Subjunctive', word: 'Es importante que ___', pronunciation: 'subjunctive trigger', answer: 'It\'s important that... + subjunctive', example: '"Es importante que estudies."' },
+            { category: 'Subjunctive', word: 'Ojalá que ___', pronunciation: 'oh-hah-LAH keh', answer: 'Hopefully... + subjunctive', example: '"Ojalá que venga." = Hopefully he comes' },
+            { category: 'Subjunctive', word: 'antes de que', pronunciation: 'AHN-tehs deh keh', answer: 'before + subjunctive', example: '"Antes de que llueva, salgamos."' },
+            { category: 'Subjunctive', word: 'para que', pronunciation: 'PAH-rah keh', answer: 'so that + subjunctive', example: '"Te lo digo para que sepas."' },
+            { category: 'Subjunctive', word: 'a menos que', pronunciation: 'ah MEH-nohs keh', answer: 'unless + subjunctive', example: '"Voy a menos que llueva."' },
+            { category: 'Subjunctive', word: 'cuando (future)', pronunciation: 'KWAHN-doh', answer: 'when (future) + subjunctive', example: '"Cuando llegues, llámame."' },
+            { category: 'Subjunctive', word: 'tan pronto como', pronunciation: 'tahn PROHN-toh KOH-moh', answer: 'as soon as + subjunctive', example: '"Tan pronto como pueda, lo haré."' },
+            { category: 'Subjunctive', word: 'No creo que ___', pronunciation: 'noh KREH-oh keh', answer: 'I don\'t think... + subjunctive', example: '"No creo que sea verdad."' },
+            { category: 'Subjunctive', word: 'Dudo que ___', pronunciation: 'DOO-doh keh', answer: 'I doubt that... + subjunctive', example: '"Dudo que venga."' },
+            { category: 'Subjunctive', word: 'quizás/tal vez', pronunciation: 'kee-SAHS/tahl vehs', answer: 'perhaps, maybe + subjunctive', example: '"Quizás llueva mañana."' },
+
+            // Preterite vs Imperfect
+            { category: 'Past Tenses', word: 'Ayer ___ (llover)', pronunciation: 'completed action', answer: 'llovió (preterite)', example: 'Completed past action = preterite' },
+            { category: 'Past Tenses', word: 'De niño, ___ mucho (jugar)', pronunciation: 'habitual', answer: 'jugaba (imperfect)', example: 'Habitual past action = imperfect' },
+            { category: 'Past Tenses', word: '___ las 3 cuando llegó', pronunciation: 'time/background', answer: 'Eran (imperfect)', example: 'Setting the scene/time = imperfect' },
+            { category: 'Past Tenses', word: 'De repente ___ (oír)', pronunciation: 'sudden action', answer: 'oí/oyó (preterite)', example: '"De repente" = suddenly → preterite' },
+            { category: 'Past Tenses', word: 'Mientras ___ (cocinar), él ___ (leer)', pronunciation: 'simultaneous', answer: 'cocinaba, leía (imperfect)', example: 'Simultaneous actions = imperfect' },
+            { category: 'Past Tenses', word: '___ cansado, así que ___ (dormir)', pronunciation: 'state + action', answer: 'Estaba (imp) + dormí (pret)', example: 'State = imperfect, Action = preterite' },
+            { category: 'Past Tenses', word: 'Siempre ___ café (tomar)', pronunciation: 'always/habitual', answer: 'tomaba (imperfect)', example: '"Siempre" suggests habitual = imperfect' },
+            { category: 'Past Tenses', word: '___ dos veces (ir)', pronunciation: 'specific count', answer: 'fui (preterite)', example: 'Specific number = completed = preterite' },
+            { category: 'Past Tenses', word: 'Cuando era joven, ___', pronunciation: 'age/description', answer: 'imperfect', example: 'Descriptions in past = imperfect' },
+            { category: 'Past Tenses', word: 'El año pasado ___ (viajar)', pronunciation: 'specific time', answer: 'viajé (preterite)', example: '"El año pasado" = specific = preterite' },
+
+            // Common Verbs
+            { category: 'Verbs', word: 'conseguir', pronunciation: 'kohn-seh-GEER', answer: 'to get, obtain, manage to', example: '"Conseguí el trabajo." = I got the job' },
+            { category: 'Verbs', word: 'lograr', pronunciation: 'loh-GRAHR', answer: 'to achieve, manage to', example: '"Logré terminar." = I managed to finish' },
+            { category: 'Verbs', word: 'aprovechar', pronunciation: 'ah-proh-veh-CHAHR', answer: 'to take advantage of', example: '"Aprovecha la oportunidad."' },
+            { category: 'Verbs', word: 'realizar', pronunciation: 'reh-ah-lee-SAHR', answer: 'to carry out, accomplish', example: 'NOT "to realize" (= darse cuenta)' },
+            { category: 'Verbs', word: 'darse cuenta de', pronunciation: 'DAHR-seh KWEHN-tah', answer: 'to realize', example: '"Me di cuenta de mi error."' },
+            { category: 'Verbs', word: 'convertirse en', pronunciation: 'kohn-vehr-TEER-seh', answer: 'to become', example: '"Se convirtió en actor."' },
+            { category: 'Verbs', word: 'quedar/quedarse', pronunciation: 'keh-DAHR', answer: 'to remain/stay; to arrange to meet', example: '"¿Quedamos a las 8?" = Shall we meet at 8?' },
+            { category: 'Verbs', word: 'soler', pronunciation: 'soh-LEHR', answer: 'to usually do', example: '"Suelo correr por la mañana."' },
+            { category: 'Verbs', word: 'tardar', pronunciation: 'tahr-DAHR', answer: 'to take (time)', example: '"Tardé 2 horas en llegar."' },
+            { category: 'Verbs', word: 'caber', pronunciation: 'kah-BEHR', answer: 'to fit', example: '"No quepo en estos jeans."' },
+            { category: 'Verbs', word: 'valer', pronunciation: 'vah-LEHR', answer: 'to be worth; to be OK', example: '"Vale" = OK (Spain)' },
+            { category: 'Verbs', word: 'echar de menos', pronunciation: 'eh-CHAHR deh MEH-nohs', answer: 'to miss (someone/thing)', example: '"Te echo de menos."' },
+            { category: 'Verbs', word: 'hacer falta', pronunciation: 'ah-SEHR FAHL-tah', answer: 'to be needed, necessary', example: '"Me hace falta dinero."' },
+            { category: 'Verbs', word: 'tener ganas de', pronunciation: 'teh-NEHR GAH-nahs', answer: 'to feel like, want to', example: '"Tengo ganas de bailar."' },
+            { category: 'Verbs', word: 'llevarse bien/mal', pronunciation: 'yeh-VAHR-seh', answer: 'to get along well/badly', example: '"Nos llevamos muy bien."' },
         ];
 
         let cards = [];
@@ -899,12 +1105,46 @@
         }
 
         function markCardLearned(index) {
+            // Update legacy progress
             const progress = JSON.parse(localStorage.getItem('yespanol_progress') || '{}');
             progress.wordsLearned = (progress.wordsLearned || 0) + 1;
             progress.totalCorrect = (progress.totalCorrect || 0) + 1;
             progress.totalAttempts = (progress.totalAttempts || 0) + 1;
             progress.accuracy = Math.round((progress.totalCorrect / progress.totalAttempts) * 100);
             localStorage.setItem('yespanol_progress', JSON.stringify(progress));
+
+            // Award XP using main profile
+            if (typeof Yespanol !== 'undefined') {
+                const profile = Yespanol.load();
+                const xpAmount = Yespanol.calculateXP(true, correctCount);
+                const result = Yespanol.awardXP(profile, xpAmount);
+                profile.totalCardsReviewed = (profile.totalCardsReviewed || 0) + 1;
+                profile.totalCorrect = (profile.totalCorrect || 0) + 1;
+                Yespanol.save(profile);
+
+                // Show XP popup
+                showXPPopup(xpAmount);
+
+                // Check for level up
+                if (result.leveledUp) {
+                    setTimeout(() => showLevelUp(result.level), 400);
+                }
+            }
+        }
+
+        function showXPPopup(amount) {
+            const popup = document.getElementById('xpPopup');
+            popup.textContent = `+${amount} XP`;
+            popup.classList.add('show');
+            setTimeout(() => popup.classList.remove('show'), 800);
+        }
+
+        function showLevelUp(level) {
+            const popup = document.getElementById('levelupPopup');
+            document.getElementById('newLevel').textContent = level;
+            popup.classList.add('show');
+            triggerConfetti();
+            setTimeout(() => popup.classList.remove('show'), 2500);
         }
 
         function markCardForReview(index) {
@@ -916,12 +1156,6 @@
             reviewQueue.push({ card: cards[index], nextReview: Date.now() + 60000 }); // Review in 1 min
             progress.reviewQueue = reviewQueue;
             localStorage.setItem('yespanol_progress', JSON.stringify(progress));
-        }
-
-        function showStats() {
-            document.getElementById('statCorrect').textContent = correctCount;
-            document.getElementById('statReview').textContent = reviewCount;
-            document.getElementById('statsOverlay').classList.add('visible');
         }
 
         function restartSession() {
@@ -943,6 +1177,70 @@
         });
 
         // Init
+        // Confetti animation
+        function triggerConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899'];
+
+            for (let i = 0; i < 150; i++) {
+                particles.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    vx: (Math.random() - 0.5) * 20,
+                    vy: (Math.random() - 0.5) * 20 - 10,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    size: Math.random() * 8 + 4,
+                    rotation: Math.random() * 360,
+                    rotationSpeed: (Math.random() - 0.5) * 10
+                });
+            }
+
+            let frame = 0;
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.5; // Gravity
+                    p.rotation += p.rotationSpeed;
+                    p.vx *= 0.99;
+
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rotation * Math.PI / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.restore();
+                });
+
+                frame++;
+                if (frame < 120) {
+                    requestAnimationFrame(animate);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            animate();
+        }
+
+        // Show confetti on session complete
+        function showStats() {
+            document.getElementById('statCorrect').textContent = correctCount;
+            document.getElementById('statReview').textContent = reviewCount;
+            document.getElementById('statsOverlay').classList.add('visible');
+
+            // Confetti if good performance (>50% correct)
+            if (correctCount > reviewCount) {
+                triggerConfetti();
+            }
+        }
+
         initSession();
     </script>
 </body>
