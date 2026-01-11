@@ -33,7 +33,6 @@
             margin: 0;
             padding: 0;
             -webkit-tap-highlight-color: transparent;
-            touch-action: pan-y;
         }
 
         html, body {
@@ -668,10 +667,6 @@
             <span class="nav-icon">📊</span>
             <span class="nav-label">Progress</span>
         </a>
-        <a href="../settings.html" class="nav-item">
-            <span class="nav-icon">⚙️</span>
-            <span class="nav-label">Settings</span>
-        </a>
     </nav>
 
     <script>
@@ -997,32 +992,38 @@
             }
         }
 
+        let touchStartTime = 0;
+        const TAP_THRESHOLD = 200; // ms - max time for a tap
+        const MOVE_THRESHOLD = 15; // px - max movement for a tap
+
+        function revealCard(cardEl) {
+            if (cardEl.classList.contains('revealed')) return;
+            cardEl.classList.add('flip-reveal');
+            setTimeout(() => cardEl.classList.add('revealed'), 300);
+            setTimeout(() => cardEl.classList.remove('flip-reveal'), 600);
+        }
+
         function setupCardInteraction(cardEl) {
             currentCard = cardEl;
 
-            // Tap to reveal with flip animation
-            cardEl.addEventListener('click', (e) => {
-                if (!isDragging && !cardEl.classList.contains('revealed')) {
-                    cardEl.classList.add('flip-reveal');
-                    setTimeout(() => {
-                        cardEl.classList.add('revealed');
-                    }, 300); // Reveal at midpoint of flip
-                    setTimeout(() => {
-                        cardEl.classList.remove('flip-reveal');
-                    }, 600);
-                }
-            });
-
-            // Touch events
+            // Touch events with improved tap detection
             cardEl.addEventListener('touchstart', handleTouchStart, { passive: true });
             cardEl.addEventListener('touchmove', handleTouchMove, { passive: false });
             cardEl.addEventListener('touchend', handleTouchEnd);
 
-            // Mouse events
+            // Mouse events (for desktop)
             cardEl.addEventListener('mousedown', handleMouseDown);
+
+            // Fallback click for desktop
+            cardEl.addEventListener('click', (e) => {
+                if (!isDragging && !cardEl.classList.contains('revealed')) {
+                    revealCard(cardEl);
+                }
+            });
         }
 
         function handleTouchStart(e) {
+            touchStartTime = Date.now();
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
             isDragging = false;
@@ -1036,18 +1037,26 @@
             const currentY = e.touches[0].clientY - startY;
 
             // If moving more horizontally than vertically, it's a swipe
-            if (Math.abs(currentX) > Math.abs(currentY) && Math.abs(currentX) > 10) {
+            if (Math.abs(currentX) > Math.abs(currentY) && Math.abs(currentX) > MOVE_THRESHOLD) {
                 isDragging = true;
                 e.preventDefault();
                 updateCardPosition(currentX);
             }
         }
 
-        function handleTouchEnd() {
+        function handleTouchEnd(e) {
             currentCard.classList.remove('grabbing');
-            if (isDragging) {
+
+            const touchDuration = Date.now() - touchStartTime;
+            const totalMove = Math.abs(currentX);
+
+            // Quick tap with minimal movement = reveal
+            if (!isDragging && touchDuration < TAP_THRESHOLD && totalMove < MOVE_THRESHOLD) {
+                revealCard(currentCard);
+            } else if (isDragging) {
                 handleSwipeEnd();
             }
+
             startX = 0;
             currentX = 0;
             isDragging = false;
