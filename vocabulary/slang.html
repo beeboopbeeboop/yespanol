@@ -99,13 +99,17 @@
         .country-flag { font-size: 1.1rem; }
 
         .intro-card {
-            background: linear-gradient(135deg, rgba(255, 107, 74, 0.1) 0%, var(--bg-glass) 100%);
-            border: 1px solid var(--border-glass);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, var(--bg-glass) 100%);
+            border: 1px solid rgba(239, 68, 68, 0.2);
             border-radius: var(--card-radius);
             padding: 16px;
             margin-bottom: 24px;
             font-size: 0.9rem;
             color: var(--text-secondary);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.1);
+        }
+        .intro-card strong {
+            color: #f87171;
         }
 
         .section { margin-bottom: 32px; }
@@ -559,20 +563,20 @@
             }, 1200);
         }
 
-        // Country selector
-        document.querySelectorAll('.country-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.country-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                selectedCountry = btn.dataset.country;
-                renderSlang();
-            });
-        });
-
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             renderSlang();
             setupQuiz();
+
+            // Country selector
+            document.querySelectorAll('.country-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.country-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    selectedCountry = btn.dataset.country;
+                    renderSlang();
+                });
+            });
         });
     </script>
 </body>

@@ -16,7 +16,10 @@ const Yespanol = (function() {
 
         // User info
         name: '',
-        level: 'beginner', // beginner, intermediate, advanced
+
+        // XP and Level system
+        xp: 0,
+        level: 1,
 
         // Streak tracking
         streak: 0,
@@ -492,6 +495,76 @@ const Yespanol = (function() {
         return true;
     }
 
+    // XP System - Level thresholds
+    const XP_PER_LEVEL = [
+        0,      // Level 1
+        100,    // Level 2
+        250,    // Level 3
+        500,    // Level 4
+        850,    // Level 5
+        1300,   // Level 6
+        1900,   // Level 7
+        2600,   // Level 8
+        3500,   // Level 9
+        4600,   // Level 10
+        6000,   // Level 11
+        7700,   // Level 12
+        9700,   // Level 13
+        12000,  // Level 14
+        15000,  // Level 15 (max)
+    ];
+
+    // Award XP and check for level up
+    function awardXP(profile, amount) {
+        const oldLevel = profile.level || 1;
+        profile.xp = (profile.xp || 0) + amount;
+
+        // Calculate new level
+        let newLevel = 1;
+        for (let i = XP_PER_LEVEL.length - 1; i >= 0; i--) {
+            if (profile.xp >= XP_PER_LEVEL[i]) {
+                newLevel = i + 1;
+                break;
+            }
+        }
+
+        profile.level = newLevel;
+        const leveledUp = newLevel > oldLevel;
+
+        return { xpGained: amount, newXP: profile.xp, level: newLevel, leveledUp };
+    }
+
+    // Get XP progress to next level (0-100%)
+    function getLevelProgress(profile) {
+        const level = profile.level || 1;
+        const currentXP = profile.xp || 0;
+
+        if (level >= XP_PER_LEVEL.length) return 100; // Max level
+
+        const currentLevelXP = XP_PER_LEVEL[level - 1];
+        const nextLevelXP = XP_PER_LEVEL[level];
+        const xpInLevel = currentXP - currentLevelXP;
+        const xpNeeded = nextLevelXP - currentLevelXP;
+
+        return Math.min(100, Math.round((xpInLevel / xpNeeded) * 100));
+    }
+
+    // Get XP needed for next level
+    function getXPToNextLevel(profile) {
+        const level = profile.level || 1;
+        if (level >= XP_PER_LEVEL.length) return 0;
+        return XP_PER_LEVEL[level] - (profile.xp || 0);
+    }
+
+    // Calculate XP for an answer
+    function calculateXP(correct, streak = 0) {
+        if (!correct) return 0;
+        let xp = 10; // Base XP
+        if (streak >= 10) xp += 5;
+        if (streak >= 5) xp += 3;
+        return xp;
+    }
+
     // Get storage stats
     function getStorageStats() {
         const main = localStorage.getItem(STORAGE_KEY) || '';
@@ -519,6 +592,12 @@ const Yespanol = (function() {
         getAccuracy,
         formatSkillName,
         achievementDefs,
+        // XP System
+        awardXP,
+        getLevelProgress,
+        getXPToNextLevel,
+        calculateXP,
+        XP_PER_LEVEL,
         // Data management
         exportData,
         importData,
