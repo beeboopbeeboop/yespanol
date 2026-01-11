@@ -889,3 +889,67 @@ body {
 .bg-accent-subtle { background: var(--accent-subtle); }
 .bg-success-subtle { background: var(--success-subtle); }
 .bg-error-subtle { background: var(--error-subtle); }
+
+/* ============================================
+   ALERTS & NOTICES
+   ============================================ */
+
+.alert {
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, var(--glass-bg) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.1);
+    color: var(--text-secondary);
+}
+.alert-warning strong { color: #f87171; }
+
+.alert-info {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, var(--glass-bg) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);
+    color: var(--text-secondary);
+}
+.alert-info strong { color: #60a5fa; }
+
+.alert-success {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, var(--glass-bg) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+    color: var(--text-secondary);
+}
+.alert-success strong { color: #34d399; }
+
+.alert-tip {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, var(--glass-bg) 100%);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.1);
+    color: var(--text-secondary);
+}
+.alert-tip strong { color: #fbbf24; }
+
+/* Inline warning tag */
+.tag-warning {
+    display: inline-block;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    border-radius: 4px;
+    vertical-align: middle;
+}
+
+.tag-info {
+    display: inline-block;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+    border-radius: 4px;
+    vertical-align: middle;
+}

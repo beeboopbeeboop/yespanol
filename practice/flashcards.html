@@ -69,7 +69,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 56px 20px 16px;
+            padding: 48px 20px 12px;
+            flex-shrink: 0;
         }
 
         .back-btn {
@@ -101,7 +102,8 @@
         /* Progress bar */
         .progress-container {
             padding: 0 20px;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
+            flex-shrink: 0;
         }
 
         .progress-bar {
@@ -125,17 +127,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            overflow: hidden;
+            padding: 16px 20px;
+            overflow: visible;
+            min-height: 0;
         }
 
         /* Flashcard */
         .flashcard {
             position: absolute;
-            width: calc(100% - 40px);
-            max-width: 380px;
-            aspect-ratio: 3/4;
-            max-height: 70vh;
+            width: calc(100% - 48px);
+            max-width: 340px;
+            height: auto;
+            min-height: 280px;
+            max-height: calc(100% - 40px);
             background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -147,7 +151,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 32px;
+            padding: 28px 24px;
             text-align: center;
             transition: transform 0.1s ease, box-shadow 0.3s ease;
             will-change: transform;
@@ -299,7 +303,8 @@
             display: flex;
             justify-content: center;
             gap: 24px;
-            padding: 24px 20px calc(var(--nav-height) + var(--safe-bottom) + 20px);
+            padding: 16px 20px calc(24px + var(--safe-bottom));
+            flex-shrink: 0;
         }
 
         .action-btn {

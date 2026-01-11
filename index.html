@@ -212,6 +212,18 @@
             background: var(--story);
             border-color: var(--story);
         }
+        .mode-pill.classic.active {
+            background: #6366f1;
+            border-color: #6366f1;
+        }
+        .mode-pill.speed.active {
+            background: #f59e0b;
+            border-color: #f59e0b;
+        }
+        .mode-pill.review.active {
+            background: #10b981;
+            border-color: #10b981;
+        }
 
         .mode-pill-icon { font-size: 16px; }
 
@@ -536,50 +548,50 @@
 
         /* Color-coded lesson cards */
         .lesson-card.grammar-card {
-            border-left: 3px solid var(--grammar);
+            border: 1px solid rgba(99, 102, 241, 0.3);
             background: linear-gradient(135deg, var(--glass-bg) 0%, var(--grammar-subtle) 100%);
         }
         .lesson-card.grammar-card .lesson-icon { filter: drop-shadow(0 0 8px var(--grammar-glow)); }
         .lesson-card.grammar-card .lesson-progress-fill { background: linear-gradient(90deg, var(--grammar), var(--grammar-light)); }
 
         .lesson-card.vocab-card {
-            border-left: 3px solid var(--vocab);
+            border: 1px solid rgba(16, 185, 129, 0.3);
             background: linear-gradient(135deg, var(--glass-bg) 0%, var(--vocab-subtle) 100%);
         }
         .lesson-card.vocab-card .lesson-icon { filter: drop-shadow(0 0 8px var(--vocab-glow)); }
 
         .lesson-card.idiom-card {
-            border-left: 3px solid var(--idiom);
+            border: 1px solid rgba(251, 191, 36, 0.3);
             background: linear-gradient(135deg, var(--glass-bg) 0%, var(--idiom-subtle) 100%);
         }
         .lesson-card.idiom-card .lesson-icon { filter: drop-shadow(0 0 8px var(--idiom-glow)); }
 
         .lesson-card.danger-card {
-            border-left: 3px solid var(--danger-mode);
+            border: 1px solid rgba(239, 68, 68, 0.3);
             background: linear-gradient(135deg, var(--glass-bg) 0%, var(--danger-mode-subtle) 100%);
         }
         .lesson-card.danger-card .lesson-icon { filter: drop-shadow(0 0 8px var(--danger-mode-glow)); }
 
         .lesson-card.travel-card {
-            border-left: 3px solid var(--travel);
+            border: 1px solid rgba(14, 165, 233, 0.3);
             background: linear-gradient(135deg, var(--glass-bg) 0%, var(--travel-subtle) 100%);
         }
         .lesson-card.travel-card .lesson-icon { filter: drop-shadow(0 0 8px var(--travel-glow)); }
 
         .lesson-card.slang-card {
-            border-left: 3px solid var(--slang);
+            border: 1px solid rgba(245, 158, 11, 0.3);
             background: linear-gradient(135deg, var(--glass-bg) 0%, var(--slang-subtle) 100%);
         }
         .lesson-card.slang-card .lesson-icon { filter: drop-shadow(0 0 8px var(--slang-glow)); }
 
         .lesson-card.practice-card {
-            border-left: 3px solid var(--practice);
+            border: 1px solid rgba(168, 85, 247, 0.3);
             background: linear-gradient(135deg, var(--glass-bg) 0%, var(--practice-subtle) 100%);
         }
         .lesson-card.practice-card .lesson-icon { filter: drop-shadow(0 0 8px var(--practice-glow)); }
 
         .lesson-card.quiz-card {
-            border-left: 3px solid var(--quiz);
+            border: 1px solid rgba(236, 72, 153, 0.3);
             background: linear-gradient(135deg, var(--glass-bg) 0%, var(--quiz-subtle) 100%);
         }
         .lesson-card.quiz-card .lesson-icon { filter: drop-shadow(0 0 8px var(--quiz-glow)); }
@@ -1057,35 +1069,13 @@
                 <button class="btn btn-primary btn-full btn-lg" onclick="welcomeNextStep(2)">Continue</button>
             </div>
 
-            <!-- Step 2: Level -->
+            <!-- Step 2: Summary -->
             <div class="welcome-step" id="welcomeStep2">
-                <div class="welcome-icon">📊</div>
-                <div class="welcome-title">Your Level</div>
-                <div class="welcome-desc">Where are you in your Spanish journey?</div>
-                <div class="welcome-level-select">
-                    <div class="level-option" data-level="beginner" onclick="selectLevel(this)">
-                        <div class="level-name">Beginner</div>
-                        <div class="level-desc">Just starting out. Hola is about it.</div>
-                    </div>
-                    <div class="level-option" data-level="intermediate" onclick="selectLevel(this)">
-                        <div class="level-name">Intermediate</div>
-                        <div class="level-desc">Can hold basic conversations. Know some grammar.</div>
-                    </div>
-                    <div class="level-option" data-level="advanced" onclick="selectLevel(this)">
-                        <div class="level-name">Advanced</div>
-                        <div class="level-desc">Fluent but want to refine. Working on nuances.</div>
-                    </div>
-                </div>
-                <button class="btn btn-primary btn-full btn-lg" id="levelNextBtn" onclick="welcomeNextStep(3)" disabled>Continue</button>
-            </div>
-
-            <!-- Step 3: Summary -->
-            <div class="welcome-step" id="welcomeStep3">
                 <div class="welcome-icon">✨</div>
                 <div class="welcome-title">You're All Set!</div>
                 <div class="welcome-summary">
                     <div class="summary-name" id="summaryName">—</div>
-                    <div class="summary-level" id="summaryLevel">Ready to learn</div>
+                    <div class="summary-level" id="summaryLevel">Ready to learn Spanish</div>
                 </div>
                 <div class="welcome-desc">We'll track your weak spots and personalize your journey with science-backed spaced repetition.</div>
                 <button class="btn btn-primary btn-full btn-lg" onclick="completeWelcome()">¡Vamos!</button>
@@ -1202,21 +1192,11 @@
             // Hide all steps
             document.querySelectorAll('.welcome-step').forEach(s => s.classList.remove('active'));
 
-            // Validate and save data from previous steps
+            // Save name and show summary
             if (step === 2) {
                 const name = document.getElementById('welcomeName').value.trim();
                 welcomeData.name = name || 'Amigo';
-            }
-
-            if (step === 3) {
-                // Update summary
                 document.getElementById('summaryName').textContent = welcomeData.name;
-                const levelLabels = {
-                    beginner: 'Starting your Spanish journey',
-                    intermediate: 'Building on solid foundations',
-                    advanced: 'Refining your fluency'
-                };
-                document.getElementById('summaryLevel').textContent = levelLabels[welcomeData.level];
             }
 
             // Show the target step
@@ -1233,22 +1213,9 @@
         }
 
         function completeWelcome() {
-            // Save user profile with name and level
+            // Save user profile with name
             const profile = Yespanol.load();
             profile.name = welcomeData.name;
-            profile.level = welcomeData.level;
-
-            // Optionally set initial skill levels based on proficiency
-            if (welcomeData.level === 'intermediate') {
-                Object.keys(profile.skills).forEach(k => {
-                    profile.skills[k].level = 20;
-                });
-            } else if (welcomeData.level === 'advanced') {
-                Object.keys(profile.skills).forEach(k => {
-                    profile.skills[k].level = 50;
-                });
-            }
-
             Yespanol.save(profile);
             localStorage.setItem('yespanol_welcomed', 'true');
 
