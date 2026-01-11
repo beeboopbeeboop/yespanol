@@ -1,11 +1,13 @@
 // Yespañol Service Worker - Enables offline mode
 
-const CACHE_NAME = 'yespanol-v2';
+const CACHE_NAME = 'yespanol-v3';
 const urlsToCache = [
   '/',
   '/index.html',
+  '/css/design-system.css',
   '/js/core.js',
   '/js/ui.js',
+  '/js/ui-premium.js',
   '/js/story.js',
   '/js/loading.js',
   '/js/content.js',
