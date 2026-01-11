@@ -14,6 +14,10 @@ const Yespanol = (function() {
         created: null,
         lastVisit: null,
 
+        // User info
+        name: '',
+        level: 'beginner', // beginner, intermediate, advanced
+
         // Streak tracking
         streak: 0,
         longestStreak: 0,

@@ -165,12 +165,40 @@
             pointer-events: none;
         }
 
+        /* Story Mode - Purple/Violet (mysterious, romantic) */
         .hero-card.story-mode {
             background: linear-gradient(135deg, var(--bg-elevated) 0%, rgba(191, 90, 242, 0.1) 100%);
+            border-color: rgba(191, 90, 242, 0.2);
         }
-
         .hero-card.story-mode::before {
             background: radial-gradient(circle, rgba(191, 90, 242, 0.2) 0%, transparent 70%);
+        }
+
+        /* Classic Mode - Indigo (structured learning) */
+        .hero-card.classic-mode {
+            background: linear-gradient(135deg, var(--bg-elevated) 0%, rgba(99, 102, 241, 0.1) 100%);
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+        .hero-card.classic-mode::before {
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, transparent 70%);
+        }
+
+        /* Speed Mode - Amber/Orange (energy, urgency) */
+        .hero-card.speed-mode {
+            background: linear-gradient(135deg, var(--bg-elevated) 0%, rgba(245, 158, 11, 0.1) 100%);
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+        .hero-card.speed-mode::before {
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.2) 0%, transparent 70%);
+        }
+
+        /* Review Mode - Emerald (growth, recall) */
+        .hero-card.review-mode {
+            background: linear-gradient(135deg, var(--bg-elevated) 0%, rgba(16, 185, 129, 0.1) 100%);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+        .hero-card.review-mode::before {
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%);
         }
 
         .hero-eyebrow {
@@ -183,6 +211,9 @@
         }
 
         .story-mode .hero-eyebrow { color: var(--story); }
+        .classic-mode .hero-eyebrow { color: #818cf8; }
+        .speed-mode .hero-eyebrow { color: #fbbf24; }
+        .review-mode .hero-eyebrow { color: #34d399; }
 
         .hero-title {
             font-size: var(--text-xl);
@@ -214,9 +245,10 @@
 
         .hero-btn:active { transform: scale(0.97); }
 
-        .story-mode .hero-btn {
-            background: var(--story);
-        }
+        .story-mode .hero-btn { background: var(--story); }
+        .classic-mode .hero-btn { background: #6366f1; }
+        .speed-mode .hero-btn { background: #f59e0b; }
+        .review-mode .hero-btn { background: #10b981; }
 
         /* Quick Actions */
         .quick-actions {
@@ -572,6 +604,84 @@
             transform: scale(1);
         }
 
+        .welcome-step {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        .welcome-step.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .welcome-input {
+            width: 100%;
+            padding: var(--space-4);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            font-size: var(--text-lg);
+            text-align: center;
+            margin: var(--space-4) 0;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .welcome-input:focus {
+            border-color: var(--accent);
+        }
+        .welcome-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .welcome-level-select {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-3);
+            margin: var(--space-4) 0;
+        }
+
+        .level-option {
+            padding: var(--space-4);
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+        .level-option:hover, .level-option.selected {
+            border-color: var(--accent);
+            background: var(--accent-subtle);
+        }
+        .level-option .level-name {
+            font-weight: var(--weight-semibold);
+            margin-bottom: 4px;
+        }
+        .level-option .level-desc {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+        }
+
+        .welcome-summary {
+            background: var(--glass-bg);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            margin: var(--space-4) 0;
+            text-align: center;
+        }
+        .summary-name {
+            font-size: var(--text-xl);
+            font-weight: var(--weight-bold);
+            color: var(--accent);
+            margin-bottom: var(--space-2);
+        }
+        .summary-level {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+        }
+
         .welcome-icon {
             font-size: 64px;
             margin-bottom: var(--space-4);
@@ -854,10 +964,48 @@
     <!-- Welcome Modal -->
     <div class="welcome-overlay" id="welcomeOverlay">
         <div class="welcome-modal">
-            <div class="welcome-icon">🇪🇸</div>
-            <div class="welcome-title">¡Bienvenido!</div>
-            <div class="welcome-desc">Learn Spanish with science-backed methods. We track your weak spots and personalize your journey.</div>
-            <button class="btn btn-primary btn-full btn-lg" onclick="dismissWelcome()">¡Vamos!</button>
+            <!-- Step 1: Name -->
+            <div class="welcome-step active" id="welcomeStep1">
+                <div class="welcome-icon">🇪🇸</div>
+                <div class="welcome-title">¡Hola!</div>
+                <div class="welcome-desc">Let's personalize your learning journey. What should we call you?</div>
+                <input type="text" class="welcome-input" id="welcomeName" placeholder="Your name" maxlength="20" autocomplete="off">
+                <button class="btn btn-primary btn-full btn-lg" onclick="welcomeNextStep(2)">Continue</button>
+            </div>
+
+            <!-- Step 2: Level -->
+            <div class="welcome-step" id="welcomeStep2">
+                <div class="welcome-icon">📊</div>
+                <div class="welcome-title">Your Level</div>
+                <div class="welcome-desc">Where are you in your Spanish journey?</div>
+                <div class="welcome-level-select">
+                    <div class="level-option" data-level="beginner" onclick="selectLevel(this)">
+                        <div class="level-name">Beginner</div>
+                        <div class="level-desc">Just starting out. Hola is about it.</div>
+                    </div>
+                    <div class="level-option" data-level="intermediate" onclick="selectLevel(this)">
+                        <div class="level-name">Intermediate</div>
+                        <div class="level-desc">Can hold basic conversations. Know some grammar.</div>
+                    </div>
+                    <div class="level-option" data-level="advanced" onclick="selectLevel(this)">
+                        <div class="level-name">Advanced</div>
+                        <div class="level-desc">Fluent but want to refine. Working on nuances.</div>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-full btn-lg" id="levelNextBtn" onclick="welcomeNextStep(3)" disabled>Continue</button>
+            </div>
+
+            <!-- Step 3: Summary -->
+            <div class="welcome-step" id="welcomeStep3">
+                <div class="welcome-icon">✨</div>
+                <div class="welcome-title">You're All Set!</div>
+                <div class="welcome-summary">
+                    <div class="summary-name" id="summaryName">—</div>
+                    <div class="summary-level" id="summaryLevel">Ready to learn</div>
+                </div>
+                <div class="welcome-desc">We'll track your weak spots and personalize your journey with science-backed spaced repetition.</div>
+                <button class="btn btn-primary btn-full btn-lg" onclick="completeWelcome()">¡Vamos!</button>
+            </div>
         </div>
     </div>
 
@@ -963,10 +1111,83 @@
         }
 
         // Dismiss welcome
+        // Welcome flow state
+        let welcomeData = { name: '', level: 'beginner' };
+
+        function welcomeNextStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.welcome-step').forEach(s => s.classList.remove('active'));
+
+            // Validate and save data from previous steps
+            if (step === 2) {
+                const name = document.getElementById('welcomeName').value.trim();
+                welcomeData.name = name || 'Amigo';
+            }
+
+            if (step === 3) {
+                // Update summary
+                document.getElementById('summaryName').textContent = welcomeData.name;
+                const levelLabels = {
+                    beginner: 'Starting your Spanish journey',
+                    intermediate: 'Building on solid foundations',
+                    advanced: 'Refining your fluency'
+                };
+                document.getElementById('summaryLevel').textContent = levelLabels[welcomeData.level];
+            }
+
+            // Show the target step
+            document.getElementById(`welcomeStep${step}`).classList.add('active');
+            UI.Haptics.selection();
+        }
+
+        function selectLevel(el) {
+            document.querySelectorAll('.level-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            welcomeData.level = el.dataset.level;
+            document.getElementById('levelNextBtn').disabled = false;
+            UI.Haptics.light();
+        }
+
+        function completeWelcome() {
+            // Save user profile with name and level
+            const profile = Yespanol.load();
+            profile.name = welcomeData.name;
+            profile.level = welcomeData.level;
+
+            // Optionally set initial skill levels based on proficiency
+            if (welcomeData.level === 'intermediate') {
+                Object.keys(profile.skills).forEach(k => {
+                    profile.skills[k].level = 20;
+                });
+            } else if (welcomeData.level === 'advanced') {
+                Object.keys(profile.skills).forEach(k => {
+                    profile.skills[k].level = 50;
+                });
+            }
+
+            Yespanol.save(profile);
+            localStorage.setItem('yespanol_welcomed', 'true');
+
+            document.getElementById('welcomeOverlay').classList.remove('visible');
+            UI.Confetti.burst({ count: 60 });
+
+            // Update greeting with name
+            updateGreeting(profile);
+        }
+
         function dismissWelcome() {
             document.getElementById('welcomeOverlay').classList.remove('visible');
             localStorage.setItem('yespanol_welcomed', 'true');
             UI.Confetti.burst({ count: 40 });
+        }
+
+        function updateGreeting(profile) {
+            const hour = new Date().getHours();
+            let greeting = hour < 12 ? '¡Buenos días' : hour < 18 ? '¡Buenas tardes' : '¡Buenas noches';
+            const name = profile.name || '';
+            greeting += name ? `, ${name}!` : '!';
+            if (profile.streak >= 3) greeting += ` 🔥 ${profile.streak} day streak!`;
+            document.getElementById('greeting').textContent = greeting;
         }
 
         // Show glitch message
@@ -994,7 +1215,8 @@
             const desc = document.getElementById('heroDesc');
             const btn = document.getElementById('heroBtn');
 
-            heroCard.classList.remove('story-mode');
+            // Remove all mode classes
+            heroCard.classList.remove('story-mode', 'classic-mode', 'speed-mode', 'review-mode');
 
             switch(mode) {
                 case 'story':
@@ -1017,6 +1239,7 @@
                     }
                     break;
                 case 'classic':
+                    heroCard.classList.add('classic-mode');
                     const rec = Yespanol.getRecommendedLesson(profile);
                     eyebrow.textContent = 'Recommended For You';
                     title.textContent = Yespanol.formatSkillName(rec.skill);
@@ -1025,6 +1248,7 @@
                     btn.onclick = () => goTo(skillUrls[rec.skill]);
                     break;
                 case 'speed':
+                    heroCard.classList.add('speed-mode');
                     eyebrow.textContent = 'Speed Challenge';
                     title.textContent = '60-Second Sprint';
                     desc.textContent = 'How many cards can you nail in 60 seconds?';
@@ -1032,6 +1256,7 @@
                     btn.onclick = () => goTo('practice/flashcards.html?mode=speed');
                     break;
                 case 'review':
+                    heroCard.classList.add('review-mode');
                     const dueCards = Yespanol.getDueCards(profile).length;
                     eyebrow.textContent = 'Spaced Repetition';
                     title.textContent = dueCards > 0 ? `${dueCards} Cards Due` : 'All Caught Up!';
@@ -1060,11 +1285,8 @@
             document.getElementById('cards').textContent = profile.totalCardsReviewed || 0;
             document.getElementById('accuracy').textContent = profile.totalCardsReviewed > 0 ? Yespanol.getAccuracy(profile) + '%' : '—';
 
-            // Greeting
-            const hour = new Date().getHours();
-            let greeting = hour < 12 ? '¡Buenos días!' : hour < 18 ? '¡Buenas tardes!' : '¡Buenas noches!';
-            if (profile.streak >= 3) greeting += ` 🔥 ${profile.streak} day streak!`;
-            document.getElementById('greeting').textContent = greeting;
+            // Personalized greeting
+            updateGreeting(profile);
 
             // Initialize fact
             refreshFact();
